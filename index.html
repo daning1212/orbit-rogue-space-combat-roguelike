@@ -191,6 +191,8 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 .panel[data-screen="hangar"] .hull-pick{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
 .panel[data-screen="hangar"] .hull-card{display:grid;gap:6px;padding:11px;background:linear-gradient(145deg,#142d43,#0d1a2c);border:1px solid #355a74;border-radius:12px;text-align:left;min-width:0}
 .panel[data-screen="hangar"] .hull-card[aria-pressed="true"]{background:linear-gradient(145deg,#16435c,#102238);border-color:#7de6ff;box-shadow:inset 0 0 0 1px #7de6ff,0 0 18px #40cfff33}
+.panel[data-screen="hangar"] .launch-actions-top{margin:8px 24px 12px;align-items:center}
+.panel[data-screen="hangar"] .launch-actions-top #launch{flex:1;min-width:220px;text-align:center;font-weight:800;font-size:16px;padding:12px 18px}
 .hull-card-head{display:flex;justify-content:space-between;align-items:baseline;gap:7px;flex-wrap:wrap}
 .hull-card-head strong{font-size:16px}
 .hull-card-head small{font-size:11px}
@@ -202,6 +204,9 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 .panel[data-screen="hangar"] .weapon-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:0 24px}
 .panel[data-screen="hangar"] .weapon-grid .card{min-height:56px;padding:8px 10px;border-radius:8px}
 .panel[data-screen="hangar"] .weapon-grid .card[aria-pressed="true"]{background:#19435a;border-color:#74dfff}
+.header-logo{display:block;width:clamp(150px,22vw,235px);height:42px;object-fit:contain;object-position:left center;filter:drop-shadow(0 0 8px #2e9dff78)}
+.panel[data-screen="hangar"] .box>h2{align-items:flex-start}
+.hangar-logo{display:block;width:min(560px,72%);height:auto;max-height:118px;object-fit:contain;object-position:left center;filter:drop-shadow(0 5px 12px #000b)}
 @media(max-width:680px){
  .hangar-wordmark{gap:9px}
  .hangar-wordmark>.brand-mark{width:39px;height:39px}
@@ -209,15 +214,19 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
  .hangar-wordmark>.brand-mark::after{left:14px;top:7px;width:13px;height:25px}
  .panel[data-screen="hangar"] .hull-pick{gap:6px}
  .panel[data-screen="hangar"] .hull-card{padding:7px}
+ .panel[data-screen="hangar"] .launch-actions-top{margin:7px 14px 9px}
+ .panel[data-screen="hangar"] .launch-actions-top #launch{min-width:160px;font-size:14px;padding:10px 12px}
  .hull-card-head strong{font-size:13px}
  .hull-card-head small{font-size:10px}
  .hull-ship{height:90px}
  .loadout-label{margin:5px 14px}
  .panel[data-screen="hangar"] .weapon-grid{grid-template-columns:repeat(2,minmax(0,1fr));margin:0 14px}
+ .header-logo{width:135px;height:28px}
+ .hangar-logo{width:min(360px,88%);max-height:76px}
 }
 </style>
 <main>
-<header><div class="brand"><span class="brand-mark" aria-hidden="true"><i></i></span><strong>ORBIT <em>ROGUE</em></strong></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button></div></header>
+<header><div class="brand"><img class="header-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button></div></header>
 <div class="hud" id="hud" aria-live="off"></div>
 <div class="field">
 <canvas id="canvas" width="960" height="640" aria-label="우주 슈팅 전투 화면"></canvas>
@@ -298,7 +307,7 @@ function drawArt(name,x,y,width,height){
 }
 const weapons=['직사 미사일','유도 미사일','직사 레이저','유도 레이저','직사 탄환','분사 탄환'];
 const hulls=[
-  {name:'스피드형',brief:'민첩한 이동 · 내구도 82',speed:320,hp:82,shield:30,bonus:0,turn:15,keyTurn:2.0,turnThrust:.62,art:'player0'},
+  {name:'스피드형',brief:'스피드 +10% · 내구도 82',speed:320,hp:82,shield:30,bonus:0,turn:15,keyTurn:2.0,turnThrust:.62,art:'player0'},
   {name:'파워형',brief:'화력 +20% · 내구도 110',speed:234,hp:110,shield:36,bonus:.20,turn:10,keyTurn:1.85,turnThrust:1,art:'power'}
 ];
 const ranks=['기본','매직','레어','유니크','레전드'];
@@ -316,7 +325,9 @@ const store = {
   set(key,value){try{localStorage.setItem(key,JSON.stringify(value))}catch{}},
   clear(key){try{localStorage.removeItem(key)}catch{}}
 };
-const prefs=store.get('or-settings',{music:18,fx:35});
+const prefs=store.get('or-settings',{music:18,fx:35,lang:'ko'});
+prefs.lang??='ko';
+const tr=(ko,en)=>prefs.lang==='en'?en:ko;
 const mobileArena=typeof matchMedia==='function'?matchMedia('(max-width:680px),(pointer:coarse) and (max-height:780px)'):null;
 const coarsePointer=typeof matchMedia==='function'&&matchMedia('(pointer:coarse)').matches;
 const joystick=$('joystick'),knob=$('stickKnob'),stickToggle=$('stickToggle');
@@ -390,25 +401,27 @@ function hangar(){
   mode='hangar'; keys.clear();pointer=null;
   let chosen=starter;
   hangarHull=starterHull;
-  screen('<span class="hangar-wordmark"><span class="brand-mark" aria-hidden="true"><i></i></span><span>ORBIT<em>ROGUE</em></span></span>',
-    '<p class="hangar-subtitle">기체와 기본 무기를 고르고 출격하세요.</p><div class="hull-pick">'+
-    hulls.map((h,i)=>'<button id="hull'+i+'" class="hull-card" aria-pressed="'+(i===hangarHull)+'"><span class="hull-card-head"><strong>'+h.name+'</strong><small>'+h.brief+'</small></span><canvas id="hangarShip'+i+'" class="hull-ship" width="300" height="170" aria-label="'+h.name+' 기체"></canvas><span class="hull-card-choice">선택</span></button>').join('')+
-    '</div><p class="loadout-label">기본 무기 선택</p><div class="weapon-grid grid">'+
-    weapons.map((w,i)=>'<button id="w'+i+'" class="card" aria-pressed="'+(chosen===i)+'"><strong>'+w+'</strong><span>'+['빠른 폭발탄','목표 추적','직선 관통','근거리 추적 빔','집중 연사','부채꼴 산탄'][i]+'</span></button>').join('')+
-    '</div><div class="stage-route" aria-label="스테이지 경로">01<i></i><strong>10 · 리프트 엑스커베이터</strong><i></i><strong>20 · 널 크라운</strong></div><small>최고 점수 '+best.toLocaleString()+'</small>'+
-    '<div class="buttons launch-actions"><button id="launch" class="primary">'+weapons[chosen]+'로 출격 ↗</button>'+
-    '<button id="stickRecommend" class="stick-recommend" type="button">조이스틱 추천</button>'+
-    (store.get('or-save',null)?'<button id="resume">저장한 상점 이어하기</button>':'')+'</div>');
+  screen('<img class="hangar-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE">',
+    '<p class="hangar-subtitle">'+tr('기체와 기본 무기를 고르고 출격하세요.','Choose a ship and primary weapon.')+'</p><div class="hull-pick">'+
+    hulls.map((h,i)=>'<button id="hull'+i+'" class="hull-card" aria-pressed="'+(i===hangarHull)+'"><span class="hull-card-head"><strong>'+tr(h.name,i?'Power':'Speed')+'</strong><small>'+tr(h.brief,i?'Damage +20% · Hull 110':'Speed +10% · Hull 82')+'</small></span><canvas id="hangarShip'+i+'" class="hull-ship" width="300" height="170" aria-label="'+tr(h.name,i?'Power ship':'Speed ship')+'"></canvas><span class="hull-card-choice">'+tr('선택','Select')+'</span></button>').join('')+
+    '</div><div class="buttons launch-actions launch-actions-top"><button id="launch" class="primary">'+tr(weapons[chosen]+'로 출격 ↗','Launch ↗')+'</button>'+
+    '<button id="startOptions" type="button">'+tr('옵션','Options')+'</button>'+
+    '<button id="stickRecommend" class="stick-recommend" type="button">'+tr('조이스틱 추천','Joystick')+'</button>'+
+    (store.get('or-save',null)?'<button id="resume">저장한 상점 이어하기</button>':'')+'</div>'+
+    '<p class="loadout-label">'+tr('기본 무기 선택','Primary weapon')+'</p><div class="weapon-grid grid">'+
+    weapons.map((w,i)=>'<button id="w'+i+'" class="card" aria-pressed="'+(chosen===i)+'"><strong>'+tr(w,['Direct Missile','Homing Missile','Direct Laser','Homing Laser','Rapid Cannon','Scatter Cannon'][i])+'</strong><span>'+tr(['빠른 폭발탄','목표 추적','직선 관통','근거리 추적 빔','집중 연사','부채꼴 산탄'][i],['Fast explosive','Target tracking','Piercing beam','Tracking beam','Focused fire','Wide spread'][i])+'</span></button>').join('')+
+    '</div><div class="stage-route" aria-label="스테이지 경로">01<i></i><strong>10 · 리프트 엑스커베이터</strong><i></i><strong>20 · 널 크라운</strong></div><small>최고 점수 '+best.toLocaleString()+'</small>');
   weapons.forEach((_,i)=>$('w'+i).onclick=()=>{
     $('w'+chosen).setAttribute('aria-pressed','false');chosen=i;
     $('w'+chosen).setAttribute('aria-pressed','true');
-    $('launch').textContent=weapons[chosen]+'로 출격 ↗';
+    $('launch').textContent=tr(weapons[chosen]+'로 출격 ↗','Launch ↗');
   });
   hulls.forEach((_,i)=>$('hull'+i).onclick=()=>{
     $('hull'+hangarHull).setAttribute('aria-pressed','false');
     hangarHull=i;$('hull'+i).setAttribute('aria-pressed','true');
   });
   $('launch').onclick=()=>start(chosen,hangarHull);
+  $('startOptions').onclick=openStartOptions;
   $('stickRecommend').onclick=()=>setStick(true);
   syncStick(false);
   if($('resume'))$('resume').onclick=()=>{
@@ -637,6 +650,20 @@ function downloadProof(){
   link.href=card.toDataURL('image/png');
   document.body.append(link);link.click();link.remove();
 }
+function openStartOptions(){
+  mode='settings';
+  screen(tr('옵션','Options'),'<div class="options start-options">'+
+    '<label>'+tr('음악 볼륨','Music volume')+'<input id="music" type="range" min="0" max="100" value="'+prefs.music+'"></label>'+
+    '<label>'+tr('효과음 볼륨','Effects volume')+'<input id="fx" type="range" min="0" max="100" value="'+prefs.fx+'"></label>'+
+    '<div class="language-option"><span>'+tr('언어','Language')+'</span><div class="buttons">'+
+    '<button id="langKo" aria-pressed="'+(prefs.lang==='ko')+'">한국어</button>'+
+    '<button id="langEn" aria-pressed="'+(prefs.lang==='en')+'">English</button></div></div></div>'+
+    '<div class="buttons"><button id="optionsBack" class="primary">'+tr('완료','Done')+'</button></div>');
+  for(const key of ['music','fx'])$(key).oninput=e=>{prefs[key]=Number(e.target.value);store.set('or-settings',prefs);if(key==='fx')sound(420,.13);};
+  $('langKo').onclick=()=>{prefs.lang='ko';store.set('or-settings',prefs);openStartOptions();};
+  $('langEn').onclick=()=>{prefs.lang='en';store.set('or-settings',prefs);openStartOptions();};
+  $('optionsBack').onclick=hangar;
+}
 function pause(){
   if(mode==='pause'){mode=previousMode;hide();return;}
   if(!['combat','boss'].includes(mode))return;
@@ -812,9 +839,23 @@ function fire(){
   const {x,y}=world, id=run.wp, tier=run.rank, power=(1+tier*.35+run.bonus)*(run.mastered?1.28:1);
   const target=nearest(x,y,310), base=world.angle;
   const fx=Math.cos(base),fy=Math.sin(base), noseX=x+fx*16,noseY=y+fy*16;
-  if(id===2||id===3){
+  if(id===3){
+    let beam=world.beams.find(b=>b.guided);
+    if(!beam){
+      beam={guided:true,x:noseX,y:noseY,tx:noseX+fx*120,ty:noseY+fy*120,target:null,phase:0,points:[],life:.8};
+      world.beams.push(beam);
+    }
+    beam.life=.8;beam.x=noseX;beam.y=noseY;
+    if(!beam.target||beam.target.hp<=0)beam.target=target||nearest(x,y,Math.hypot(W,H));
+    if(beam.target){
+      beam.target.hp-=(5.2+run.laser*.32)*power*(Math.random()<Math.min(.75,run.crit)?1.7:1);
+    }
+    sound(310,.06,.14);
+    return .085-tier*.004;
+  }
+  if(id===2){
     const range=Math.hypot(W,H);
-    const seek=id===3&&target,tx=seek?target.x:noseX+fx*range,ty=seek?target.y:noseY+fy*range;
+    const seek=false,tx=noseX+fx*range,ty=noseY+fy*range;
     const length=clamp(Math.hypot(tx-noseX,ty-noseY)*.58,28,138);
     const bend=seek?{x:noseX+fx*length,y:noseY+fy*length}:null;
     const beam={x:noseX,y:noseY,tx,ty,bend,life:seek?.2:.13};
@@ -1097,6 +1138,24 @@ function step(dt){
     }
     return z.age<z.warning+.33;
   });
+  for(const b of world.beams){
+    if(!b.guided)continue;
+    b.x=world.x+Math.cos(world.angle)*16;b.y=world.y+Math.sin(world.angle)*16;
+    if(!b.target||b.target.hp<=0)b.target=nearest(b.x,b.y,Math.hypot(W,H));
+    b.phase+=dt*5.4;
+    if(b.target){
+      b.tx=b.target.x;b.ty=b.target.y;
+      const dx=b.tx-b.x,dy=b.ty-b.y,d=Math.max(1,Math.hypot(dx,dy)),nx=-dy/d,ny=dx/d;
+      b.points=Array.from({length:13},(_,i)=>{
+        const u=i/12,ease=u*u*(3-2*u),curl=Math.sin(u*Math.PI*2.35+b.phase)*(14+34*u)*Math.sin(u*Math.PI);
+        const orbit=Math.sin(u*Math.PI)*Math.sin(b.phase*1.35+u*7)*22*u;
+        return {x:b.x+dx*ease+nx*(curl+orbit),y:b.y+dy*ease+ny*(curl+orbit)};
+      });
+    }else{
+      b.tx=b.x+Math.cos(world.angle)*180;b.ty=b.y+Math.sin(world.angle)*180;
+      b.points=[{x:b.x,y:b.y},{x:b.tx,y:b.ty}];
+    }
+  }
   world.beams=world.beams.filter(b=>(b.life-=dt)>0);
   if(run.hp<=0){end(false);return;}
   let defeated=false;
@@ -1281,10 +1340,15 @@ function paint(){
   for(const b of world.beams){
     ctx.save();ctx.globalAlpha=Math.min(1,b.life/.09);ctx.lineCap='round';
     ctx.beginPath();ctx.moveTo(b.x,b.y);
-    if(b.bend)ctx.quadraticCurveTo(b.bend.x,b.bend.y,b.tx,b.ty);
+    if(b.guided&&b.points?.length>1){
+      for(let i=1;i<b.points.length-1;i++){
+        const p=b.points[i],n=b.points[i+1];ctx.quadraticCurveTo(p.x,p.y,(p.x+n.x)/2,(p.y+n.y)/2);
+      }
+      ctx.lineTo(b.tx,b.ty);
+    }else if(b.bend)ctx.quadraticCurveTo(b.bend.x,b.bend.y,b.tx,b.ty);
     else ctx.lineTo(b.tx,b.ty);
-    ctx.strokeStyle=b.bend?'#747affb8':'#8268ffd0';ctx.lineWidth=b.bend?12:13;ctx.stroke();
-    ctx.strokeStyle='#c7f9ff';ctx.lineWidth=3;ctx.stroke();
+    ctx.strokeStyle=b.guided?'#4b87ffc4':b.bend?'#747affb8':'#8268ffd0';ctx.lineWidth=b.guided?10:b.bend?12:13;ctx.stroke();
+    ctx.strokeStyle=b.guided?'#d7fdff':'#c7f9ff';ctx.lineWidth=b.guided?2.5:3;ctx.stroke();
     ctx.restore();
   }
   ctx.save();
@@ -1382,3 +1446,4 @@ addEventListener('pagehide',()=>{if(mode==='shop')saveShop();});
 requestAnimationFrame(frame);
 </script>
 </html>
+
