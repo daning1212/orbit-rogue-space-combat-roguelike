@@ -235,6 +235,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <button id="touchDash" class="dash-control" type="button" aria-label="두 번 눌러 니트로 대시" hidden>대시 ×2</button>
 <section class="panel" id="panel"><div class="box" id="box"></div></section>
 </div>
+<audio id="combatOst" src="orbit%20robgue%20bgm.mp3" preload="metadata" loop></audio>
 <audio id="mainOst" src="orbit-rogue-main-ost.mp3" preload="metadata" loop></audio>
 <audio id="bossOst1" src="orbit-rogue-boss-01.mp3" preload="metadata" loop></audio>
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
@@ -337,6 +338,8 @@ const coarsePointer=typeof matchMedia==='function'&&matchMedia('(pointer:coarse)
 const joystick=$('joystick'),knob=$('stickKnob'),stickToggle=$('stickToggle');
 const throttle=$('throttle'),touchDash=$('touchDash');
 const mainOst=$('mainOst');
+const combatOst=$('combatOst');
+let combatPlayPending=false, combatPlayFailed=false;
 const bossOsts=[$('bossOst1'),$('bossOst2')];
 const warningArt=$('warningArt');
 const stick={on:coarsePointer||store.get('or-stick',false),id:null,x:0,y:0};
@@ -371,7 +374,22 @@ const musicBars=[
 function musicTone(note,length,gain,wave='square'){
   sound(440*2**((note-69)/12),length,gain,true,wave);
 }
+function syncCombatOst(){
+  const shouldPlay=mode==='combat'&&prefs.music>0;
+  if(!shouldPlay){
+    if(!combatOst.paused)combatOst.pause();
+    if(!['combat','pause','level'].includes(mode)&&combatOst.currentTime)combatOst.currentTime=0;
+    return;
+  }
+  combatOst.volume=prefs.music/100;
+  if(combatOst.paused&&!combatPlayPending&&!combatPlayFailed){
+    combatPlayPending=true;
+    combatOst.play().then(()=>{combatPlayPending=false;if(mode!=='combat'||!prefs.music)combatOst.pause();}).catch(()=>{combatPlayPending=false;combatPlayFailed=true;});
+  }
+}
 function playMusic(now){
+  syncCombatOst();
+  if(mode==='combat')return;
   if(!['combat','boss'].includes(mode)||!audio||audio.state!=='running'||!prefs.music)return;
   if(mode==='boss'&&activeBossOst&&!activeBossOst.paused)return;
   if(musicPhase!==mode){musicPhase=mode;musicStep=0;musicAt=now;}
@@ -414,6 +432,8 @@ function saveAudioPreference(key,value){
   prefs[key]=Number(value);store.set('or-settings',prefs);
   if(key==='music'){
     if(!mainOst.paused)mainOst.volume=menuOstVolume();
+    combatOst.volume=prefs.music/100;
+    syncCombatOst();
     if(activeBossOst&&!activeBossOst.paused)activeBossOst.volume=prefs.music/100;
   }else sound(420,.13);
 }
@@ -441,6 +461,8 @@ document.addEventListener('pointerdown',()=>{
   const Audio=window.AudioContext||window.webkitAudioContext;
   if(Audio){audio ||= new Audio();audio.resume().catch(()=>{});}
   if(mode==='hangar'||mode==='settings')startMenuOst();
+  combatPlayFailed=false;
+  syncCombatOst();
 });
 function controls(actions){
   for(const [id,action] of Object.entries(actions))$(id).onclick=action;
@@ -508,7 +530,7 @@ function start(index,hull=starterHull){
   enterStage();
 }
 function enterStage(){
-  resetWorld();pointer=null;releaseThrust();run.time=STAGE_TIME; mode='combat'; hide();
+  resetWorld();pointer=null;releaseThrust();run.time=STAGE_TIME; mode='combat'; combatPlayFailed=false; syncCombatOst(); hide();
 }
 function xpGoal(){return 8+Math.floor(run.level*2.2)}
 function weaponCard(){
@@ -1531,4 +1553,3 @@ addEventListener('pagehide',()=>{if(mode==='shop')saveShop();});
 requestAnimationFrame(frame);
 </script>
 </html>
-
