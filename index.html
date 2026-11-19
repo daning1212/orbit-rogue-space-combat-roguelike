@@ -235,6 +235,10 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <button id="touchDash" class="dash-control" type="button" aria-label="두 번 눌러 니트로 대시" hidden>대시 ×2</button>
 <section class="panel" id="panel"><div class="box" id="box"></div></section>
 </div>
+<audio id="mainOst" src="orbit-rogue-main-ost.mp3" preload="metadata" loop></audio>
+<audio id="bossOst1" src="orbit-rogue-boss-01.mp3" preload="metadata" loop></audio>
+<audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
+<img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
 <footer>v0.2.0 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 두 번</span></footer>
 </main>
 <script>
@@ -332,10 +336,13 @@ const mobileArena=typeof matchMedia==='function'?matchMedia('(max-width:680px),(
 const coarsePointer=typeof matchMedia==='function'&&matchMedia('(pointer:coarse)').matches;
 const joystick=$('joystick'),knob=$('stickKnob'),stickToggle=$('stickToggle');
 const throttle=$('throttle'),touchDash=$('touchDash');
-const stick={on:store.get('or-stick',coarsePointer),id:null,x:0,y:0};
+const mainOst=$('mainOst');
+const bossOsts=[$('bossOst1'),$('bossOst2')];
+const warningArt=$('warningArt');
+const stick={on:coarsePointer||store.get('or-stick',false),id:null,x:0,y:0};
 let hangarHull=0, starterHull=0, mouseThrust=false, throttleId=null;
 let best=store.get('or-best',0), mode='hangar', run, world, boss, starter=4;
-let audio, musicAt=0, musicStep=0, musicPhase='', pointer=null, last=0,lastClock=null,cards=[], stock=[], previousMode;
+let audio, musicAt=0, musicStep=0, musicPhase='',ostFade=null,bossFade=null,activeBossOst=null, pointer=null, last=0,lastClock=null,cards=[], stock=[], previousMode;
 let permanent=!!store.get('or-discount',false);
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const rng=(a,b)=>a+Math.random()*(b-a);
@@ -366,6 +373,7 @@ function musicTone(note,length,gain,wave='square'){
 }
 function playMusic(now){
   if(!['combat','boss'].includes(mode)||!audio||audio.state!=='running'||!prefs.music)return;
+  if(mode==='boss'&&activeBossOst&&!activeBossOst.paused)return;
   if(musicPhase!==mode){musicPhase=mode;musicStep=0;musicAt=now;}
   if(now<musicAt)return;
   const sixteenth=60000/(mode==='boss'?190:178)/4;
@@ -381,9 +389,58 @@ function playMusic(now){
   if(note!==null)musicTone(note,beat%4===0?.18:.12,beat%4===0?.72:.57,'square');
   musicStep++;
 }
+function menuOstVolume(){return Math.min(.32,prefs.music/100*.48);}
+function updateOstButton(){
+  const button=$('ostToggle');
+  if(button)button.textContent=mainOst.paused?tr('♪ Main OST 듣기','♪ Play Main OST'):tr('Ⅱ OST 정지','Ⅱ Pause OST');
+}
+function fadeMainOst(target,duration=700,done){
+  clearInterval(ostFade);
+  const from=mainOst.volume,start=performance.now();
+  ostFade=setInterval(()=>{
+    const p=Math.min(1,(performance.now()-start)/duration);
+    mainOst.volume=from+(target-from)*p;
+    if(p>=1){clearInterval(ostFade);ostFade=null;if(done)done();}
+  },30);
+}
+function startMenuOst(){
+  if(!prefs.music)return;
+  const target=menuOstVolume();
+  if(mainOst.paused){mainOst.volume=0;mainOst.play().then(()=>fadeMainOst(target,900)).catch(()=>{});}
+  else fadeMainOst(target,250);
+  updateOstButton();
+}
+function saveAudioPreference(key,value){
+  prefs[key]=Number(value);store.set('or-settings',prefs);
+  if(key==='music'){
+    if(!mainOst.paused)mainOst.volume=menuOstVolume();
+    if(activeBossOst&&!activeBossOst.paused)activeBossOst.volume=prefs.music/100;
+  }else sound(420,.13);
+}
+function fadeBossOst(track,target,duration=850,done){
+  clearInterval(bossFade);
+  const from=track.volume,start=performance.now();
+  bossFade=setInterval(()=>{
+    const p=Math.min(1,(performance.now()-start)/duration);
+    track.volume=from+(target-from)*p;
+    if(p>=1){clearInterval(bossFade);bossFade=null;if(done)done();}
+  },30);
+}
+function startBossOst(){
+  bossOsts.forEach(track=>{if(track!==activeBossOst){track.pause();track.currentTime=0;}});
+  activeBossOst=run.stage===20?bossOsts[1]:bossOsts[0];
+  activeBossOst.currentTime=0;activeBossOst.volume=0;
+  activeBossOst.play().then(()=>fadeBossOst(activeBossOst,prefs.music/100,1000)).catch(()=>{});
+}
+function stopBossOst(duration=650){
+  if(!activeBossOst||activeBossOst.paused)return;
+  const track=activeBossOst;
+  fadeBossOst(track,0,duration,()=>{track.pause();track.currentTime=0;if(activeBossOst===track)activeBossOst=null;});
+}
 document.addEventListener('pointerdown',()=>{
   const Audio=window.AudioContext||window.webkitAudioContext;
   if(Audio){audio ||= new Audio();audio.resume().catch(()=>{});}
+  if(mode==='hangar'||mode==='settings')startMenuOst();
 });
 function controls(actions){
   for(const [id,action] of Object.entries(actions))$(id).onclick=action;
@@ -406,6 +463,7 @@ function hangar(){
     hulls.map((h,i)=>'<button id="hull'+i+'" class="hull-card" aria-pressed="'+(i===hangarHull)+'"><span class="hull-card-head"><strong>'+tr(h.name,i?'Power':'Speed')+'</strong><small>'+tr(h.brief,i?'Damage +20% · Hull 110':'Speed +10% · Hull 82')+'</small></span><canvas id="hangarShip'+i+'" class="hull-ship" width="300" height="170" aria-label="'+tr(h.name,i?'Power ship':'Speed ship')+'"></canvas><span class="hull-card-choice">'+tr('선택','Select')+'</span></button>').join('')+
     '</div><div class="buttons launch-actions launch-actions-top"><button id="launch" class="primary">'+tr(weapons[chosen]+'로 출격 ↗','Launch ↗')+'</button>'+
     '<button id="startOptions" type="button">'+tr('옵션','Options')+'</button>'+
+    '<button id="ostToggle" type="button">'+tr('♪ Main OST 듣기','♪ Play Main OST')+'</button>'+
     '<button id="stickRecommend" class="stick-recommend" type="button">'+tr('조이스틱 추천','Joystick')+'</button>'+
     (store.get('or-save',null)?'<button id="resume">저장한 상점 이어하기</button>':'')+'</div>'+
     '<p class="loadout-label">'+tr('기본 무기 선택','Primary weapon')+'</p><div class="weapon-grid grid">'+
@@ -420,10 +478,12 @@ function hangar(){
     $('hull'+hangarHull).setAttribute('aria-pressed','false');
     hangarHull=i;$('hull'+i).setAttribute('aria-pressed','true');
   });
-  $('launch').onclick=()=>start(chosen,hangarHull);
+  $('launch').onclick=()=>{fadeMainOst(0,900,()=>{mainOst.pause();updateOstButton();});start(chosen,hangarHull);};
   $('startOptions').onclick=openStartOptions;
+  $('ostToggle').onclick=()=>{if(mainOst.paused)startMenuOst();else{mainOst.pause();updateOstButton();}};
   $('stickRecommend').onclick=()=>setStick(true);
   syncStick(false);
+  updateOstButton();
   if($('resume'))$('resume').onclick=()=>{
     run=store.get('or-save',null);starter=run.starter;starterHull=run.hull??0;run.hull=starterHull;run.dash??=1;
     if(!Number.isFinite(run.elapsed)){run.elapsed=run.stage*STAGE_TIME;run.partialTiming=true;}
@@ -659,7 +719,7 @@ function openStartOptions(){
     '<button id="langKo" aria-pressed="'+(prefs.lang==='ko')+'">한국어</button>'+
     '<button id="langEn" aria-pressed="'+(prefs.lang==='en')+'">English</button></div></div></div>'+
     '<div class="buttons"><button id="optionsBack" class="primary">'+tr('완료','Done')+'</button></div>');
-  for(const key of ['music','fx'])$(key).oninput=e=>{prefs[key]=Number(e.target.value);store.set('or-settings',prefs);if(key==='fx')sound(420,.13);};
+  for(const key of ['music','fx'])$(key).oninput=e=>saveAudioPreference(key,e.target.value);
   $('langKo').onclick=()=>{prefs.lang='ko';store.set('or-settings',prefs);openStartOptions();};
   $('langEn').onclick=()=>{prefs.lang='en';store.set('or-settings',prefs);openStartOptions();};
   $('optionsBack').onclick=hangar;
@@ -671,7 +731,7 @@ function pause(){
   screen('일시정지','<div class="options"><label>음악 볼륨<input id="music" type="range" min="0" max="100" value="'+prefs.music+
     '"></label><label>효과음 볼륨<input id="fx" type="range" min="0" max="100" value="'+prefs.fx+
     '"></label></div><div class="buttons"><button id="continue" class="primary">계속하기</button><button id="leaveRun">그만하기</button></div>');
-  for(const key of ['music','fx'])$(key).oninput=e=>{prefs[key]=Number(e.target.value);store.set('or-settings',prefs);if(key==='fx')sound(420,.13);};
+  for(const key of ['music','fx'])$(key).oninput=e=>saveAudioPreference(key,e.target.value);
   controls({continue:pause,leaveRun:()=>{
     screen('이번 전투를 그만할까요?','<p>이번 전투의 진행이 끝납니다.</p><div class="buttons"><button id="confirmQuit">그만하기</button><button id="backRun">계속하기</button></div>');
     controls({confirmQuit:()=>{best=Math.max(best,run.score);store.set('or-best',best);store.clear('or-save');hangar();},backRun:pause});
@@ -980,6 +1040,12 @@ function startBoss(){
   const hp=run.stage===10?1300:2600;
   boss={boss:true,x:W/2,y:118,r:run.stage===10?57:72,hp,max:hp,fire:.9,pattern:2,phase:0};
   world.targets.push(boss);
+  startBossOst();
+}
+function startBossWarning(){
+  mode='boss-warning';world.bossWarning=3.2;world.warningBeat=0;
+  world.hostile=[];
+  sound(92,.55,1.8,false,'sawtooth',48);
 }
 function bossStep(dt){
   boss.pattern-=dt;boss.fire-=dt;
@@ -1004,6 +1070,13 @@ function bossStep(dt){
 const dropSymbols={magnet:'M',purge:'✦',sale:'½',free:'R',halfRoll:'r½',half:'½×',dice:'⚄',loyalty:'10%'};
 const dropNames={magnet:'광석 자석',purge:'전멸 펄스',sale:'이번 판 장비 반값',free:'리롤 무료 1회',halfRoll:'리롤 반값 1회',half:'상품 반값 1개',dice:'행운의 주사위',loyalty:'단골 영구 할인'};
 function step(dt){
+  if(mode==='boss-warning'){
+    animateExplosions(dt);
+    world.bossWarning-=dt;world.warningBeat-=dt;
+    if(world.warningBeat<=0){sound(760,.12,.62,false,'square',420);world.warningBeat=.72;}
+    if(world.bossWarning<=0)startBoss();
+    return;
+  }
   if(mode==='boss-clear'){
     animateExplosions(dt);
     world.clearDelay-=dt;
@@ -1069,7 +1142,7 @@ function step(dt){
   if(combat){
     run.time=Math.max(0,run.time-dt);world.spawn-=dt;
     if(run.time===0){
-      if(run.stage===10||run.stage===20)startBoss();
+      if(run.stage===10||run.stage===20)startBossWarning();
       else{openShop();return;}
     }else if(world.spawn<=0){world.spawn=spawnWave(wavePressure(run.time));}
   }
@@ -1185,6 +1258,7 @@ function step(dt){
   if(world.noticeFor>0)world.noticeFor-=dt;
   if(defeated){
     mode='boss-clear';
+    stopBossOst();
     resetStick();releaseThrust();syncStick(false);
     world.clearDelay=.78;
     world.hostile=[];
@@ -1400,6 +1474,17 @@ function paint(){
     ctx.restore();
   }
   if(world.inv<=0||Math.floor(last/55)%2===0)ship(world.x,world.y,1,false,run.rank,world.angle,run.hull??0);
+  if(mode==='boss-warning'){
+    const elapsed=3.2-world.bossWarning,pulse=.82+.18*Math.sin(elapsed*18),appear=clamp(elapsed/.35,0,1),fade=clamp(world.bossWarning/.4,0,1);
+    ctx.save();ctx.globalAlpha=.20*pulse*appear*fade;ctx.fillStyle='#ff1828';ctx.fillRect(0,0,W,H);
+    ctx.globalAlpha=pulse*appear*fade;
+    if(warningArt.complete&&warningArt.naturalWidth){
+      const maxWidth=Math.min(W*.9,920),scale=Math.min(maxWidth/warningArt.naturalWidth,(H*.42)/warningArt.naturalHeight)*(1+.035*Math.sin(elapsed*8));
+      const ww=warningArt.naturalWidth*scale,hh=warningArt.naturalHeight*scale;
+      ctx.drawImage(warningArt,(W-ww)/2,(H-hh)/2,ww,hh);
+    }
+    ctx.strokeStyle='#ff273c';ctx.lineWidth=5;ctx.globalAlpha=.45*pulse*fade;ctx.strokeRect(8,8,W-16,H-16);ctx.restore();
+  }
   if(boss&&boss.hp>0){
     const width=Math.min(500,W-42), x=(W-width)/2;
     ctx.fillStyle='#361f49';ctx.fillRect(x,18,width,8);
