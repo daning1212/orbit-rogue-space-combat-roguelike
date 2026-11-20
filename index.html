@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.13 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.14 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -282,6 +282,13 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 .sell-dialog::backdrop{background:#040915bd}.sell-dialog h3{margin-top:0}
 @media(max-width:620px){.build-layout{grid-template-columns:minmax(82px,26%) minmax(0,1fr);gap:5px}.ship-stats{padding:5px}.ship-stats dl div{font-size:.63rem;flex-wrap:wrap;gap:1px 4px}.build-content .weapon-cells{grid-template-columns:repeat(2,minmax(0,1fr))}.shop-shelf{grid-template-columns:repeat(2,minmax(0,1fr))}.weapon-cell{padding-right:6px}.weapon-cell .slot-sell{position:static;margin-top:3px}}
 </style>
+<style>
+.shop-shelf{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.panel[data-screen="shop"] .shop-offer .card{min-height:138px;padding:8px;overflow-wrap:anywhere}
+.panel[data-screen="shop"] .shop-offer .card strong{font-size:.9rem}
+.shop-lock{font-size:.72rem;padding:4px}.shop-lock[aria-pressed="true"]{border-color:#ffcf81;color:#ffcf81}
+@media(max-width:740px){.shop-shelf{grid-template-columns:repeat(2,minmax(0,1fr))}.panel[data-screen="shop"] .shop-offer .card{min-height:120px}}
+</style>
 <main>
 <header><div class="brand"><img class="header-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button></div></header>
 <div class="hud" id="hud" aria-live="off"></div>
@@ -297,7 +304,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <audio id="bossOst1" src="orbit-rogue-boss-01.mp3" preload="metadata" loop></audio>
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.13 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 두 번</span></footer>
+<footer>v0.2.14 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 두 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -576,7 +583,7 @@ function hangar(){
   if($('resume'))$('resume').onclick=()=>{
     run=store.get('or-save',null);starter=run.starter;starterHull=run.hull??0;run.hull=starterHull;run.dash??=1;
     if(!Number.isFinite(run.elapsed)){run.elapsed=Array.from({length:run.stage},(_,i)=>waveDuration(i+1)).reduce((a,b)=>a+b,0);run.partialTiming=true;}
-    lastClock=null;inventory();stock=run.stock?.length<=3&&run.stock?.every(c=>!c||c.type!=='swap'&&(c.type!=='copy'||c.id!==undefined))?run.stock.map(c=>c?refreshWeaponOffer(c,c.price):null):newStock();resetWorld();openShop(false);
+    lastClock=null;inventory();stock=run.stock?.length<=4&&run.stock?.every(c=>!c||c.type!=='swap'&&(c.type!=='copy'||c.id!==undefined))?run.stock.map(c=>c?refreshWeaponOffer(c,c.price):null):newStock();resetWorld();openShop(false);
   };
 }
 function resetWorld(){
@@ -630,7 +637,15 @@ function weaponCard(id,offeredRank){
     '+'+points+' 중첩점 · '+Math.min(need,total)+'/'+need+(total>=need?' → '+next:'')};
 }
 function rollWeaponCardRank(maxRank){
-  const chance=clamp(.32+(run.luck??0)*.006,.25,.56), roll=Math.random();
+  const luck=run.luck??0,roll=Math.random();
+  if(run.stage>=18){
+    const late=run.stage-18;
+    if(roll<Math.min(.36,.08+late*.075+luck*.002))return 4;
+    if(roll<Math.min(.62,.28+late*.10+luck*.003))return 3;
+    if(roll<Math.min(.93,.74+late*.07+luck*.002))return 2;
+    return 1;
+  }
+  const chance=clamp(.32+luck*.006,.25,.56);
   let rank=0;
   while(rank<maxRank&&roll<chance**(rank+1))rank++;
   return rank;
@@ -651,7 +666,7 @@ function levelChoices(){
   return choices;
 }
 function refreshWeaponOffer(card,priceTag){
-  if(card.type==='copy'||card.type==='equip')return {...weaponCard(card.id,card.rank??0),group:'weapon',price:priceTag};
+  if(card.type==='copy'||card.type==='equip')return {...weaponCard(card.id,card.rank??0),locked:card.locked,group:'weapon',price:priceTag};
   return card;
 }
 function statCard(){
@@ -715,7 +730,7 @@ function apply(card){
   }else if(card.type==='equip'){
     const slots=inventory();
     if(slots.some(s=>s.id===card.id))return;
-    if(slots.length<WEAPON_LIMIT)slots.push(makeWeapon(card.id));
+    if(slots.length<WEAPON_LIMIT)slots.push({...makeWeapon(card.id),acquiredStage:run.stage});
     else slots[slots.indexOf(replacementSlot(card.id))]=makeWeapon(card.id);
     syncPrimary();
   }else if(card.type==='stat'||card.type==='trade'){
@@ -812,15 +827,24 @@ function choose(index){
   apply(cards[index]); mode=previousMode; hide();
   if(!updateRank()) sound(480,.18);
 }
-function newStock(){
+function newStock(reserved=[]){
+  const offers=Array.from({length:4},(_,i)=>reserved[i]?.locked?refreshWeaponOffer(reserved[i],reserved[i].price):null);
   const weapons=levelOffers();
   const first=weapons.splice(Math.floor(Math.random()*weapons.length),1)[0];
   const upgrades=tradeoffGear.filter(canInstallTradeoff);
-  const equipment=upgrades.length&&Math.random()<.65?{...pick(upgrades),type:'trade',group:'ship'}:
-    Math.random()<.5?{...supportCard(),group:'support'}:{...statCard(),group:'ship'};
-  const offers=[{...first,group:'weapon'},equipment];
-  if(Math.random()<.55)offers.push({...pick(weapons),group:'weapon'});
-  return offers.map((c,i)=>({...c,price:16+run.stage*2+i*5}));
+  const candidates=[{...first,group:'weapon'},{...pick(weapons),group:'weapon'},
+    upgrades.length?{...pick(upgrades),type:'trade',group:'ship'}:{...statCard(),group:'ship'},
+    {...supportCard(),group:'support'}];
+  const key=c=>c.group==='weapon'?'weapon:'+c.id:c.name;
+  const used=new Set(offers.filter(Boolean).map(key));
+  for(let index=0;index<offers.length;index++){
+    if(offers[index])continue;
+    const preferred=candidates[index];
+    const card=!used.has(key(preferred))?preferred:candidates.find(c=>!used.has(key(c)))??{...statCard(),group:'ship'};
+    used.add(key(card));
+    offers[index]={...card,price:16+run.stage*2+index*4};
+  }
+  return offers;
 }
 function price(c){
   return Math.ceil(c.price*(run.coupons.sale||run.coupons.half?.5:permanent?.9:1));
@@ -849,7 +873,7 @@ function shopInventory(){
 }
 function openShop(fresh=true){
   mode='shop';
-  if(fresh){run.roll=0;stock=newStock();run.coin+=10+run.stage+run.salvage;run.hp=Math.min(run.max,run.hp+12);run.shopMessage='';}
+  if(fresh){run.roll=0;stock=newStock(run.shopReserved);delete run.shopReserved;run.coin+=10+run.stage+run.salvage;run.hp=Math.min(run.max,run.hp+12);run.shopMessage='';}
   screen('보급 상점 · '+run.stage+'구역',
     '<div class="build-layout">'+shipStats()+'<div class="build-content"><div class="shop-toolbar"><p class="shop-wallet"><span>보유 코인</span><strong>'+run.coin.toLocaleString()+' <small>코인</small></strong></p>'+
     '<button id="shopRoll" class="shop-reroll">다시 뽑기 <span>'+rerollLabel()+'</span></button></div>'+
@@ -860,6 +884,7 @@ function openShop(fresh=true){
       const cost=price(card),short=Math.max(0,cost-run.coin),eligible=canBuy(card);
       const listing=cardButton({...card,cost,short,eligible},'buy'+i);
       return '<div class="shop-offer">'+listing+
+        '<button id="lock'+i+'" class="shop-lock" aria-pressed="'+!!card.locked+'">'+(card.locked?'잠금 해제':'상품 잠금')+'</button>'+
         (run.coupons.dice?'<button id="dice'+i+'" class="shop-dice"'+(eligible?'':' disabled')+'>주사위 사용</button>':'')+'</div>';
     }).join('')+'</div>'+
     '<p class="shop-message" role="status">'+(run.shopMessage||'')+'</p>'+shopInventory()+
@@ -868,6 +893,7 @@ function openShop(fresh=true){
   stock.forEach((c,i)=>{
     if(!c)return;
     $('buy'+i).onclick=()=>buy(i,false);
+    $('lock'+i).onclick=()=>{c.locked=!c.locked;openShop(false);$('lock'+i)?.focus({preventScroll:true});};
     if($('dice'+i))$('dice'+i).onclick=()=>{
       if(!canBuy(c))return;
       run.coupons.dice--;const roll=Math.floor(rng(1,7));
@@ -875,21 +901,27 @@ function openShop(fresh=true){
       else{run.shopMessage=roll+'이 나왔어요. 상품은 그대로예요.';openShop(false);}
     };
   });
-  run.support.forEach((n,i)=>{if(n)$('sell'+i).onclick=()=>confirmSale(modules[i],5+n*4,()=>{
-    run.coin+=5+n*4;run.support[i]=0;openShop(false);
-  });});
+  run.support.forEach((n,i)=>{if(n)$('sell'+i).onclick=()=>{
+    const credits=Math.floor((run.supportPaid?.[i]??n*18)/2);
+    confirmSale(modules[i],credits,()=>{
+      run.coin+=credits;run.support[i]=0;
+      if(run.supportPaid)run.supportPaid[i]=0;
+      openShop(false);
+    });
+  };});
   for(const slot of inventory()){
     const button=$('sellWeapon'+slot.id);
-    if(button)button.onclick=()=>confirmSale(weapons[slot.id],8+slot.rank*12,()=>{
+    if(button)button.onclick=()=>confirmSale(weapons[slot.id],weaponResale(slot),()=>{
       if(inventory().length<=1||!inventory().includes(slot))return;
-      run.coin+=8+slot.rank*12;run.weaponSlots=inventory().filter(s=>s!==slot);
+      run.coin+=weaponResale(slot);run.weaponSlots=inventory().filter(s=>s!==slot);
       syncPrimary();stock=stock.map(item=>item?refreshWeaponOffer(item,item.price):null);openShop(false);
     });
   }
-  controls({shopRoll:()=>{if(payReroll()){run.roll++;stock=newStock();openShop(false);}},
-    next:()=>{run.stage++;enterStage();},leave:()=>{saveShop();hangar();}});
+  controls({shopRoll:()=>{if(stock.some(c=>!c?.locked)&&payReroll()){run.roll++;stock=newStock(stock);openShop(false);}},
+    next:()=>{run.shopReserved=stock.map(c=>c?.locked?c:null);run.stage++;enterStage();},leave:()=>{saveShop();hangar();}});
   saveShop();
 }
+function weaponResale(slot){return Math.floor((slot.purchaseValue??(16+(slot.acquiredStage??1)*2))/2);}
 function confirmSale(name,credits,sell){
   const dialog=$('sellDialog');
   $('sellDescription').textContent=name+' · 판매 시 '+credits+' 코인 획득';
@@ -905,8 +937,14 @@ function canBuy(c){
 function buy(i,free){
   const c=stock[i];
   if(!c||!canBuy(c)||(!free&&run.coin<price(c)))return;
-  if(!free){run.coin-=price(c);if(!run.coupons.sale&&run.coupons.half)run.coupons.half--;}
+  const paid=free?0:price(c);
+  if(!free){run.coin-=paid;if(!run.coupons.sale&&run.coupons.half)run.coupons.half--;}
   apply(c);
+  if(c.type==='equip')inventory().find(slot=>slot.id===c.id).purchaseValue=free?c.price:paid;
+  if(c.type==='support'){
+    const costs=run.supportPaid??=[];
+    costs[c.id]=(costs[c.id]??0)+(free?c.price:paid);
+  }
   stock[i]=null;
   stock=stock.map(item=>item?refreshWeaponOffer(item,item.price):null);
   sound(520,.17);openShop(false);
@@ -958,7 +996,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.13',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.14',896,587);
   return card;
 }
 function downloadProof(){
