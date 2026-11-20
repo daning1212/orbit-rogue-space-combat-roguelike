@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://rawcdn.githack.com/daning1212/orbit-rogue-space-combat-roguelike/5fd85be4b6275d28ea3fc091d96288262deef372/index.html"><strong>게임 시작</strong></a>
+  <a href="https://rawcdn.githack.com/daning1212/orbit-rogue-space-combat-roguelike/8ef1fca46d263615f8e2a3d23a23eb33eba9f552/index.html"><strong>게임 시작</strong></a>
 </p>
 
 ## 게임 소개
