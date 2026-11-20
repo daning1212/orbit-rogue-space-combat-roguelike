@@ -3,11 +3,11 @@
 </p>
 
 <p align="center">
-  10분 동안 살아남는 우주 전투 로그라이크
+  우주전투 로그라이크
 </p>
 
 <p align="center">
-  <a href="https://raw.githack.com/daning1212/orbit-rogue-space-combat-roguelike/main/index.html"><strong>게임 시작</strong></a>
+  <a href="https://rawcdn.githack.com/daning1212/orbit-rogue-space-combat-roguelike/cf77dfa39712a396c76061fc992a7dacdb571716/index.html"><strong>게임 시작</strong></a>
 </p>
 
 ## 게임 소개
