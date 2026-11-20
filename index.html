@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.3 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.4 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -251,7 +251,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <audio id="bossOst1" src="orbit-rogue-boss-01.mp3" preload="metadata" loop></audio>
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.3 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 두 번</span></footer>
+<footer>v0.2.4 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 두 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -531,7 +531,7 @@ function hangar(){
   if($('resume'))$('resume').onclick=()=>{
     run=store.get('or-save',null);starter=run.starter;starterHull=run.hull??0;run.hull=starterHull;run.dash??=1;
     if(!Number.isFinite(run.elapsed)){run.elapsed=Array.from({length:run.stage},(_,i)=>waveDuration(i+1)).reduce((a,b)=>a+b,0);run.partialTiming=true;}
-    lastClock=null;inventory();stock=run.stock?.length<=3&&run.stock?.every(c=>!c||c.type!=='swap'&&(c.type!=='copy'||c.id!==undefined))?run.stock:newStock();resetWorld();openShop(false);
+    lastClock=null;inventory();stock=run.stock?.length<=3&&run.stock?.every(c=>!c||c.type!=='swap'&&(c.type!=='copy'||c.id!==undefined))?run.stock.map(c=>c?refreshWeaponOffer(c,c.price):null):newStock();resetWorld();openShop(false);
   };
 }
 function resetWorld(){
@@ -557,7 +557,8 @@ function enterStage(){
 }
 function xpGoal(){return 8+Math.floor(run.level*2.2)}
 const WEAPON_LIMIT=3;
-const WEAPON_UPGRADE_COPIES=5;
+const WEAPON_CARD_POINTS=[1,2,3,5,5];
+const WEAPON_UPGRADE_POINTS=[2,6,12,20,25];
 const makeWeapon=id=>({id,rank:0,copies:0,mastered:false,prestige:0});
 function inventory(){
   return run.weaponSlots??=[{...makeWeapon(run.wp),rank:run.rank,copies:run.copies,mastered:run.mastered}];
@@ -571,18 +572,26 @@ function replacementSlot(id){
   return slots.find(s=>Math.floor(s.id/2)===Math.floor(id/2))
     ?? slots.reduce((best,s)=>s.rank<best.rank? s:best);
 }
-function weaponCard(id){
+function weaponCard(id,offeredRank){
   const slot=inventory().find(s=>s.id===id);
   if(!slot){
     const swap=inventory().length>=WEAPON_LIMIT?replacementSlot(id):null;
     return {type:'equip',id,name:weapons[id],text:swap?'교체 · '+weapons[swap.id]+' 대신 장착':'빈 무기 칸에 장착'};
   }
-  const need=WEAPON_UPGRADE_COPIES,next=slot.rank<4?ranks[slot.rank+1]:slot.mastered?'레전드 중첩 +1':'레전드 완성';
-  return {type:'copy',id,rank:slot.rank,name:weapons[id]+' · '+ranks[slot.rank],text:
-    (slot.copies+1)+'/'+need+(slot.copies+1===need?' → '+next:' · 같은 무기 중첩')};
+  const rank=offeredRank??rollWeaponCardRank(slot.rank),points=WEAPON_CARD_POINTS[rank];
+  const need=WEAPON_UPGRADE_POINTS[slot.rank],total=slot.copies+points;
+  const next=slot.rank<4?ranks[slot.rank+1]:slot.mastered?'레전드 중첩 +1':'레전드 완성';
+  return {type:'copy',id,rank,name:weapons[id],text:
+    '+'+points+' 중첩점 · '+Math.min(need,total)+'/'+need+(total>=need?' → '+next:'')};
+}
+function rollWeaponCardRank(maxRank){
+  const chance=clamp(.32+(run.luck??0)*.006,.25,.56), roll=Math.random();
+  let rank=0;
+  while(rank<maxRank&&roll<chance**(rank+1))rank++;
+  return rank;
 }
 function levelOffers(){
-  const slots=inventory(), ownedChance=clamp(.43+run.luck*.012,.2,.82);
+  const slots=inventory(), ownedChance=clamp(.26+run.luck*.012,.14,.76);
   return [0,2,4].map(first=>{
     const pool=[first,first+1], held=pool.filter(id=>slots.some(s=>s.id===id));
     const fresh=pool.filter(id=>!held.includes(id));
@@ -590,7 +599,7 @@ function levelOffers(){
   });
 }
 function refreshWeaponOffer(card,priceTag){
-  if(card.type==='copy'||card.type==='equip')return {...weaponCard(card.id),group:'weapon',price:priceTag};
+  if(card.type==='copy'||card.type==='equip')return {...weaponCard(card.id,card.rank??0),group:'weapon',price:priceTag};
   return card;
 }
 function statCard(){
@@ -617,8 +626,10 @@ function apply(card){
   if(card.type==='copy'){
     const slot=inventory().find(s=>s.id===card.id);
     if(!slot)return;
-    if(++slot.copies>=WEAPON_UPGRADE_COPIES){
-      slot.copies=0;
+    slot.copies+=WEAPON_CARD_POINTS[card.rank??0];
+    const need=WEAPON_UPGRADE_POINTS[slot.rank];
+    if(slot.copies>=need){
+      slot.copies-=need;
       if(slot.rank<4)slot.rank++;
       else if(slot.mastered)slot.prestige++;
       else slot.mastered=true;
@@ -666,7 +677,7 @@ function cardButton(c,id,shortcut=''){
 function gear(expanded=false){
   const slots=inventory();
   return '<ul class="stat"><li>무기 '+slots.length+'/'+WEAPON_LIMIT+'</li>'+
-  slots.map(s=>'<li>'+weapons[s.id]+' · '+ranks[s.rank]+' '+s.copies+'/'+WEAPON_UPGRADE_COPIES+(s.prestige?' · 중첩 +'+s.prestige:'')+'</li>').join('')+
+  slots.map(s=>'<li>'+weapons[s.id]+' · '+ranks[s.rank]+' '+s.copies+'/'+WEAPON_UPGRADE_POINTS[s.rank]+' 중첩점'+(s.prestige?' · 중첩 +'+s.prestige:'')+'</li>').join('')+
   '<li>내구도 '+Math.max(0,Math.ceil(run.hp))+' / '+run.max+' · 실드 '+Math.ceil(run.shield)+' / '+run.shieldMax+'</li>'+
   run.support.map((n,i)=>n?'<li>'+modules[i]+' '+n+'/3</li>':'').join('')+'</ul>'+
   '<details'+(expanded?' open':'')+'><summary>기체 능력치 16개</summary><ul class="stat">'+
@@ -802,7 +813,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.3',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.4',896,587);
   return card;
 }
 function downloadProof(){
