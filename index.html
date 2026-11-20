@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.17 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.18 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -304,6 +304,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 .shop-toolbar-actions button{font-size:.77rem;padding:6px 8px;white-space:nowrap}
 @media(max-width:620px){.shop-toolbar{gap:4px}.shop-toolbar-actions button{font-size:.68rem;padding:4px 5px}}
 </style>
+<style>.options select{color:#ecf6ff;background:#0b1929;border:1px solid #4a6980;border-radius:6px;padding:5px;max-width:100%;font:inherit}</style>
 <main>
 <header><div class="brand"><img class="header-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button></div></header>
 <div class="hud" id="hud" aria-live="off"></div>
@@ -319,7 +320,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <audio id="bossOst1" src="orbit-rogue-boss-01.mp3" preload="metadata" loop></audio>
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.17 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 두 번</span></footer>
+<footer>v0.2.18 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 두 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -417,6 +418,8 @@ const joystick=$('joystick'),knob=$('stickKnob'),stickToggle=$('stickToggle');
 const throttle=$('throttle'),touchDash=$('touchDash');
 const mainOst=$('mainOst');
 const combatOst=$('combatOst');
+const combatTracks={battle:'orbit%20robgue%20bgm.mp3',opening:'orbit-rogue-main-ost.mp3'};
+let combatTrack='battle',combatPlayRequest=0;
 let combatPlayPending=false, combatPlayFailed=false;
 const bossOsts=[$('bossOst1'),$('bossOst2')];
 const warningArt=$('warningArt');
@@ -459,16 +462,26 @@ function syncCombatOst(){
     if(!['combat','pause','level'].includes(mode)&&combatOst.currentTime)combatOst.currentTime=0;
     return;
   }
+  const selected=prefs.combatTrack==='opening'?'opening':'battle';
+  if(selected!==combatTrack){
+    combatTrack=selected;
+    combatPlayRequest++;
+    combatPlayPending=false;combatPlayFailed=false;
+    combatOst.pause();combatOst.src=combatTracks[selected];
+  }
   combatOst.volume=prefs.music/100;
   if(combatOst.paused&&!combatPlayPending&&!combatPlayFailed){
+    const request=++combatPlayRequest;
     combatPlayPending=true;
     combatOst.play().then(()=>{
+      if(request!==combatPlayRequest)return;
       combatPlayPending=false;
       if(mode!=='combat'||!prefs.music)combatOst.pause();
     }).catch(error=>{
+      if(request!==combatPlayRequest)return;
       combatPlayPending=false;
       if(mode!=='combat'||!prefs.music||error?.name==='AbortError')return;
-      const backup='https://raw.githubusercontent.com/daning1212/orbit-rogue-space-combat-roguelike/main/orbit%20robgue%20bgm.mp3';
+      const backup='https://raw.githubusercontent.com/daning1212/orbit-rogue-space-combat-roguelike/main/'+combatTracks[combatTrack];
       if(error?.name!=='NotAllowedError'&&combatOst.getAttribute('src')!==backup){
         combatOst.src=backup;
         syncCombatOst();
@@ -1029,7 +1042,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.17',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.18',896,587);
   return card;
 }
 function downloadProof(){
@@ -1038,16 +1051,27 @@ function downloadProof(){
   link.href=card.toDataURL('image/png');
   document.body.append(link);link.click();link.remove();
 }
+function combatMusicOption(){
+  return '<label>'+tr('전투 음악','Combat music')+'<select id="combatTrack">'+
+    '<option value="battle"'+(prefs.combatTrack==='opening'?'':' selected')+'>'+tr('기존 전투 BGM','Original battle BGM')+'</option>'+
+    '<option value="opening"'+(prefs.combatTrack==='opening'?' selected':'')+'>'+tr('오프닝곡','Opening theme')+'</option></select></label>';
+}
+function bindCombatMusicOption(){
+  $('combatTrack').onchange=e=>{
+    prefs.combatTrack=e.target.value;store.set('or-settings',prefs);
+  };
+}
 function openStartOptions(){
   mode='settings';
   screen(tr('옵션','Options'),'<div class="options start-options">'+
     '<label>'+tr('음악 볼륨','Music volume')+'<input id="music" type="range" min="0" max="100" value="'+prefs.music+'"></label>'+
     '<label>'+tr('효과음 볼륨','Effects volume')+'<input id="fx" type="range" min="0" max="100" value="'+prefs.fx+'"></label>'+
-    '<div class="language-option"><span>'+tr('언어','Language')+'</span><div class="buttons">'+
+    combatMusicOption()+'<div class="language-option"><span>'+tr('언어','Language')+'</span><div class="buttons">'+
     '<button id="langKo" aria-pressed="'+(prefs.lang==='ko')+'">한국어</button>'+
     '<button id="langEn" aria-pressed="'+(prefs.lang==='en')+'">English</button></div></div></div>'+
     '<div class="buttons"><button id="optionsBack" class="primary">'+tr('완료','Done')+'</button></div>');
   for(const key of ['music','fx'])$(key).oninput=e=>saveAudioPreference(key,e.target.value);
+  bindCombatMusicOption();
   $('langKo').onclick=()=>{prefs.lang='ko';store.set('or-settings',prefs);openStartOptions();};
   $('langEn').onclick=()=>{prefs.lang='en';store.set('or-settings',prefs);openStartOptions();};
   $('optionsBack').onclick=hangar;
@@ -1058,8 +1082,9 @@ function pause(){
   previousMode=mode;mode='pause';keys.clear();pointer=null;
   screen('일시정지','<div class="build-layout">'+shipStats()+'<div class="build-content"><div class="options"><label>음악 볼륨<input id="music" type="range" min="0" max="100" value="'+prefs.music+
     '"></label><label>효과음 볼륨<input id="fx" type="range" min="0" max="100" value="'+prefs.fx+
-    '"></label></div><div class="buttons"><button id="continue" class="primary">계속하기</button><button id="leaveRun">그만하기</button></div></div></div>');
+    '"></label>'+combatMusicOption()+'</div><div class="buttons"><button id="continue" class="primary">계속하기</button><button id="leaveRun">그만하기</button></div></div></div>');
   for(const key of ['music','fx'])$(key).oninput=e=>saveAudioPreference(key,e.target.value);
+  bindCombatMusicOption();
   controls({continue:pause,leaveRun:()=>{
     screen('이번 전투를 그만할까요?','<p>이번 전투의 진행이 끝납니다.</p><div class="buttons"><button id="confirmQuit">그만하기</button><button id="backRun">계속하기</button></div>');
     controls({confirmQuit:()=>{best=Math.max(best,run.score);store.set('or-best',best);store.clear('or-save');hangar();},backRun:pause});
