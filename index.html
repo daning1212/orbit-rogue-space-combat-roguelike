@@ -384,12 +384,23 @@ function syncCombatOst(){
   combatOst.volume=prefs.music/100;
   if(combatOst.paused&&!combatPlayPending&&!combatPlayFailed){
     combatPlayPending=true;
-    combatOst.play().then(()=>{combatPlayPending=false;if(mode!=='combat'||!prefs.music)combatOst.pause();}).catch(()=>{combatPlayPending=false;combatPlayFailed=true;});
+    combatOst.play().then(()=>{
+      combatPlayPending=false;
+      if(mode!=='combat'||!prefs.music)combatOst.pause();
+    }).catch(error=>{
+      combatPlayPending=false;
+      if(mode!=='combat'||!prefs.music||error?.name==='AbortError')return;
+      const backup='https://raw.githubusercontent.com/daning1212/orbit-rogue-space-combat-roguelike/main/orbit%20robgue%20bgm.mp3';
+      if(error?.name!=='NotAllowedError'&&combatOst.getAttribute('src')!==backup){
+        combatOst.src=backup;
+        syncCombatOst();
+      }else combatPlayFailed=true;
+    });
   }
 }
 function playMusic(now){
   syncCombatOst();
-  if(mode==='combat')return;
+  if(mode==='combat'&&!combatPlayFailed)return;
   if(!['combat','boss'].includes(mode)||!audio||audio.state!=='running'||!prefs.music)return;
   if(mode==='boss'&&activeBossOst&&!activeBossOst.paused)return;
   if(musicPhase!==mode){musicPhase=mode;musicStep=0;musicAt=now;}
