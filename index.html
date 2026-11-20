@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.23 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.24 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -320,7 +320,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <audio id="bossOst1" src="orbit-rogue-boss-01.mp3" preload="metadata" loop></audio>
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.23 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 두 번</span></footer>
+<footer>v0.2.24 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 두 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -721,7 +721,7 @@ function statCard(){
     {type:'stat',id:'max',name:'내구도 보강',text:'최대 내구도 +12 · 즉시 12 회복',value:12},
     {type:'stat',id:'armor',name:'복합 장갑',text:'본체 피해 감소 +2',value:2},
     {type:'stat',id:'speed',name:'기동 제어',text:'이동 속도 +24',value:24},
-    {type:'stat',id:'bonus',name:'출력 조정',text:'공격력 +12%',value:.12}
+    {type:'stat',id:'bonus',name:'출력 조정',text:'공격력 +12',value:.12}
   ];
   for(const [id,value] of Object.entries({rate:.08,crit:.06,regen:.25,shieldMax:9,area:.10,engineering:4,pickup:20,luck:4,salvage:4})){
     const [,name,percent]=statLabels.find(([key])=>key===id);
@@ -809,7 +809,7 @@ function rewardLabel(changes){
   return Object.entries(changes).map(([id,delta])=>{
     const [,name,percent]=statLabels.find(([key])=>key===id);
     const amount=Math.round(Math.abs(delta)*(percent?100:1)*100)/100;
-    return '<span class="effect '+(delta<0?'effect-loss':'effect-gain')+'">'+(delta<0?'−':'+')+amount+(percent?'%':'')+' '+name+'</span>';
+    return '<span class="effect '+(delta<0?'effect-loss':'effect-gain')+'">'+(delta<0?'−':'+')+amount+(percent&&id!=='bonus'?'%':'')+' '+name+'</span>';
   }).join('');
 }
 function rewardIcon(type,id){
@@ -831,13 +831,22 @@ function cardButton(c,id,shortcut=''){
     (shop?'<span class="shop-purchase"><span class="card-price"><b>'+c.cost.toLocaleString()+'</b> 코인</span>'+
       '<span class="shop-afford '+(blocked?'shop-blocked':'')+'">'+(!c.eligible?'장착 조건 부족':c.short?c.short.toLocaleString()+' 코인 부족':'구매하기 ↗')+'</span></span>':'')+'</button>';
 }
+function roundStat(value){return Math.round(value*100)/100;}
+function shipStatValue(id,percent){
+  if(id==='bonus')return Math.round(100+run.bonus*100);
+  if(id==='rate')return roundStat((1+run.rate)/weaponInterval(inventory()[0]))+'회/초';
+  if(id==='crit')return Math.round(Math.min(.75,run.crit)*100)+'%';
+  return percent?Math.round(run[id]*100)+'%':roundStat(run[id]);
+}
 function shipStats(){
   const rows=[
     ['내구도',Math.max(0,Math.ceil(run.hp))+' / '+run.max],
     ['실드',Math.ceil(run.shield)+' / '+run.shieldMax],
     ...statLabels.filter(([id])=>id!=='max'&&id!=='shieldMax').map(([id,label,percent])=>
-      [label,percent?Math.round(run[id]*100)+'%':Math.round(run[id]*100)/100])
+      [label,shipStatValue(id,percent)])
   ];
+  const critIndex=rows.findIndex(([label])=>label==='치명타율');
+  rows.splice(critIndex+1,0,['치명타 피해',roundStat(weaponHit(inventory()[0])*CRITICAL_MULTIPLIER)]);
   return '<aside class="ship-stats"><h3>기체 능력치</h3><dl>'+
     rows.map(([label,value])=>'<div><dt>'+label+'</dt><dd>'+value+'</dd></div>').join('')+'</dl></aside>';
 }
@@ -848,7 +857,7 @@ function gear(expanded=false){
   '<li>내구도 '+Math.max(0,Math.ceil(run.hp))+' / '+run.max+' · 실드 '+Math.ceil(run.shield)+' / '+run.shieldMax+'</li>'+
   run.support.map((n,i)=>n?'<li>'+modules[i]+' '+n+'/3</li>':'').join('')+'</ul>'+
   '<details'+(expanded?' open':'')+'><summary>기체 능력치</summary><ul class="stat">'+
-  statLabels.map(([id,label,percent])=>'<li>'+label+' '+(percent?Math.round(run[id]*100)+'%':run[id])+'</li>').join('')+'</ul></details>';
+  statLabels.map(([id,label,percent])=>'<li>'+label+' '+shipStatValue(id,percent)+'</li>').join('')+'</ul></details>';
 }
 function rerollPrice(){
   return 8+run.roll*4;
@@ -1058,7 +1067,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.23',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.24',896,587);
   return card;
 }
 function downloadProof(){
@@ -1264,9 +1273,20 @@ function beamHits(beam,t,radius){
   }
   return false;
 }
+const CRITICAL_MULTIPLIER=1.7;
+function weaponHit(slot){
+  const {id,rank,mastered,prestige}=slot;
+  const base=id===3?5.2+run.laser*.32:id===2?12+run.laser:id<2?19+run.missile:(id===5?5.5:9)+run.bullet;
+  return base*(1+rank*.35+run.bonus)*(mastered?1.28+prestige*.08:1);
+}
+function weaponInterval({id,rank}){
+  if(id===3)return .085-rank*.004;
+  if(id===2)return .53-rank*.045;
+  return (id<2?.48:id===5?.31:.23)-rank*.022;
+}
 function fire(slot=inventory()[0]){
   const {x,y}=world,id=slot.id,tier=slot.rank;
-  const power=(1+tier*.35+run.bonus)*(slot.mastered?1.28+slot.prestige*.08:1);
+  const damage=weaponHit(slot);
   const target=nearest(x,y,310), base=world.angle;
   const fx=Math.cos(base),fy=Math.sin(base), noseX=x+fx*16,noseY=y+fy*16;
   if(id===3){
@@ -1281,10 +1301,10 @@ function fire(slot=inventory()[0]){
     beam.life=.14;beam.x=noseX;beam.y=noseY;beam.maxWidth=10+tier*4+Math.min(12,slot.prestige*1.5);
     beam.target=lock;
     if(beam.target){
-      beam.target.hp-=(5.2+run.laser*.32)*power*(Math.random()<Math.min(.75,run.crit)?1.7:1);
+      beam.target.hp-=damage*(Math.random()<Math.min(.75,run.crit)?CRITICAL_MULTIPLIER:1);
     }
     sound(310,.06,.14);
-    return .085-tier*.004;
+    return weaponInterval(slot);
   }
   if(id===2){
     const range=Math.hypot(W,H),count=1+tier+(slot.mastered?1:0)+Math.min(2,slot.prestige);
@@ -1296,20 +1316,19 @@ function fire(slot=inventory()[0]){
       if(!hits.length&&!world.targets.some(t=>t.hp>0&&Math.hypot(t.x-x,t.y-y)<310))continue;
       world.beams.push(beam);
       for(const t of hits)
-        t.hp-=(12+run.laser)*power*(Math.random()<Math.min(.75,run.crit)?1.7:1);
+        t.hp-=damage*(Math.random()<Math.min(.75,run.crit)?CRITICAL_MULTIPLIER:1);
     }
     sound(250,.16,.4);
-    return .53-tier*.045;
+    return weaponInterval(slot);
   }
   const missile=id<2, spread=id===5, count=(spread?3+2*tier:1+tier)+(slot.mastered?1:0)+Math.min(2,slot.prestige);
   for(let i=0;i<count;i++){
     const offset=i-(count-1)/2;
-    const damage=(missile?19+run.missile:(spread?5.5:9)+run.bullet)*power;
     const lane=spread?0:offset*9;
-    projectile(noseX-fy*lane,noseY+fx*lane,base+offset*(spread?.16:.045),missile?430:650,damage*(Math.random()<Math.min(.75,run.crit)?1.7:1),missile?'missile':'bullet',id===1);
+    projectile(noseX-fy*lane,noseY+fx*lane,base+offset*(spread?.16:.045),missile?430:650,damage*(Math.random()<Math.min(.75,run.crit)?CRITICAL_MULTIPLIER:1),missile?'missile':'bullet',id===1);
   }
   sound(missile?170:420,.07,.24);
-  return (missile?.48:spread?.31:.23)-tier*.022;
+  return weaponInterval(slot);
 }
 function waveDuration(stage){return stage<=8?20+(stage-1)*5:stage===20?90:60;}
 function wavePressure(time){
@@ -1439,8 +1458,8 @@ function collect(type){
 }
 function startBoss(){
   mode='boss';
-  const hp=run.stage===10?4000:6400;
-  boss={boss:true,x:W/2,y:118,r:run.stage===10?57:72,hp,max:hp,fire:.9,pattern:2,phase:0};
+  const hp=run.stage===10?6000:6400;
+  boss={boss:true,x:W/2,y:118,r:run.stage===10?57:72,hp,max:hp,fire:.9,pattern:run.stage===10?1.1:2,phase:0};
   world.targets.push(boss);
   syncCombatOst();startBossOst();
 }
@@ -1461,13 +1480,26 @@ function bossStep(dt){
   const x=clamp(world.x,38,W-38),y=clamp(world.y,45,H-45);
   const add=(a,b,w,h,delay=0)=>world.zones.push({x:a,y:b,w,h,age:-delay,warning:1.65,done:false});
   if(run.stage===10){
-    for(let i=0;i<3;i++)add(clamp(x-92+i*66,0,W-52),0,52,H,i*.26);
+    switch(boss.phase%4){
+      case 0:
+        for(let i=0;i<3;i++)add(clamp(x-92+i*66,0,W-52),0,52,H,i*.26);
+        break;
+      case 1:
+        for(let i=0;i<3;i++)add(0,clamp(y-70+i*55,0,H-42),W,42,i*.29);
+        break;
+      case 2:
+        for(let i=0;i<14;i++)hostile(boss,i*Math.PI/7+boss.phase*.21,155);
+        break;
+      case 3:
+        add(x-26,0,52,H);add(0,y-26,W,52,.44);
+        break;
+    }
   }else if(boss.phase%2===0){
     add(x-21,0,42,H);add(0,y-21,W,42);
   }else{
     add(0,y-35,W,70);add(x-27,0,54,H,.56);
   }
-  boss.phase++;boss.pattern=run.stage===10?5.2:4.25;
+  boss.phase++;boss.pattern=run.stage===10?4.8:4.25;
 }
 const dropParts={
   magnet:['#79efad','M7 7v7a5 5 0 0 0 10 0V7m-10 3h3m4 0h3'],
