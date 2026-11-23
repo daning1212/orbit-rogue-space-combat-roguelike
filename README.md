@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://rawcdn.githack.com/daning1212/orbit-rogue-space-combat-roguelike/255e2e1b4f701df6861f5215cc99c260507bc589/index.html"><strong>게임 시작 · v0.2.42</strong></a>
+  <a href="https://rawcdn.githack.com/daning1212/orbit-rogue-space-combat-roguelike/a842c066b564700c2256215160a3d3b14684074b/index.html"><strong>게임 시작 · v0.2.43</strong></a>
 </p>
 
 ## 게임 소개
@@ -38,9 +38,10 @@
 
 별도의 설치 없이 `index.html`을 브라우저에서 열면 실행됩니다.
 
-## 작업 이어가기 · v0.2.42
+## 작업 이어가기 · v0.2.43
 
-- 현재 공개 버전은 **v0.2.42**입니다. 게임 로직과 화면은 이 저장소의 `index.html`에 있습니다. [공개 버전 소스](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/tree/255e2e1b4f701df6861f5215cc99c260507bc589)
+- 현재 공개 버전은 **v0.2.43**입니다. 게임 로직과 화면은 이 저장소의 `index.html`에 있습니다. [공개 버전 소스](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/tree/a842c066b564700c2256215160a3d3b14684074b)
 - 모바일 보급 상점은 상품을 가로 두 열로 배치합니다. 코인과 내구도·실드 요약은 상품 위에 있고, 요약을 누르면 상세 능력치가 펼쳐집니다. **다음 구역으로** 버튼은 상품을 스크롤해도 하단에 보입니다.
-- 홈페이지는 별도 `daning1212/healingarty` 저장소입니다. 모바일 ORBIT ROGUE 카드의 PLAY·링크 복사·다운로드를 설명 아래로 옮겨 설명이 한 단어씩 끊기던 문제를 해결했습니다. 카드의 PLAY와 ZIP은 v0.2.42 커밋을 가리킵니다. [홈페이지 소스](https://github.com/daning1212/healingarty) · [공개 게임 섹션](https://daning1212.github.io/healingarty/#games)
+- 홈페이지는 별도 `daning1212/healingarty` 저장소입니다. 모바일 ORBIT ROGUE 카드의 PLAY·링크 복사·다운로드를 설명 아래로 옮겨 설명이 한 단어씩 끊기던 문제를 해결했습니다. 카드의 PLAY와 ZIP은 v0.2.43 커밋을 가리킵니다. [홈페이지 소스](https://github.com/daning1212/healingarty) · [공개 게임 섹션](https://daning1212.github.io/healingarty/#games)
 - 갤럭시 S23 울트라에서 찍은 v0.2.41 화면을 기준으로 수정했습니다. v0.2.42는 Chromium 모바일 에뮬레이션의 세로 폭 360·393·412px에서 카드 배치, 상세 능력치 펼치기, 상품 구매, 다음 구역 이동을 검증했습니다. S23 울트라 실기에서의 v0.2.42 확인이 남아 있습니다.
+- v0.2.43에서는 조이스틱을 누른 채 두 번째 손가락으로 대시를 누를 수 있도록 터치 입력을 수정했습니다. Chromium 모바일 모의 화면에서 단독 터치와 두 손가락 입력을 확인했습니다.
