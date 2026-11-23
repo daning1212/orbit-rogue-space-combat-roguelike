@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./orbit-rogue-logo.png" alt="ORBIT ROGUE" width="720">
+  <img src="./orbit-rogue-cover.png" alt="ORBIT ROGUE와 스피드·파워 파일럿" width="960">
 </p>
 
 <p align="center">
