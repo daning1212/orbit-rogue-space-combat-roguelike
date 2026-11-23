@@ -203,8 +203,9 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 .hull-card[aria-pressed="true"] .hull-card-choice::before{content:"✓ "}
 .loadout-label{margin:6px 24px 8px;color:#b7d0e3;font-size:12px;font-weight:700;letter-spacing:.04em}
 .panel[data-screen="hangar"] .weapon-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:0 24px}
+.panel[data-screen="hangar"] .difficulty-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 .panel[data-screen="hangar"] .weapon-grid .card{min-height:56px;padding:8px 10px;border-radius:8px}
-.panel[data-screen="hangar"] .weapon-grid .card[aria-pressed="true"]{background:#19435a;border-color:#74dfff}
+.panel[data-screen="hangar"] .weapon-grid button[aria-pressed="true"]{background:#19435a;border-color:#74dfff}
 .header-logo{display:block;width:clamp(150px,22vw,235px);height:42px;object-fit:contain;object-position:left center;filter:drop-shadow(0 0 8px #2e9dff78)}
 .panel[data-screen="hangar"] .box>h2{align-items:flex-start}
 .hangar-logo{display:block;width:min(560px,72%);height:auto;max-height:118px;object-fit:contain;object-position:left center;filter:drop-shadow(0 5px 12px #000b)}
@@ -394,6 +395,19 @@ function drawArt(name,x,y,width,height){
 const weapons=['직사 미사일','유도 미사일','직사 레이저','유도 레이저','직사 탄환','분사 탄환'];
 const weaponNamesEn=['Direct Missile','Homing Missile','Direct Laser','Homing Laser','Rapid Cannon','Scatter Cannon'];
 const starterUnlockOrder=[4,5,0,1,2,3];
+const difficulties=[
+  {ko:'캐주얼',en:'Casual',extra:0,spawn:1,hp:1,bossHp:1,shot:1,damage:1,cap:92},
+  {ko:'하드',en:'Hard',extra:1,spawn:.88,hp:1.35,bossHp:1.25,shot:1.12,damage:1,cap:110},
+  {ko:'매니악',en:'Maniac',extra:3,spawn:.74,hp:1.7,bossHp:1.55,shot:1.25,damage:1.25,cap:128},
+];
+let chosenDifficulty=0;
+const difficultyIndex=()=>difficulties[run?.difficulty]?run.difficulty:0;
+const difficulty=()=>difficulties[difficultyIndex()];
+function unlockedDifficulty(){
+  const saved=store.get('or-difficulty',0);
+  return Number.isInteger(saved)?clamp(saved,0,difficulties.length-1):0;
+}
+
 
 const hulls=[
   {name:'스피드형',brief:'스피드 +10% · 내구도 82',speed:320,hp:82,shield:30,bonus:0,turn:15,keyTurn:2.0,turnThrust:.62,art:'player0'},
@@ -610,6 +624,7 @@ function unlockStarter(){
 function hangar(){
   mode='hangar'; keys.clear();pointer=null;
   const available=availableStarters();
+  const difficultyLimit=unlockedDifficulty();
   let chosen=available.includes(starter)?starter:available[0];
   hangarHull=starterHull;
   screen('<img class="hangar-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE">',
@@ -620,7 +635,12 @@ function hangar(){
     '<button id="ostToggle" type="button">'+tr('♪ Main OST 듣기','♪ Play Main OST')+'</button>'+
     '<button id="stickRecommend" class="stick-recommend" type="button">'+tr('조이스틱 추천','Joystick')+'</button>'+
     (store.get('or-save',null)?'<button id="resume">저장한 작전 이어하기</button>':'')+'</div>'+
-    '<p class="loadout-label">'+tr('시작 무기','Starting weapons')+' · '+available.length+' / '+weapons.length+
+    '<p class="loadout-label">'+tr('난이도','Difficulty')+
+    (difficultyLimit<2?' <small>'+tr('20구역 클리어로 다음 난이도 해금','Clear Sector 20 to unlock the next difficulty')+'</small>':'')+
+    '</p><div class="weapon-grid grid difficulty-grid">'+
+    difficulties.map(({ko,en},i)=>'<button id="difficulty'+i+'" aria-pressed="'+(chosenDifficulty===i)+'"'+
+      (i>difficultyLimit?' disabled':'')+'>'+tr(ko,en)+(i>difficultyLimit?' · '+tr('잠김','Locked'):'')+'</button>').join('')+
+    '</div><p class="loadout-label">'+tr('시작 무기','Starting weapons')+' · '+available.length+' / '+weapons.length+
     ' <small>'+tr('20구역 클리어마다 1개 해금','Clear Sector 20 to unlock one per run')+'</small></p><div class="weapon-grid grid">'+
     weapons.map((w,i)=>{
       const unlocked=available.includes(i);
@@ -640,7 +660,12 @@ function hangar(){
     $('hull'+hangarHull).setAttribute('aria-pressed','false');
     hangarHull=i;$('hull'+i).setAttribute('aria-pressed','true');
   });
-  $('launch').onclick=()=>start(chosen,hangarHull);
+  for(let i=0;i<=difficultyLimit;i++)$('difficulty'+i).onclick=()=>{
+    $('difficulty'+chosenDifficulty).setAttribute('aria-pressed','false');
+    chosenDifficulty=i;
+    $('difficulty'+i).setAttribute('aria-pressed','true');
+  };
+  $('launch').onclick=()=>start(chosen,hangarHull,chosenDifficulty);
   $('startOptions').onclick=openStartOptions;
   $('ostToggle').onclick=()=>{if(mainOst.paused)startMenuOst();else{mainOst.pause();updateOstButton();}};
   $('stickRecommend').onclick=()=>setStick(true);
@@ -654,11 +679,12 @@ function hangar(){
   };
 }
 function resetWorld(){
-  world={x:W/2,y:H/2,vx:0,vy:0,braking:false,angle:-Math.PI/2,dashAngle:0,dashRemaining:0,reverseRemaining:0,entry:Math.floor(rng(0,4)),damageNumbers:[],edgeAlerts:[],shots:[],hostile:[],targets:[],gems:[],drops:[],beams:[],zones:[],
+  world={x:W/2,y:H/2,vx:0,vy:0,braking:false,angle:-Math.PI/2,dashAngle:0,dashRemaining:0,reverseRemaining:0,entry:Math.floor(rng(0,4)),damageNumbers:[],enemyDesignIndex:0,edgeAlerts:[],shots:[],hostile:[],targets:[],gems:[],drops:[],beams:[],zones:[],
     sparks:[],blasts:[],blastSound:0,spawn:.4,fire:.2,drone:0,flash:0,inv:0,shieldDelay:0,magnet:0};
   boss=null;
 }
-function start(index,hull=starterHull){
+function start(index,hull=starterHull,level=chosenDifficulty){
+  chosenDifficulty=Number.isInteger(level)?clamp(level,0,unlockedDifficulty()):0;
   const available=availableStarters();
   if(!available.includes(index))index=available[0];
   starter=index;
@@ -666,7 +692,7 @@ function start(index,hull=starterHull){
   lastClock=null;
   const frame=hulls[hull];
   store.clear('or-save');
-  run={hull,starter:index,stage:1,level:1,xp:0,score:0,kills:0,coin:0,elapsed:0,hp:frame.hp,max:frame.hp,shield:frame.shield,armor:0,dash:1,
+  run={hull,difficulty:chosenDifficulty,starter:index,stage:1,level:1,xp:0,score:0,kills:0,coin:0,elapsed:0,hp:frame.hp,max:frame.hp,shield:frame.shield,armor:0,dash:1,
     speed:frame.speed,bonus:frame.bonus,wp:index,rank:0, copies:0, mastered:false,
     bullet:0,missile:0,laser:0,rate:0,crit:0,regen:0,shieldMax:frame.shield,area:0,engineering:0,pickup:36,luck:0,salvage:0,
     support:[0,0,0,0],charge:0,coupons:{sale:false,free:0,halfRoll:0,half:0,dice:0},roll:0};
@@ -1049,16 +1075,21 @@ function buy(i,free){
 function end(win){
   if(mode==='result')return;
   const unlocked=win&&run.stage===20?unlockStarter():null;
+  const resultDifficulty=difficultyIndex();
+  const difficultyReward=win&&run.stage===20&&resultDifficulty===unlockedDifficulty()
+    ? difficulties[resultDifficulty+1] : null;
+  if(difficultyReward)store.set('or-difficulty',resultDifficulty+1);
   const canReplay=availableStarters().includes(starter);
   mode='result';best=Math.max(best,run.score);store.set('or-best',best);store.clear('or-save');
-  screen(win?'20구역 최종 클리어':'작전 종료','<p>도달 '+run.stage+' / 20 · 점수 '+run.score.toLocaleString()+
+  screen(win?'20구역 최종 클리어':'작전 종료','<p>'+tr(difficulties[resultDifficulty].ko,difficulties[resultDifficulty].en)+' · 도달 '+run.stage+' / 20 · 점수 '+run.score.toLocaleString()+
     ' · 최고 '+best.toLocaleString()+'</p><p>전체 시간 <strong>'+formatRunTime(run.elapsed)+'</strong>'+
     (run.partialTiming?' · 이전 구간 시간 추정':'')+'</p><p>격추 '+run.kills+' · 최종 레벨 '+run.level+'</p>'+gear()+
+    (difficultyReward?'<p class="sym">'+tr('난이도 해금','Difficulty unlocked')+' · <strong>'+tr(difficultyReward.ko,difficultyReward.en)+'</strong></p>':'')+
     (unlocked!==null?'<p class="sym">'+tr('시작 무기 해금','Starting weapon unlocked')+' · <strong>'+tr(weapons[unlocked],weaponNamesEn[unlocked])+'</strong></p>':'')+
     (win?'<div class="buttons"><button id="proof" class="primary">클리어 카드 PNG 저장 ↓</button></div>':'')+
     '<div class="buttons"><button id="again" class="primary">'+(canReplay?'같은 기체·무기로 다시 하기':'기본 무기로 다시 하기')+'</button><button id="quit">격납고</button></div>');
   if(win)$('proof').onclick=downloadProof;
-  controls({again:()=>start(starter),quit:hangar});
+  controls({again:()=>start(starter,starterHull,resultDifficulty),quit:hangar});
 }
 function formatRunTime(seconds){
   const total=Math.max(0,Math.floor(seconds||0));
@@ -1418,6 +1449,70 @@ function enemyFireProfile(stage,pressure){
     burst:stage>=9
   };
 }
+// Half-outlines, from the nose down the right side to the tail.
+const enemySilhouettes=[
+  [[0,20],[5,9],[16,-11],[6,-7],[0,-12]],
+  [[0,18],[8,8],[9,-4],[16,-15],[4,-13],[0,-7]],
+  [[0,19],[4,11],[18,5],[18,-4],[8,-11],[0,-10]],
+  [[0,17],[6,13],[13,3],[15,-10],[9,-16],[0,-12]],
+  [[0,21],[6,4],[11,8],[14,4],[13,-13],[0,-9]],
+  [[0,15],[7,12],[15,15],[17,8],[13,-12],[0,-8]],
+  [[0,20],[7,15],[10,2],[17,-3],[17,-13],[0,-10]],
+  [[0,18],[8,7],[16,10],[18,4],[11,-9],[0,-14]],
+  [[0,15],[12,14],[17,5],[8,2],[12,-12],[0,-10]],
+  [[0,19],[4,17],[6,0],[18,-5],[13,-12],[0,-14]],
+  [[0,15],[12,15],[18,5],[17,-11],[10,-15],[0,-10]],
+  [[0,19],[7,9],[13,9],[19,0],[16,-12],[0,-15]],
+  [[0,14],[7,10],[14,19],[19,16],[15,-6],[0,-13]],
+  [[0,17],[7,16],[10,9],[19,6],[19,-5],[10,-10],[0,-14]],
+  [[0,11],[8,13],[17,12],[14,4],[19,-3],[14,-15],[0,-11]],
+  [[0,18],[10,13],[14,4],[10,-1],[16,-8],[9,-15],[0,-11]],
+  [[0,18],[12,16],[13,4],[18,1],[19,-9],[10,-9],[0,-15]],
+  [[0,16],[6,13],[13,15],[18,11],[16,-12],[9,-10],[0,-15]],
+  [[0,15],[12,19],[18,12],[18,-2],[11,-13],[0,-10]],
+  [[0,20],[8,13],[17,9],[19,4],[12,1],[18,-12],[0,-12]],
+  [[0,18],[11,15],[19,7],[19,-6],[13,-13],[0,-16]],
+  [[0,17],[9,12],[17,15],[20,5],[18,-12],[0,-15]],
+  [[0,19],[10,18],[14,9],[18,8],[20,-8],[11,-14],[0,-16]],
+  [[0,14],[8,10],[16,18],[20,14],[18,-7],[11,-16],[0,-12]],
+  [[0,18],[14,14],[20,1],[16,-4],[19,-13],[0,-17]],
+  [[0,16],[8,15],[14,8],[20,10],[20,-8],[12,-16],[0,-12]],
+  [[0,19],[12,19],[19,12],[15,3],[20,-5],[15,-14],[0,-17]],
+  [[0,12],[8,18],[16,17],[20,10],[17,2],[20,-12],[0,-12]],
+  [[0,19],[8,16],[16,17],[20,8],[16,-2],[18,-12],[8,-16],[0,-13]],
+  [[0,20],[13,16],[20,9],[20,-6],[13,-7],[9,-16],[0,-15]],
+];
+const enemyDesigns=enemySilhouettes.map(half=>{
+  const [wingX,wingY]=half.reduce((outer,point)=>point[0]>outer[0]?point:outer);
+  return {
+    nose:half[0][1],
+    outline:[...half,...half.slice(1,-1).reverse().map(([x,y])=>[-x,y])],
+    span:wingX*.72,
+    stripe:wingY*.65,
+  };
+});
+function drawEnemyDesign(t){
+  const design=enemyDesigns[t.design];
+  if(!design)return false;
+  const {outline,nose,span,stripe}=design;
+  const palette=t.variant==='warden'?['#362356','#b89cff']:
+    t.variant==='fanfire'?['#55292e','#ffaa75']:['#223345','#85c8d8'];
+  const [hull,accent]=palette;
+  ctx.save();
+  ctx.translate(t.x,t.y);
+  ctx.rotate(t.angle-Math.PI/2);
+  ctx.scale(t.r/18,t.r/18);
+  path(outline,hull,accent);
+  path([[0,nose*.75],[span,stripe],[2,-8],[0,-11],[-2,-8],[-span,stripe]],'#14202e');
+  for(const side of [-1,1]){
+    path([[side*span,stripe],[side*span*.55,stripe+3],[side*span*.55,stripe-4]],accent);
+    ctx.fillStyle=accent;
+    ctx.fillRect(side*3-1,-12,2,4);
+  }
+  path([[0,9],[3,3],[0,-2],[-3,3]],t.armed?'#ffd18a':'#dcf8ff');
+  ctx.restore();
+  return true;
+}
 function spawnTarget(rock=false,along=null,shift=0,pressure=wavePressure(run.time),side=world.entry%4){
   const stage=run.stage, roll=Math.random(), fireProfile=enemyFireProfile(stage,pressure);
   const armed=!rock&&Math.random()<fireProfile.chance;
@@ -1426,7 +1521,7 @@ function spawnTarget(rock=false,along=null,shift=0,pressure=wavePressure(run.tim
     (stage>=3||pressure>=2)&&roll<.35+pressure*.08?'fanfire':'raider';
   const r=rock?rng(16,34):variant==='raider'?rng(14,17):rng(21,24);
   const base=rock?20+r*.55:variant==='warden'?44:variant==='fanfire'?32:20;
-  const hp=Math.round(base+(stage-1)*(rock?4:variant==='raider'?7:11)+(rock?0:pressure*(3+stage*.35)));
+  const hp=Math.round((base+(stage-1)*(rock?4:variant==='raider'?7:11)+(rock?0:pressure*(3+stage*.35)))*(rock?1:difficulty().hp));
   const speed=(rock||variant==='warden'?rng(27,44):rng(40,64))+stage*1.55;
   const vertical=side===0||side===2, length=vertical?W:H;
   along ??=rng(40,length-40);
@@ -1436,23 +1531,25 @@ function spawnTarget(rock=false,along=null,shift=0,pressure=wavePressure(run.tim
   const angle=Math.atan2(H/2-y,W/2-x);
   const drift=rock?rng(-.52,.52):0;
   const heading=angle+drift;
-  world.targets.push({x,y,r,hp,max:hp,rock,speed,angle,variant,life:42,armed,fire:rng(fireProfile.delay*.7,fireProfile.delay*1.3),
+  const design=rock?-1:((stage-1)*7+world.enemyDesignIndex++)%(enemySilhouettes.length+1)-1;
+  world.targets.push({x,y,r,hp,max:hp,rock,speed,angle,variant,design,life:42,armed,fire:rng(fireProfile.delay*.7,fireProfile.delay*1.3),
     vx:rock?Math.cos(heading)*speed:0,vy:rock?Math.sin(heading)*speed:0,
     rotation:rock?rng(0,Math.PI*2):0,spin:rock?rng(-.75,.75):0});
 }
 function spawnWave(pressure){
   const side=world.entry++%4, vertical=side===0||side===2;
-  const length=vertical?W:H, count=2+Math.floor(pressure*(run.stage<4?.65:1))+Math.floor((run.stage-1)/6), gap=Math.min(68,(length-96)/Math.max(1,count-1));
+  const tuning=difficulty();
+  const length=vertical?W:H, count=2+tuning.extra+Math.floor(pressure*(run.stage<4?.65:1))+Math.floor((run.stage-1)/6), gap=Math.min(68,(length-96)/Math.max(1,count-1));
   const span=(count-1)*gap, edge=48, origin=rng(edge,length-edge-span);
   const middle=origin+span/2;
   world.edgeAlerts.push({x:vertical?middle:side===1?W-13:13,
     y:vertical?(side===0?13:H-13):middle,angle:(1-side)*Math.PI/2,life:1.05});
-  for(let i=0;i<count&&world.targets.length<92;i++){
+  for(let i=0;i<count&&world.targets.length<tuning.cap;i++){
     const shift=Math.abs(i-(count-1)/2)*13;
     spawnTarget(false,origin+i*gap,shift,pressure,side);
   }
-  if(world.targets.length<92&&Math.random()<.30)spawnTarget(true);
-  return [1.25,1.55,1.65,1.72,1.68][pressure]/(1+(run.stage-1)*.019);
+  if(world.targets.length<tuning.cap&&Math.random()<.30)spawnTarget(true);
+  return [1.25,1.55,1.65,1.72,1.68][pressure]*tuning.spawn/(1+(run.stage-1)*.019);
 }
 function explode(t){
   const color=t.boss?(run.stage===20?'#bd84ff':'#ffc36f'):t.rock?'#a6ebd9':'#ffad72';
@@ -1479,10 +1576,12 @@ function animateExplosions(dt){
   });
 }
 function hostile(t,angle,speed){
+  speed*=difficulty().shot;
   world.hostile.push({x:t.x,y:t.y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed});
 }
 function hurt(damage){
   if(world.inv>0)return;
+  damage*=difficulty().damage;
   const absorbed=Math.min(run.shield,damage);
   const hullLoss=Math.max(0,damage-absorbed-run.armor);
   showDamageNumber(world,absorbed+Math.min(Math.max(run.hp,0),hullLoss),false,true);
@@ -1535,7 +1634,7 @@ function collect(type){
 }
 function startBoss(){
   mode='boss';
-  const hp=run.stage===10?6000:6400;
+  const hp=Math.round((run.stage===10?6000:6400)*difficulty().bossHp);
   boss={boss:true,x:W/2,y:118,r:run.stage===10?57:72,hp,max:hp,fire:.9,pattern:run.stage===10?1.1:2,phase:0};
   world.targets.push(boss);
   syncCombatOst();startBossOst();
@@ -1923,9 +2022,12 @@ function paint(){
   for(const t of world.targets){
     if(t.boss){drawBoss(t);continue;}
     if(!t.rock){
-      ctx.save();ctx.translate(t.x,t.y);ctx.rotate(t.angle-Math.PI/2);
-      const painted=drawArt(t.variant,0,0,t.r*2.7,t.r*2.7);ctx.restore();
-      if(!painted)ship(t.x,t.y,.75,true,0,t.angle);
+      if(!drawEnemyDesign(t)){
+        ctx.save();ctx.translate(t.x,t.y);ctx.rotate(t.angle-Math.PI/2);
+        const painted=drawArt(t.variant,0,0,t.r*2.7,t.r*2.7);
+        ctx.restore();
+        if(!painted)ship(t.x,t.y,.75,true,0,t.angle);
+      }
       if(t.variant!=='raider'&&t.y>0&&t.y<H){
         const width=t.r*1.6, x=t.x-width/2,y=Math.max(5,t.y-t.r*1.4-7);
         ctx.fillStyle='#201a29';ctx.fillRect(x-1,y-1,width+2,6);
@@ -2058,7 +2160,7 @@ function showHud(){
   const meter=(label,value,max,color)=>'<span><small>'+label+' '+value+'/'+max+'</small><meter min="0" max="'+max+
     '" value="'+clamp(value,0,max)+'" aria-label="'+label+'" style="--meter:'+color+'"></meter></span>';
   touchDash.disabled=run.dash<1||world.dashRemaining>0;
-  setHud(field('구역',run.stage+' / 20')+field(boss?'보스전':'공세 '+(wavePressure(run.time)+1)+'/5',time)+
+  setHud(field(tr(difficulty().ko,difficulty().en),run.stage+' / 20')+field(boss?'보스전':'공세 '+(wavePressure(run.time)+1)+'/5',time)+
     meter('실드',Math.ceil(run.shield),run.shieldMax,'#64dfff')+
     meter('내구도',Math.max(0,Math.ceil(run.hp)),run.max,'#73e4ae')+
     meter('경험치 · Lv.'+run.level,run.xp,xpGoal(),'#b995ff')+
