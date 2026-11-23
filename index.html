@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.33 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.34 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -358,7 +358,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <audio id="bossOst1" src="orbit-rogue-boss-01.mp3" preload="metadata" loop></audio>
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.33 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer>v0.2.34 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -503,6 +503,26 @@ function sound(freq,duration,gain=1,music=false,wave=music?'sine':'triangle',end
   amp.gain.setValueAtTime(.045*gain*volume,audio.currentTime);
   amp.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+duration);
   osc.connect(amp);amp.connect(audio.destination);osc.start();osc.stop(audio.currentTime+duration);
+}
+function bossSiren(duration){
+  const volume=prefs.fx/100;
+  if(!audio||!volume||audio.state!=='running'||duration<.10)return;
+  const now=audio.currentTime;
+  const amp=audio.createGain(), filter=audio.createBiquadFilter();
+  filter.type='lowpass';filter.frequency.value=1450;
+  amp.gain.setValueAtTime(.0001,now);
+  amp.gain.linearRampToValueAtTime(.09*volume,now+duration*.12);
+  amp.gain.setValueAtTime(.085*volume,now+duration*.78);
+  amp.gain.exponentialRampToValueAtTime(.0001,now+duration);
+  filter.connect(amp);amp.connect(audio.destination);
+  for(const frequency of [205,314]){
+    const voice=audio.createOscillator();
+    voice.type='sawtooth';
+    voice.frequency.setValueAtTime(frequency,now);
+    voice.frequency.exponentialRampToValueAtTime(frequency*2.15,now+duration*.43);
+    voice.frequency.exponentialRampToValueAtTime(frequency,now+duration);
+    voice.connect(filter);voice.start(now);voice.stop(now+duration);
+  }
 }
 const musicBars=[
   {bass:40,chord:[52,55,59],lead:[76,null,79,81,79,null,76,74,76,null,79,83,81,null,79,null]},
@@ -748,7 +768,7 @@ function start(index,hull=starterHull,level=chosenDifficulty){
 function enterStage(){
   stopMenuOst();
   resetWorld();pointer=null;releaseThrust();run.time=waveDuration(run.stage); world.loot={coins:0,levels:0,items:{}}; mode='combat'; combatPlayFailed=false; syncCombatOst(); hide();
-  if(run.stage===20)startBossWarning();
+  if(run.stage===10||run.stage===20||vulcanBosses[run.stage])startBossWarning();
 }
 function xpGoal(){
   const growth=run.level-1;
@@ -1175,7 +1195,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.33',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.34',896,587);
   return card;
 }
 function downloadProof(){
@@ -1483,7 +1503,7 @@ function fire(slot=inventory()[0]){
   sound(missile?170:420,.07,.24);
   return weaponInterval(slot);
 }
-function waveDuration(stage){return stage<=8?20+(stage-1)*5:stage===20?90:60;}
+function waveDuration(stage){return stage<=8?20+(stage-1)*5:stage===20?120:60;}
 function wavePressure(time){
   const duration=waveDuration(run.stage);
   return clamp(Math.floor((1-time/duration)*5),0,4);
@@ -1742,8 +1762,8 @@ function collect(type){
   sound(760,.21);
 }
 const vulcanBosses={
-  5:{name:'VULCAN SENTINEL',hp:560,r:39,shots:12,interval:.10,recovery:1.25,speed:195,zoneWidth:42,zoneDelay:6.4,zoneDamage:20},
-  15:{name:'VULCAN OVERSEER',hp:2100,r:49,shots:20,interval:.075,recovery:1.05,speed:245,zoneWidth:52,zoneDelay:5.2,zoneDamage:30},
+  5:{name:'VULCAN SENTINEL',hp:5000,r:39,shots:12,interval:.10,recovery:1.25,speed:195,zoneWidth:42,zoneDelay:6.4,zoneDamage:20},
+  15:{name:'VULCAN OVERSEER',hp:10000,r:49,shots:20,interval:.075,recovery:1.05,speed:245,zoneWidth:52,zoneDelay:5.2,zoneDamage:30},
 };
 function vulcanStep(dt){
   const config=vulcanBosses[run.stage];
@@ -1788,7 +1808,7 @@ function vulcanApproach(dt){
 function startBoss(){
   mode='boss';
   const vulcan=vulcanBosses[run.stage];
-  const hp=Math.round((vulcan?.hp??(run.stage===10?6000:6400))*difficulty().bossHp);
+  const hp=Math.round((vulcan?.hp??(run.stage===10?20000:200000))*difficulty().bossHp);
   boss={boss:true,x:W/2,y:118,r:vulcan?.r??(run.stage===10?57:72),hp,max:hp,
     fire:.9,pattern:vulcan?2.8:run.stage===10?1.1:2,phase:0,angle:Math.PI/2,burst:0};
   if(vulcan){
@@ -1798,6 +1818,7 @@ function startBoss(){
     world.vulcanTeam=[boss,partner];
     world.targets.push(...world.vulcanTeam);
   }else world.targets.push(boss);
+  world.spawn=spawnWave(0);
   syncCombatOst();startBossOst();
 }
 function startBossWarning(){
@@ -1814,7 +1835,6 @@ function startBossWarning(){
     world.vulcanApproach={lanes,fired:0};
     syncStick(true);
   }
-  sound(92,.55,1.8,false,'sawtooth',48);
 }
 function addBossZone(x,y,w,h,delay=0,warning=1.65){
   world.zones.push({x,y,w,h,age:-delay,warning,done:false});
@@ -1948,8 +1968,10 @@ function step(dt){
   if(mode==='boss-warning'){
     animateExplosions(dt);
     world.bossWarning-=dt;world.warningBeat-=dt;
-    if(run.stage!==20)run.time=Math.max(0,run.time-dt);
-    if(world.warningBeat<=0){sound(760,.12,.62,false,'square',420);world.warningBeat=.72;}
+    if(world.warningBeat<=0&&world.bossWarning>0){
+      bossSiren(Math.min(1.55,world.bossWarning));
+      world.warningBeat=1.55;
+    }
     if(world.vulcanApproach){
       vulcanApproach(dt);
       if(run.hp<=0){end(false);return;}
@@ -1979,13 +2001,8 @@ function step(dt){
     if(boss)stopBossOst();
     boss=null;missionComplete();return;
   }
-  if(mode==='combat'){
-    if((run.stage===10||vulcanBosses[run.stage])&&run.time<=25&&!world.midBossShown){
-      world.midBossShown=true;startBossWarning();return;
-    }
-    world.spawn-=dt;
-    if(world.spawn<=0)world.spawn=spawnWave(wavePressure(run.time));
-  }
+  world.spawn-=dt;
+  if(world.spawn<=0)world.spawn=spawnWave(wavePressure(run.time));
   if(mode==='boss')bossStep(dt);
   world.weaponTimers??=[];
   for(const slot of inventory()){
@@ -2098,7 +2115,7 @@ function step(dt){
   if(defeated||run.stage===20&&run.time===0){
     stopBossOst();
     if(run.stage===20){
-      run.clearReason=defeated?'BOSS DEFEATED':'SURVIVED 90 SEC';
+      run.clearReason=defeated?'BOSS DEFEATED':'SURVIVED 120 SEC';
       end(true);return;
     }
     boss=null;mode='combat';world.zones=[];
