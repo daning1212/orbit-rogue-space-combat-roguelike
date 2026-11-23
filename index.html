@@ -193,7 +193,31 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 .panel[data-screen="hangar"] .hull-card{display:grid;gap:6px;padding:11px;background:linear-gradient(145deg,#142d43,#0d1a2c);border:1px solid #355a74;border-radius:12px;text-align:left;min-width:0}
 .panel[data-screen="hangar"] .hull-card[aria-pressed="true"]{background:linear-gradient(145deg,#16435c,#102238);border-color:#7de6ff;box-shadow:inset 0 0 0 1px #7de6ff,0 0 18px #40cfff33}
 .panel[data-screen="hangar"] .launch-actions-top{margin:8px 24px 12px;align-items:center}
-.panel[data-screen="hangar"] .launch-actions-top #launch{flex:1;min-width:220px;text-align:center;font-weight:800;font-size:16px;padding:12px 18px}
+.panel[data-screen="hangar"] .launch-actions-top #launch{
+  flex:1;min-width:min(235px,100%);display:grid;grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;gap:12px;padding:9px 13px;text-align:left;color:#effdff;
+  background:linear-gradient(112deg,#153b50,#102735 56%,#0d1928);
+  border:1px solid #67dce8;border-radius:8px;
+  box-shadow:inset 0 0 0 3px #0a1825,inset 0 0 20px #36dfed26,0 0 15px #40dafa26;
+  transition:background .16s,box-shadow .16s,transform .16s;
+}
+.panel[data-screen="hangar"] #launch:hover,.panel[data-screen="hangar"] #launch:focus-visible{
+  background:linear-gradient(112deg,#206076,#15384d 56%,#11263c);
+  box-shadow:inset 0 0 0 3px #0a1825,inset 0 0 20px #36dfed33,0 0 19px #40dafa57;
+}
+.panel[data-screen="hangar"] #launch:active{transform:translateY(1px)}
+.engine-icon{
+  position:relative;width:36px;height:36px;display:grid;place-items:center;border:1px solid #4b9eab;
+  border-radius:50%;color:#83f4f2;background:#0a2432;font:700 23px/1 system-ui,sans-serif;
+  box-shadow:inset 0 0 8px #3ed4ef42;text-shadow:0 0 10px #35f0ff;
+}
+.engine-label{min-width:0}
+.engine-title{display:block;font:800 clamp(15px,2.5vw,22px)/1.05 system-ui,sans-serif;letter-spacing:.105em}
+.engine-weapon{display:block;margin-top:4px;color:#b5dbe4;font:600 10px/1.2 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.engine-stripes{width:22px;height:23px;background:repeating-linear-gradient(120deg,transparent 0 4px,#68e3e8 4px 7px);opacity:.66}
+@media(prefers-reduced-motion:reduce){
+  .panel[data-screen="hangar"] .launch-actions-top #launch{transition:none}
+}
 .hull-card-head{display:flex;justify-content:space-between;align-items:baseline;gap:7px;flex-wrap:wrap}
 .hull-card-head strong{font-size:16px}
 .hull-card-head small{font-size:11px}
@@ -225,7 +249,9 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
  .panel[data-screen="hangar"] .hull-pick{gap:6px}
  .panel[data-screen="hangar"] .hull-card{padding:7px}
  .panel[data-screen="hangar"] .launch-actions-top{margin:7px 14px 9px}
- .panel[data-screen="hangar"] .launch-actions-top #launch{min-width:160px;font-size:14px;padding:10px 12px}
+ .panel[data-screen="hangar"] .launch-actions-top #launch{gap:8px;padding:8px 10px}
+ .engine-icon{width:30px;height:30px;font-size:19px}
+ .engine-stripes{width:15px}
  .hull-card-head strong{font-size:13px}
  .hull-card-head small{font-size:10px}
  .hull-ship,.hull-pilot{height:90px}
@@ -640,7 +666,7 @@ function hangar(){
   screen('<img class="hangar-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE">',
     '<p class="hangar-subtitle">'+tr('기체와 기본 무기를 고르고 출격하세요.','Choose a ship and primary weapon.')+'</p><div class="hull-pick">'+
     hulls.map((h,i)=>'<button id="hull'+i+'" class="hull-card" aria-pressed="'+(i===hangarHull)+'"><span class="hull-card-head"><strong>'+tr(h.name,i?'Power':'Speed')+'</strong><small>'+tr(h.brief,i?'Damage +20% · Hull 110':'Speed +10% · Hull 82')+'</small></span><span class="hull-display"><canvas id="hangarShip'+i+'" class="hull-ship" width="300" height="170" aria-label="'+tr(h.name,i?'Power ship':'Speed ship')+'"></canvas><img class="hull-pilot" src="orbit-rogue-pilot-'+(i?'power':'speed')+'.png" alt="'+tr(i?'파워 기체 파일럿':'스피드 기체 파일럿',i?'Power pilot':'Speed pilot')+'"></span><span class="hull-card-choice">'+tr('선택','Select')+'</span></button>').join('')+
-    '</div><div class="buttons launch-actions launch-actions-top"><button id="launch" class="primary">'+tr(weapons[chosen]+'로 출격 ↗','Launch ↗')+'</button>'+
+    '</div><div class="buttons launch-actions launch-actions-top"><button id="launch" class="primary" type="button" aria-labelledby="engineTitle"><span class="engine-icon" aria-hidden="true">⏻</span><span class="engine-label"><strong class="engine-title" id="engineTitle" lang="en">ENGINE START</strong><small class="engine-weapon" id="engineWeapon" lang="en">'+weaponNamesEn[chosen]+'</small></span><span class="engine-stripes" aria-hidden="true"></span></button>'+
     '<button id="startOptions" type="button">'+tr('옵션','Options')+'</button>'+
     '<button id="ostToggle" type="button">'+tr('♪ Main OST 듣기','♪ Play Main OST')+'</button>'+
     '<button id="stickRecommend" class="stick-recommend" type="button">'+tr('조이스틱 추천','Joystick')+'</button>'+
@@ -664,7 +690,7 @@ function hangar(){
   available.forEach(i=>$('w'+i).onclick=()=>{
     $('w'+chosen).setAttribute('aria-pressed','false');chosen=i;
     $('w'+chosen).setAttribute('aria-pressed','true');
-    $('launch').textContent=tr(weapons[chosen]+'로 출격 ↗','Launch ↗');
+    $('engineWeapon').textContent=weaponNamesEn[chosen];
   });
   hulls.forEach((_,i)=>$('hull'+i).onclick=()=>{
     $('hull'+hangarHull).setAttribute('aria-pressed','false');
