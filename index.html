@@ -197,7 +197,15 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 .hull-card-head{display:flex;justify-content:space-between;align-items:baseline;gap:7px;flex-wrap:wrap}
 .hull-card-head strong{font-size:16px}
 .hull-card-head small{font-size:11px}
-.hull-ship{width:100%;height:clamp(102px,18vh,160px);min-height:0;border-radius:8px;background:radial-gradient(ellipse,#20405c,#0b1728 70%);object-fit:contain}
+.hull-display{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:stretch;gap:6px}
+.hull-pilot{
+  display:block;width:clamp(76px,13.5vh,120px);height:clamp(102px,18vh,160px);
+  border-radius:8px;background:radial-gradient(ellipse,#20405c,#0b1728 75%);
+  object-fit:cover;object-position:center top;
+  border:1px solid #366176;
+}
+#hull1 .hull-pilot{border-color:#70523a}
+.hull-ship{width:100%;min-width:0;height:clamp(102px,18vh,160px);min-height:0;border-radius:8px;background:radial-gradient(ellipse,#20405c,#0b1728 70%);object-fit:contain}
 .hull-card-choice{font-size:11px;font-weight:700;color:#a8c2d7}
 .hull-card[aria-pressed="true"] .hull-card-choice{color:#7de6ff}
 .hull-card[aria-pressed="true"] .hull-card-choice::before{content:"✓ "}
@@ -220,7 +228,9 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
  .panel[data-screen="hangar"] .launch-actions-top #launch{min-width:160px;font-size:14px;padding:10px 12px}
  .hull-card-head strong{font-size:13px}
  .hull-card-head small{font-size:10px}
- .hull-ship{height:90px}
+ .hull-ship,.hull-pilot{height:90px}
+ .hull-display{gap:4px}
+ .hull-pilot{width:60px}
  .loadout-label{margin:5px 14px}
  .panel[data-screen="hangar"] .weapon-grid{grid-template-columns:repeat(2,minmax(0,1fr));margin:0 14px}
  .header-logo{width:135px;height:28px}
@@ -629,7 +639,7 @@ function hangar(){
   hangarHull=starterHull;
   screen('<img class="hangar-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE">',
     '<p class="hangar-subtitle">'+tr('기체와 기본 무기를 고르고 출격하세요.','Choose a ship and primary weapon.')+'</p><div class="hull-pick">'+
-    hulls.map((h,i)=>'<button id="hull'+i+'" class="hull-card" aria-pressed="'+(i===hangarHull)+'"><span class="hull-card-head"><strong>'+tr(h.name,i?'Power':'Speed')+'</strong><small>'+tr(h.brief,i?'Damage +20% · Hull 110':'Speed +10% · Hull 82')+'</small></span><canvas id="hangarShip'+i+'" class="hull-ship" width="300" height="170" aria-label="'+tr(h.name,i?'Power ship':'Speed ship')+'"></canvas><span class="hull-card-choice">'+tr('선택','Select')+'</span></button>').join('')+
+    hulls.map((h,i)=>'<button id="hull'+i+'" class="hull-card" aria-pressed="'+(i===hangarHull)+'"><span class="hull-card-head"><strong>'+tr(h.name,i?'Power':'Speed')+'</strong><small>'+tr(h.brief,i?'Damage +20% · Hull 110':'Speed +10% · Hull 82')+'</small></span><span class="hull-display"><canvas id="hangarShip'+i+'" class="hull-ship" width="300" height="170" aria-label="'+tr(h.name,i?'Power ship':'Speed ship')+'"></canvas><img class="hull-pilot" src="orbit-rogue-pilot-'+(i?'power':'speed')+'.png" alt="'+tr(i?'파워 기체 파일럿':'스피드 기체 파일럿',i?'Power pilot':'Speed pilot')+'"></span><span class="hull-card-choice">'+tr('선택','Select')+'</span></button>').join('')+
     '</div><div class="buttons launch-actions launch-actions-top"><button id="launch" class="primary">'+tr(weapons[chosen]+'로 출격 ↗','Launch ↗')+'</button>'+
     '<button id="startOptions" type="button">'+tr('옵션','Options')+'</button>'+
     '<button id="ostToggle" type="button">'+tr('♪ Main OST 듣기','♪ Play Main OST')+'</button>'+
