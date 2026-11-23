@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.26 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.27 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -358,7 +358,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <audio id="bossOst1" src="orbit-rogue-boss-01.mp3" preload="metadata" loop></audio>
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.26 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer>v0.2.27 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -395,6 +395,14 @@ function loadArtwork(){
   const speed=new Image();
   speed.onload=()=>{artwork.player0=speed;const preview=$('hangarShip0');if(preview)preview.drawn=-1;};
   speed.src=speedImage;
+  for(const [variant,loadouts] of Object.entries(enemyLoadouts)){
+    loadouts.forEach((_,index)=>{
+      const name=enemySpriteName(variant,index);
+      const sprite=new Image();
+      sprite.onload=()=>{artwork[name]=sprite;};
+      sprite.src='ships/'+name+'.png';
+    });
+  }
   for(const {data,cutouts} of sheets){
     const source=new Image();
     source.onload=()=>{
@@ -715,7 +723,7 @@ function hangar(){
   };
 }
 function resetWorld(){
-  world={x:W/2,y:H/2,vx:0,vy:0,braking:false,angle:-Math.PI/2,dashAngle:0,dashRemaining:0,reverseRemaining:0,entry:Math.floor(rng(0,4)),damageNumbers:[],enemyDesignIndex:0,edgeAlerts:[],shots:[],hostile:[],targets:[],gems:[],drops:[],beams:[],zones:[],
+  world={x:W/2,y:H/2,vx:0,vy:0,braking:false,angle:-Math.PI/2,dashAngle:0,dashRemaining:0,reverseRemaining:0,entry:Math.floor(rng(0,4)),damageNumbers:[],enemyDesignIndex:{raider:0,fanfire:0,warden:0},edgeAlerts:[],shots:[],hostile:[],targets:[],gems:[],drops:[],beams:[],zones:[],
     sparks:[],blasts:[],blastSound:0,spawn:.4,fire:.2,drone:0,flash:0,inv:0,shieldDelay:0,magnet:0};
   boss=null;
 }
@@ -1164,7 +1172,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.26',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.27',896,587);
   return card;
 }
 function downloadProof(){
@@ -1481,73 +1489,51 @@ function enemyFireProfile(stage,pressure){
   const late=Math.max(0,stage-8);
   return {
     chance:clamp(.16+(stage-1)*.025+late*.035+pressure*.018,.16,.90),
-    delay:Math.max(2.2,7-(stage-1)*.24),
-    burst:stage>=9
+    delay:Math.max(2.2,7-(stage-1)*.24)
   };
 }
-// Half-outlines, from the nose down the right side to the tail.
-const enemySilhouettes=[
-  [[0,20],[5,9],[16,-11],[6,-7],[0,-12]],
-  [[0,18],[8,8],[9,-4],[16,-15],[4,-13],[0,-7]],
-  [[0,19],[4,11],[18,5],[18,-4],[8,-11],[0,-10]],
-  [[0,17],[6,13],[13,3],[15,-10],[9,-16],[0,-12]],
-  [[0,21],[6,4],[11,8],[14,4],[13,-13],[0,-9]],
-  [[0,15],[7,12],[15,15],[17,8],[13,-12],[0,-8]],
-  [[0,20],[7,15],[10,2],[17,-3],[17,-13],[0,-10]],
-  [[0,18],[8,7],[16,10],[18,4],[11,-9],[0,-14]],
-  [[0,15],[12,14],[17,5],[8,2],[12,-12],[0,-10]],
-  [[0,19],[4,17],[6,0],[18,-5],[13,-12],[0,-14]],
-  [[0,15],[12,15],[18,5],[17,-11],[10,-15],[0,-10]],
-  [[0,19],[7,9],[13,9],[19,0],[16,-12],[0,-15]],
-  [[0,14],[7,10],[14,19],[19,16],[15,-6],[0,-13]],
-  [[0,17],[7,16],[10,9],[19,6],[19,-5],[10,-10],[0,-14]],
-  [[0,11],[8,13],[17,12],[14,4],[19,-3],[14,-15],[0,-11]],
-  [[0,18],[10,13],[14,4],[10,-1],[16,-8],[9,-15],[0,-11]],
-  [[0,18],[12,16],[13,4],[18,1],[19,-9],[10,-9],[0,-15]],
-  [[0,16],[6,13],[13,15],[18,11],[16,-12],[9,-10],[0,-15]],
-  [[0,15],[12,19],[18,12],[18,-2],[11,-13],[0,-10]],
-  [[0,20],[8,13],[17,9],[19,4],[12,1],[18,-12],[0,-12]],
-  [[0,18],[11,15],[19,7],[19,-6],[13,-13],[0,-16]],
-  [[0,17],[9,12],[17,15],[20,5],[18,-12],[0,-15]],
-  [[0,19],[10,18],[14,9],[18,8],[20,-8],[11,-14],[0,-16]],
-  [[0,14],[8,10],[16,18],[20,14],[18,-7],[11,-16],[0,-12]],
-  [[0,18],[14,14],[20,1],[16,-4],[19,-13],[0,-17]],
-  [[0,16],[8,15],[14,8],[20,10],[20,-8],[12,-16],[0,-12]],
-  [[0,19],[12,19],[19,12],[15,3],[20,-5],[15,-14],[0,-17]],
-  [[0,12],[8,18],[16,17],[20,10],[17,2],[20,-12],[0,-12]],
-  [[0,19],[8,16],[16,17],[20,8],[16,-2],[18,-12],[8,-16],[0,-13]],
-  [[0,20],[13,16],[20,9],[20,-6],[13,-7],[9,-16],[0,-15]],
-];
-const enemyDesigns=enemySilhouettes.map(half=>{
-  const [wingX,wingY]=half.reduce((outer,point)=>point[0]>outer[0]?point:outer);
-  return {
-    nose:half[0][1],
-    outline:[...half,...half.slice(1,-1).reverse().map(([x,y])=>[-x,y])],
-    span:wingX*.72,
-    stripe:wingY*.65,
-  };
-});
-function drawEnemyDesign(t){
-  const design=enemyDesigns[t.design];
-  if(!design)return false;
-  const {outline,nose,span,stripe}=design;
-  const palette=t.variant==='warden'?['#362356','#b89cff']:
-    t.variant==='fanfire'?['#55292e','#ffaa75']:['#223345','#85c8d8'];
-  const [hull,accent]=palette;
-  ctx.save();
-  ctx.translate(t.x,t.y);
-  ctx.rotate(t.angle-Math.PI/2);
-  ctx.scale(t.r/18,t.r/18);
-  path(outline,hull,accent);
-  path([[0,nose*.75],[span,stripe],[2,-8],[0,-11],[-2,-8],[-span,stripe]],'#14202e');
-  for(const side of [-1,1]){
-    path([[side*span,stripe],[side*span*.55,stripe+3],[side*span*.55,stripe-4]],accent);
-    ctx.fillStyle=accent;
-    ctx.fillRect(side*3-1,-12,2,4);
+// Sprite order follows the source sheets, left to right then top to bottom.
+const enemyLoadouts={
+  raider:['missile','twin','bolt','arc','twin','cannon','cross','pulse','twin','seeker'],
+  fanfire:['scatter','dualCannon','salvo','arc','barrage','twin','cross','pulse','dualCannon','scatter'],
+  warden:['heavy','heavyTwin','heavyArc','dualCannon','heavyTwin','heavyArc','barrage','heavySpread','seeker','heavy'],
+};
+const enemyOrdnance={
+  bolt:{color:'#ff758a',speed:1,power:.9,r:3},
+  missile:{color:'#ffb776',speed:.92,power:1,r:4,trail:11},
+  seeker:{color:'#ef9bff',speed:.76,power:1.05,r:4,trail:12,turn:.9},
+  cannon:{color:'#ffc584',speed:1.20,power:1.05,r:4,trail:8},
+  plasma:{color:'#ffa172',speed:.66,power:1.38,r:6},
+};
+const enemyPatterns={
+  missile:['missile',1,[[0,0]]],
+  twin:['missile',1.08,[[-.05,-8],[.05,8]]],
+  bolt:['bolt',.92,[[0,0]]],
+  arc:['bolt',1.12,[[-.35,-8],[0,0],[.35,8]]],
+  cannon:['cannon',1.12,[[0,0]]],
+  cross:['bolt',1.18,[[-.34,-9],[-.12,8],[.12,-8],[.34,9]]],
+  pulse:['plasma',1.24,[[0,0]]],
+  seeker:['seeker',1.22,[[0,0]]],
+  scatter:['bolt',1.17,[[-.42,0],[-.21,0],[0,0],[.21,0],[.42,0]]],
+  dualCannon:['cannon',1.25,[[0,-11],[0,11]]],
+  salvo:['missile',1.26,[[-.24,-10],[0,0],[.24,10]]],
+  barrage:['bolt',1.30,[[-.30,-12],[-.10,-7],[.10,7],[.30,12]]],
+  heavy:['plasma',1.30,[[0,0]]],
+  heavyTwin:['plasma',1.44,[[-.04,-10],[.04,10]]],
+  heavyArc:['plasma',1.46,[[-.28,-8],[.28,8]]],
+  heavySpread:['plasma',1.52,[[-.29,-9],[0,0],[.29,9]]],
+};
+function enemySpriteName(variant,index){
+  return variant+'-'+String(index+1).padStart(2,'0');
+}
+function fireEnemy(target,aim,speed,profile){
+  const [kind,cooldown,shots]=enemyPatterns[enemyLoadouts[target.variant][target.design]];
+  const shotCount=run.stage<3&&target.variant==='raider'?Math.min(shots.length,2):shots.length;
+  for(let i=0;i<shotCount;i++){
+    const [angle,port]=shots[shotCount===shots.length?i:(i===0?0:shots.length-1)];
+    hostile(target,aim+angle,speed,kind,port,aim);
   }
-  path([[0,9],[3,3],[0,-2],[-3,3]],t.armed?'#ffd18a':'#dcf8ff');
-  ctx.restore();
-  return true;
+  return rng(profile.delay*.8,profile.delay*1.35)*cooldown;
 }
 function spawnTarget(rock=false,along=null,shift=0,pressure=wavePressure(run.time),side=world.entry%4){
   const stage=run.stage, roll=Math.random(), fireProfile=enemyFireProfile(stage,pressure);
@@ -1567,7 +1553,7 @@ function spawnTarget(rock=false,along=null,shift=0,pressure=wavePressure(run.tim
   const angle=Math.atan2(H/2-y,W/2-x);
   const drift=rock?rng(-.52,.52):0;
   const heading=angle+drift;
-  const design=rock?-1:((stage-1)*7+world.enemyDesignIndex++)%(enemySilhouettes.length+1)-1;
+  const design=rock?-1:((stage-1)*3+world.enemyDesignIndex[variant]++)%enemyLoadouts[variant].length;
   world.targets.push({x,y,r,hp,max:hp,rock,speed,angle,variant,design,life:42,armed,fire:rng(fireProfile.delay*.7,fireProfile.delay*1.3),
     vx:rock?Math.cos(heading)*speed:0,vy:rock?Math.sin(heading)*speed:0,
     rotation:rock?rng(0,Math.PI*2):0,spin:rock?rng(-.75,.75):0});
@@ -1611,9 +1597,10 @@ function animateExplosions(dt){
     return (p.life-=dt)>0;
   });
 }
-function hostile(t,angle,speed){
-  speed*=difficulty().shot;
-  world.hostile.push({x:t.x,y:t.y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed});
+function hostile(t,angle,speed,kind=null,port=0,aim=angle){
+  speed*=difficulty().shot*(enemyOrdnance[kind]?.speed??1);
+  world.hostile.push({x:t.x-Math.sin(aim)*port,y:t.y+Math.cos(aim)*port,
+    vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,kind,life:kind?5:Infinity});
 }
 function hurt(damage){
   if(world.inv>0)return;
@@ -1668,10 +1655,33 @@ function collect(type){
   else run.coupons[type]++;
   sound(760,.21);
 }
+const vulcanBosses={
+  5:{name:'VULCAN SENTINEL',hp:560,r:39,shots:12,interval:.10,recovery:1.25,speed:195},
+  15:{name:'VULCAN OVERSEER',hp:2100,r:49,shots:20,interval:.075,recovery:1.05,speed:245},
+};
+function vulcanStep(dt){
+  const config=vulcanBosses[run.stage];
+  boss.fire-=dt;
+  if(boss.fire>0)return;
+
+  if(!boss.burst){
+    boss.angle=Math.atan2(world.y-boss.y,world.x-boss.x);
+    boss.burst=config.shots;
+    sound(125,.19,.35,false,'sawtooth',82);
+  }
+  const muzzle=boss.r*1.14;
+  const origin={x:boss.x+Math.cos(boss.angle)*muzzle,y:boss.y+Math.sin(boss.angle)*muzzle};
+  const sweep=Math.sin((config.shots-boss.burst)*.52)*(run.stage===15?.16:.09);
+  hostile(origin,boss.angle+sweep,config.speed,'cannon');
+  boss.burst--;
+  boss.fire=boss.burst?config.interval:config.recovery;
+}
 function startBoss(){
   mode='boss';
-  const hp=Math.round((run.stage===10?6000:6400)*difficulty().bossHp);
-  boss={boss:true,x:W/2,y:118,r:run.stage===10?57:72,hp,max:hp,fire:.9,pattern:run.stage===10?1.1:2,phase:0};
+  const vulcan=vulcanBosses[run.stage];
+  const hp=Math.round((vulcan?.hp??(run.stage===10?6000:6400))*difficulty().bossHp);
+  boss={boss:true,x:W/2,y:118,r:vulcan?.r??(run.stage===10?57:72),hp,max:hp,
+    fire:.9,pattern:run.stage===10?1.1:2,phase:0,angle:Math.PI/2,burst:0};
   world.targets.push(boss);
   syncCombatOst();startBossOst();
 }
@@ -1681,6 +1691,7 @@ function startBossWarning(){
   sound(92,.55,1.8,false,'sawtooth',48);
 }
 function bossStep(dt){
+  if(vulcanBosses[run.stage]){vulcanStep(dt);return;}
   boss.pattern-=dt;boss.fire-=dt;
   if(boss.fire<=0){
     const angle=Math.atan2(world.y-boss.y,world.x-boss.x);
@@ -1735,7 +1746,7 @@ function step(dt){
   if(mode==='boss-warning'){
     animateExplosions(dt);
     world.bossWarning-=dt;world.warningBeat-=dt;
-    if(run.stage===10)run.time=Math.max(0,run.time-dt);
+    if(run.stage!==20)run.time=Math.max(0,run.time-dt);
     if(world.warningBeat<=0){sound(760,.12,.62,false,'square',420);world.warningBeat=.72;}
     if(world.bossWarning<=0)startBoss();
     return;
@@ -1803,7 +1814,7 @@ function step(dt){
     boss=null;missionComplete();return;
   }
   if(mode==='combat'){
-    if(run.stage===10&&run.time<=25&&!world.midBossShown){
+    if((run.stage===10||vulcanBosses[run.stage])&&run.time<=25&&!world.midBossShown){
       world.midBossShown=true;startBossWarning();return;
     }
     world.spawn-=dt;
@@ -1842,9 +1853,7 @@ function step(dt){
       if(t.fire<0&&t.x>0&&t.x<W&&t.y>0&&t.y<H){
         const aim=Math.atan2(world.y-t.y,world.x-t.x), speed=116+run.stage*7;
         const profile=enemyFireProfile(run.stage,wavePressure(run.time));
-        const spread=profile.burst&&t.variant==='fanfire'?[-.27,0,.27]:[0];
-        for(const offset of spread)hostile(t,aim+offset,speed);
-        t.fire=rng(profile.delay*.8,profile.delay*1.35);
+        t.fire=fireEnemy(t,aim,speed,profile);
       }
     }
     if(near(t,world,t.r+12)){hurt(t.rock?18:15);if(!t.rock)t.hp=0;}
@@ -1868,9 +1877,17 @@ function step(dt){
   }
   world.shots=world.shots.filter(s=>s.life>0&&s.x>-30&&s.x<W+30&&s.y>-35&&s.y<H+35);
   world.hostile=world.hostile.filter(p=>{
+    const rounds=enemyOrdnance[p.kind];
+    if(rounds?.turn){
+      const angle=Math.atan2(p.vy,p.vx), aim=Math.atan2(world.y-p.y,world.x-p.x);
+      const delta=aim-angle;
+      const next=angle+clamp(Math.atan2(Math.sin(delta),Math.cos(delta)),-rounds.turn*dt,rounds.turn*dt);
+      const speed=Math.hypot(p.vx,p.vy);
+      p.vx=Math.cos(next)*speed;p.vy=Math.sin(next)*speed;
+    }
     p.x+=p.vx*dt;p.y+=p.vy*dt;
-    if(near(p,world,13)){hurt(11+run.stage*.5);return false;}
-    return p.x>-25&&p.x<W+25&&p.y>-25&&p.y<H+25;
+    if(near(p,world,9+(rounds?.r??4))){hurt((11+run.stage*.5)*(rounds?.power??1));return false;}
+    return (p.life-=dt)>0&&p.x>-25&&p.x<W+25&&p.y>-25&&p.y<H+25;
   });
   world.zones=world.zones.filter(z=>{
     z.age+=dt;
@@ -1993,6 +2010,18 @@ function ship(x,y,size,enemy=false,tier=0,angle=enemy?Math.PI/2:-Math.PI/2,hull=
   ctx.restore();
 }
 function drawBoss(t){
+  if(vulcanBosses[run.stage]){
+    ctx.save();ctx.translate(t.x,t.y);ctx.rotate(t.angle+Math.PI/2);
+    const width=t.r*2.25;
+    drawArt(enemySpriteName('warden',run.stage===5?3:9),0,6,width,width);
+    ctx.fillStyle='#565055';ctx.strokeStyle='#ffcd7a';ctx.lineWidth=2;
+    ctx.fillRect(-6,-t.r*1.17,12,t.r*.88);
+    ctx.strokeRect(-6,-t.r*1.17,12,t.r*.88);
+    ctx.fillStyle=t.burst?'#ffbc65':'#a56a4b';
+    ctx.fillRect(-2,-t.r*1.12,4,t.r*.57);
+    ctx.restore();
+    return;
+  }
   if(drawArt(run.stage===10?'boss10':'boss20',t.x,t.y,run.stage===10?185:230,run.stage===10?174:216))return;
   ctx.save();ctx.translate(t.x,t.y);
   const final=run.stage===20,color=final?'#cd8aff':'#ffaf57';
@@ -2058,12 +2087,14 @@ function paint(){
   for(const t of world.targets){
     if(t.boss){drawBoss(t);continue;}
     if(!t.rock){
-      if(!drawEnemyDesign(t)){
-        ctx.save();ctx.translate(t.x,t.y);ctx.rotate(t.angle-Math.PI/2);
-        const painted=drawArt(t.variant,0,0,t.r*2.7,t.r*2.7);
-        ctx.restore();
-        if(!painted)ship(t.x,t.y,.75,true,0,t.angle);
+      ctx.save();ctx.translate(t.x,t.y);ctx.rotate(t.angle+Math.PI/2);
+      let painted=drawArt(enemySpriteName(t.variant,t.design),0,0,t.r*2.6,t.r*2.6);
+      if(!painted){
+        ctx.rotate(Math.PI);
+        painted=drawArt(t.variant,0,0,t.r*2.7,t.r*2.7);
       }
+      ctx.restore();
+      if(!painted)ship(t.x,t.y,.75,true,0,t.angle);
       if(t.variant!=='raider'&&t.y>0&&t.y<H){
         const width=t.r*1.6, x=t.x-width/2,y=Math.max(5,t.y-t.r*1.4-7);
         ctx.fillStyle='#201a29';ctx.fillRect(x-1,y-1,width+2,6);
@@ -2089,7 +2120,19 @@ function paint(){
     ctx.fillRect(-2,-8,4,s.kind==='missile'?14:10);ctx.restore();
   }
   for(const p of world.hostile){
-    ctx.fillStyle='#ff6179';ctx.beginPath();ctx.arc(p.x,p.y,4,0,7);ctx.fill();
+    const rounds=enemyOrdnance[p.kind];
+    ctx.fillStyle=rounds?.color??'#ff6179';
+    if(rounds?.trail){
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(Math.atan2(p.vy,p.vx));
+      ctx.fillRect(-rounds.trail,-2,rounds.trail,4);
+      ctx.fillStyle='#fff0dc';ctx.fillRect(-3,-1,5,2);
+      ctx.restore();
+    }else{
+      ctx.beginPath();ctx.arc(p.x,p.y,rounds?.r??4,0,7);ctx.fill();
+      if(p.kind==='plasma'){
+        ctx.fillStyle='#fff2d1';ctx.beginPath();ctx.arc(p.x,p.y,2.5,0,7);ctx.fill();
+      }
+    }
   }
   for(const b of world.beams){
     ctx.save();ctx.globalAlpha=Math.min(1,b.life/.09);ctx.lineCap='round';
@@ -2177,8 +2220,8 @@ function paint(){
   if(boss&&boss.hp>0){
     const width=Math.min(500,W-42), x=(W-width)/2;
     ctx.fillStyle='#361f49';ctx.fillRect(x,18,width,8);
-    ctx.fillStyle=run.stage===10?'#ffa066':'#d987ff';ctx.fillRect(x,18,width*boss.hp/boss.max,8);
-    ctx.fillStyle='#fff';ctx.fillText(run.stage===10?'RIFT EXCAVATOR':'NULL CROWN',W/2,45);
+    ctx.fillStyle=run.stage===20?'#d987ff':'#ffa066';ctx.fillRect(x,18,width*boss.hp/boss.max,8);
+    ctx.fillStyle='#fff';ctx.fillText(vulcanBosses[run.stage]?.name??(run.stage===10?'RIFT EXCAVATOR':'NULL CROWN'),W/2,45);
   }
   if(world.noticeFor>0){
     ctx.fillStyle='#ffda92';ctx.fillText(world.notice,W/2,H-22);
