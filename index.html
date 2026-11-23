@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.40 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.41 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -407,7 +407,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <audio id="warningAudio" src="orbit-rogue-warning.mp3" preload="auto"></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.40 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer>v0.2.41 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -1379,7 +1379,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.40',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.41',896,587);
   return card;
 }
 function downloadProof(){
@@ -1705,6 +1705,7 @@ const enemyOrdnance={
   missile:{color:'#ffb776',speed:.92,power:1,r:4,trail:11},
   seeker:{color:'#ef9bff',speed:.76,power:1.05,r:4,trail:12,turn:.9},
   cannon:{color:'#ffc584',speed:1.20,power:1.05,r:4,trail:8},
+  heavyMissile:{color:'#ff9769',speed:.76,power:1.38,r:6,trail:24},
   plasma:{color:'#ffa172',speed:.66,power:1.38,r:6},
 };
 const enemyPatterns={
@@ -1720,15 +1721,21 @@ const enemyPatterns={
   dualCannon:['cannon',1.25,[[0,-11],[0,11]]],
   salvo:['missile',1.26,[[-.24,-10],[0,0],[.24,10]]],
   barrage:['bolt',1.30,[[-.30,-12],[-.10,-7],[.10,7],[.30,12]]],
-  heavy:['plasma',1.30,[[0,0]]],
-  heavyTwin:['plasma',1.44,[[-.04,-10],[.04,10]]],
-  heavyArc:['plasma',1.46,[[-.28,-8],[.28,8]]],
-  heavySpread:['plasma',1.52,[[-.29,-9],[0,0],[.29,9]]],
+  heavy:['heavyMissile',1.30,[[0,0]]],
+  heavyTwin:['heavyMissile',1.44,[[-.04,-10],[.04,10]]],
+  heavyArc:['heavyMissile',1.46,[[-.28,-8],[.28,8]]],
+  heavySpread:['heavyMissile',1.52,[[-.29,-9],[0,0],[.29,9]]],
 };
 function enemySpriteName(variant,index){
   return variant+'-'+String(index+1).padStart(2,'0');
 }
 function fireEnemy(target,aim,speed,profile){
+  if(target.variant==='warden'&&target.laserNext){
+    target.attack={type:'laser',angle:aim,warning:.85,left:.24};
+    target.laserNext=false;
+    return profile.delay*1.45;
+  }
+  if(target.variant==='warden')target.laserNext=true;
   const [kind,cooldown,shots]=enemyPatterns[enemyLoadouts[target.variant][target.design]];
   const shotCount=run.stage<3&&target.variant==='raider'?Math.min(shots.length,2):shots.length;
   for(let i=0;i<shotCount;i++){
@@ -1827,6 +1834,35 @@ function moveEnemy(target,dt,rocks){
     }
   }
   target.angle=heading;
+}
+function stepEnemyAttack(target,dt,rocks){
+  const attack=target.attack;
+  target.angle=attack.angle;
+  if(attack.warning>0){
+    attack.warning-=dt;
+    return;
+  }
+  attack.left-=dt;
+  const dash=attack.type==='dash';
+  const travel=dash?430*dt:Math.hypot(W,H);
+  const x=target.x+Math.cos(attack.angle)*travel;
+  const y=target.y+Math.sin(attack.angle)*travel;
+  const radius=dash?target.r:5;
+  let stop=1;
+  for(const rock of rocks)stop=Math.min(stop,rockClearance(target.x,target.y,x,y,rock,radius));
+  const hit=rockClearance(target.x,target.y,x,y,{x:world.x,y:world.y,r:9},radius);
+  if(hit<=stop&&!attack.hit){
+    attack.hit=true;
+    hurt(dash?22:17+run.stage*.45);
+    if(dash)target.hp=0;
+  }
+  const endX=target.x+(x-target.x)*stop,endY=target.y+(y-target.y)*stop;
+  if(dash){
+    target.x=endX;target.y=endY;
+  }else{
+    attack.x=endX;attack.y=endY;
+  }
+  if(attack.left<=0||dash&&stop<1)target.attack=null;
 }
 function spawnWave(pressure){
   const side=world.entry++%4, vertical=side===0||side===2;
@@ -2228,7 +2264,16 @@ function step(dt){
     t.life-=dt;
     if(t.rock){
       t.x+=t.vx*dt;t.y+=t.vy*dt;t.rotation+=t.spin*dt;
+    }else if(t.attack){
+      stepEnemyAttack(t,dt,rocks);
+      continue;
     }else moveEnemy(t,dt,rocks);
+    if(t.variant==='raider'&&run.stage>=3&&(t.design===3||t.design===7)&&!t.dashed&&
+      t.x>0&&t.x<W&&t.y>0&&t.y<H&&near(t,world,250)){
+      t.dashed=true;
+      t.attack={type:'dash',angle:Math.atan2(world.y-t.y,world.x-t.x),warning:.65,left:.65};
+      continue;
+    }
     if(t.artillery)artilleryStep(t,dt);
     else if(t.armed){
       t.fire-=dt;
@@ -2428,6 +2473,51 @@ function paintBossHealth(){
   });
   ctx.restore();
 }
+function paintEnemyAttack(target){
+  const attack=target.attack,dash=attack.type==='dash';
+  const firing=attack.warning<=0&&attack.x!==undefined;
+  if(dash&&attack.warning<=0)return;
+  const reach=dash?135:Math.hypot(W,H);
+  const x=firing?attack.x:target.x+Math.cos(attack.angle)*reach;
+  const y=firing?attack.y:target.y+Math.sin(attack.angle)*reach;
+  ctx.save();
+  ctx.strokeStyle=dash?'#ffd078':'#ff668c';
+  ctx.lineWidth=firing?10:2;
+  if(!firing){
+    ctx.globalAlpha=.65+.35*Math.sin(last*.022);
+    ctx.setLineDash([9,5]);
+  }
+  ctx.beginPath();ctx.moveTo(target.x,target.y);ctx.lineTo(x,y);ctx.stroke();
+  if(firing){
+    ctx.strokeStyle='#fff1f6';ctx.lineWidth=3;ctx.stroke();
+  }else if(dash){
+    ctx.translate(x,y);ctx.rotate(attack.angle);
+    path([[-15,-9],[0,0],[-15,9],[-10,0]],'#ffd078');
+  }
+  ctx.restore();
+}
+function paintPlayerMeters(){
+  const width=56,height=5, gap=3, offset=45;
+  const x=Math.round(clamp(world.x-width/2,4,W-width-4));
+  // Flip above the ship near the bottom so both bars stay visible.
+  const y=Math.round(world.y+offset+height*2+gap+4<=H
+    ?world.y+offset
+    :world.y-offset-height*2-gap);
+  const hull=clamp(run.hp/run.max,0,1);
+  const shield=clamp(run.shield/run.shieldMax,0,1);
+  ctx.save();
+  ctx.fillStyle='#080e19';
+  ctx.fillRect(x-1,y-1,width+2,height+2);
+  ctx.fillRect(x-1,y+height+gap-1,width+2,height+2);
+  ctx.fillStyle='#34445a';
+  ctx.fillRect(x,y,width,height);
+  ctx.fillRect(x,y+height+gap,width,height);
+  ctx.fillStyle='#64dfff';
+  ctx.fillRect(x,y,width*shield,height);
+  ctx.fillStyle=hull<=.25?'#ff6678':'#73e4ae';
+  ctx.fillRect(x,y+height+gap,width*hull,height);
+  ctx.restore();
+}
 function paint(){
   ctx.fillStyle='#090f1d';ctx.fillRect(0,0,W,H);
   const sector=Math.min(3,Math.floor(((run?.stage??1)-1)/5));
@@ -2479,6 +2569,7 @@ function paint(){
   for(const t of world.targets){
     if(t.boss){drawBoss(t);continue;}
     if(!t.rock){
+      if(t.attack)paintEnemyAttack(t);
       if(t.chargeAngle!==undefined){
         ctx.save();ctx.translate(t.x,t.y);ctx.rotate(t.chargeAngle);
         ctx.strokeStyle='#ffbf78aa';ctx.lineWidth=1.5;ctx.setLineDash([7,6]);
@@ -2535,8 +2626,9 @@ function paint(){
     ctx.fillStyle=rounds?.color??'#ff6179';
     if(rounds?.trail){
       ctx.save();ctx.translate(p.x,p.y);ctx.rotate(Math.atan2(p.vy,p.vx));
-      ctx.fillRect(-rounds.trail,-2,rounds.trail,4);
-      ctx.fillStyle='#fff0dc';ctx.fillRect(-3,-1,5,2);
+      const thickness=p.kind==='heavyMissile'?8:4;
+      ctx.fillRect(-rounds.trail,-thickness/2,rounds.trail,thickness);
+      ctx.fillStyle='#fff0dc';ctx.fillRect(-thickness,-thickness/4,thickness+2,thickness/2);
       ctx.restore();
     }else{
       ctx.beginPath();ctx.arc(p.x,p.y,rounds?.r??4,0,7);ctx.fill();
@@ -2616,6 +2708,7 @@ function paint(){
     ctx.restore();
   }
   if(world.inv<=0||Math.floor(last/55)%2===0)ship(world.x,world.y,1,false,run.rank,world.angle,run.hull??0);
+  if(flightActive())paintPlayerMeters();
   paintDamageNumbers();
   if(mode==='boss-warning'){
     const elapsed=WARNING_DURATION-world.bossWarning,pulse=.82+.18*Math.sin(elapsed*18),appear=world.warningPosition>0||world.warningFallback?1:0;
