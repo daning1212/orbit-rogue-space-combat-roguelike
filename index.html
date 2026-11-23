@@ -50,6 +50,7 @@ button.primary{background:linear-gradient(120deg,#0c4157,#0a3045);border-color:#
 .stage-route strong{color:var(--gold)}
 summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 .options input{width:100%;accent-color:var(--accent)}
+.options input[type="checkbox"]{width:auto;justify-self:start}
 @media(max-width:680px){.hud{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:7px}.hud strong{font-size:11px}.hud small{font-size:9px}}
 @media(max-width:540px){.hangar-grid,.panel[data-screen="level"] .split{grid-template-columns:1fr}.hangar-preview{max-height:116px}.panel[data-screen="level"] .split{gap:10px}.panel[data-screen="level"] .card{min-height:0}.box h2{font-size:21px}.buttons button{font-size:13px}}
 .header-controls{display:flex;align-items:center;gap:6px}
@@ -630,7 +631,7 @@ function hangar(){
   };
 }
 function resetWorld(){
-  world={x:W/2,y:H/2,vx:0,vy:0,braking:false,angle:-Math.PI/2,dashAngle:0,dashRemaining:0,reverseRemaining:0,entry:Math.floor(rng(0,4)),edgeAlerts:[],shots:[],hostile:[],targets:[],gems:[],drops:[],beams:[],zones:[],
+  world={x:W/2,y:H/2,vx:0,vy:0,braking:false,angle:-Math.PI/2,dashAngle:0,dashRemaining:0,reverseRemaining:0,entry:Math.floor(rng(0,4)),damageNumbers:[],edgeAlerts:[],shots:[],hostile:[],targets:[],gems:[],drops:[],beams:[],zones:[],
     sparks:[],blasts:[],blastSound:0,spawn:.4,fire:.2,drone:0,flash:0,inv:0,shieldDelay:0,magnet:0};
   boss=null;
 }
@@ -1086,17 +1087,29 @@ function bindCombatMusicOption(){
     prefs.combatTrack=e.target.value;store.set('or-settings',prefs);
   };
 }
+function damageNumbersOption(){
+  return '<label>'+tr('피해 숫자','Damage numbers')+'<input id="damageNumbers" type="checkbox"'+
+    (prefs.damageNumbers!==false?' checked':'')+'></label>';
+}
+function bindDamageNumbersOption(){
+  $('damageNumbers').onchange=e=>{
+    prefs.damageNumbers=e.target.checked;
+    store.set('or-settings',prefs);
+    if(!prefs.damageNumbers&&world)world.damageNumbers.length=0;
+  };
+}
 function openStartOptions(){
   mode='settings';
   screen(tr('옵션','Options'),'<div class="options start-options">'+
     '<label>'+tr('음악 볼륨','Music volume')+'<input id="music" type="range" min="0" max="100" value="'+prefs.music+'"></label>'+
     '<label>'+tr('효과음 볼륨','Effects volume')+'<input id="fx" type="range" min="0" max="100" value="'+prefs.fx+'"></label>'+
-    combatMusicOption()+'<div class="language-option"><span>'+tr('언어','Language')+'</span><div class="buttons">'+
+    combatMusicOption()+damageNumbersOption()+'<div class="language-option"><span>'+tr('언어','Language')+'</span><div class="buttons">'+
     '<button id="langKo" aria-pressed="'+(prefs.lang==='ko')+'">한국어</button>'+
     '<button id="langEn" aria-pressed="'+(prefs.lang==='en')+'">English</button></div></div></div>'+
     '<div class="buttons"><button id="optionsBack" class="primary">'+tr('완료','Done')+'</button></div>');
   for(const key of ['music','fx'])$(key).oninput=e=>saveAudioPreference(key,e.target.value);
   bindCombatMusicOption();
+  bindDamageNumbersOption();
   $('langKo').onclick=()=>{prefs.lang='ko';store.set('or-settings',prefs);openStartOptions();};
   $('langEn').onclick=()=>{prefs.lang='en';store.set('or-settings',prefs);openStartOptions();};
   $('optionsBack').onclick=hangar;
@@ -1107,9 +1120,10 @@ function pause(){
   previousMode=mode;mode='pause';keys.clear();pointer=null;
   screen('일시정지','<div class="build-layout">'+shipStats()+'<div class="build-content"><div class="options"><label>음악 볼륨<input id="music" type="range" min="0" max="100" value="'+prefs.music+
     '"></label><label>효과음 볼륨<input id="fx" type="range" min="0" max="100" value="'+prefs.fx+
-    '"></label>'+combatMusicOption()+'</div><div class="buttons"><button id="continue" class="primary">계속하기</button><button id="leaveRun">그만하기</button></div></div></div>');
+    '"></label>'+combatMusicOption()+damageNumbersOption()+'</div><div class="buttons"><button id="continue" class="primary">계속하기</button><button id="leaveRun">그만하기</button></div></div></div>');
   for(const key of ['music','fx'])$(key).oninput=e=>saveAudioPreference(key,e.target.value);
   bindCombatMusicOption();
+  bindDamageNumbersOption();
   controls({continue:pause,leaveRun:()=>{
     screen('이번 전투를 그만할까요?','<p>이번 전투의 진행이 끝납니다.</p><div class="buttons"><button id="confirmQuit">그만하기</button><button id="backRun">계속하기</button></div>');
     controls({confirmQuit:()=>{best=Math.max(best,run.score);store.set('or-best',best);store.clear('or-save');hangar();},backRun:pause});
@@ -1186,7 +1200,7 @@ function fitArena(){
   const ratio=width/W;W=width;canvas.width=width;
   if(!world)return;
   world.x=clamp(world.x*ratio,16,W-16);
-  for(const group of [world.targets,world.shots,world.hostile,world.gems,world.drops,world.sparks,world.blasts]){
+  for(const group of [world.targets,world.shots,world.hostile,world.gems,world.drops,world.sparks,world.blasts,world.damageNumbers]){
     for(const entity of group)entity.x*=ratio;
   }
   for(const beam of world.beams){
@@ -1246,8 +1260,8 @@ function nearest(x,y,limit=Infinity){
   }
   return best;
 }
-function projectile(x,y,angle,speed,power,kind,seek=false){
-  world.shots.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,power,kind,seek,life:2.2});
+function projectile(x,y,angle,speed,power,kind,seek=false,critical=false){
+  world.shots.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,power,kind,seek,critical,life:2.2});
 }
 function beamHits(beam,t,radius){
   let px=beam.x,py=beam.y;
@@ -1264,6 +1278,47 @@ function beamHits(beam,t,radius){
   return false;
 }
 const CRITICAL_MULTIPLIER=1.7;
+const DAMAGE_NUMBER_MS=720;
+function showDamageNumber(target,amount,critical=false,incoming=false){
+  if(prefs.damageNumbers===false||amount<=0)return;
+  const numbers=world.damageNumbers;
+  if(numbers.length>=100)numbers.shift();
+  const offset=(numbers.length%5-2)*8;
+  numbers.push({x:target.x+offset,y:target.y-(target.r??14)-6,amount,critical,incoming,start:last});
+}
+function damageTarget(target,amount,critical=false){
+  if(target.hp>0)showDamageNumber(target,amount,critical);
+  target.hp-=amount;
+}
+function weaponCritical(){
+  return Math.random()<Math.min(.75,run.crit);
+}
+function damageWithWeapon(target,damage){
+  const critical=weaponCritical();
+  damageTarget(target,damage*(critical?CRITICAL_MULTIPLIER:1),critical);
+}
+function paintDamageNumbers(){
+  if(!world.damageNumbers.length)return;
+  world.damageNumbers=world.damageNumbers.filter(number=>last-number.start<DAMAGE_NUMBER_MS);
+  ctx.save();
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.strokeStyle='#08101b';
+  ctx.lineJoin='round';
+  ctx.lineWidth=3;
+  for(const number of world.damageNumbers){
+    const progress=clamp((last-number.start)/DAMAGE_NUMBER_MS,0,1);
+    ctx.globalAlpha=Math.min(1,(1-progress)*2.5);
+    ctx.font=number.critical?'900 25px system-ui':'700 15px system-ui';
+    ctx.fillStyle=number.critical?'#ffe45c':number.incoming?'#ff8e92':'#f4f9ff';
+    const amount=Math.max(1,Math.round(number.amount));
+    const label=number.incoming?'-'+amount:String(amount);
+    const x=clamp(number.x,32,W-32),y=clamp(number.y-progress*35,13,H-13);
+    ctx.strokeText(label,x,y);
+    ctx.fillText(label,x,y);
+  }
+  ctx.restore();
+}
 function weaponHit(slot){
   const {id,rank,mastered,prestige}=slot;
   const base=id===3?5.2+run.laser*.32:id===2?12+run.laser:id<2?19+run.missile:(id===5?5.5:9)+run.bullet;
@@ -1291,7 +1346,7 @@ function fire(slot=inventory()[0]){
     beam.life=.14;beam.x=noseX;beam.y=noseY;beam.maxWidth=10+tier*4+Math.min(12,slot.prestige*1.5);
     beam.target=lock;
     if(beam.target){
-      beam.target.hp-=damage*(Math.random()<Math.min(.75,run.crit)?CRITICAL_MULTIPLIER:1);
+      damageWithWeapon(beam.target,damage);
     }
     sound(310,.06,.14);
     return weaponInterval(slot);
@@ -1306,7 +1361,7 @@ function fire(slot=inventory()[0]){
       if(!hits.length&&!world.targets.some(t=>t.hp>0&&Math.hypot(t.x-x,t.y-y)<310))continue;
       world.beams.push(beam);
       for(const t of hits)
-        t.hp-=damage*(Math.random()<Math.min(.75,run.crit)?CRITICAL_MULTIPLIER:1);
+        damageWithWeapon(t,damage);
     }
     sound(250,.16,.4);
     return weaponInterval(slot);
@@ -1315,7 +1370,8 @@ function fire(slot=inventory()[0]){
   for(let i=0;i<count;i++){
     const offset=i-(count-1)/2;
     const lane=spread?0:offset*9;
-    projectile(noseX-fy*lane,noseY+fx*lane,base+offset*(spread?.16:.045),missile?430:650,damage*(Math.random()<Math.min(.75,run.crit)?CRITICAL_MULTIPLIER:1),missile?'missile':'bullet',id===1);
+    const critical=weaponCritical();
+    projectile(noseX-fy*lane,noseY+fx*lane,base+offset*(spread?.16:.045),missile?430:650,damage*(critical?CRITICAL_MULTIPLIER:1),missile?'missile':'bullet',id===1,critical);
   }
   sound(missile?170:420,.07,.24);
   return weaponInterval(slot);
@@ -1399,14 +1455,16 @@ function hostile(t,angle,speed){
 function hurt(damage){
   if(world.inv>0)return;
   const absorbed=Math.min(run.shield,damage);
-  run.shield-=absorbed;run.hp-=Math.max(0,damage-absorbed-run.armor);
+  const hullLoss=Math.max(0,damage-absorbed-run.armor);
+  showDamageNumber(world,absorbed+Math.min(Math.max(run.hp,0),hullLoss),false,true);
+  run.shield-=absorbed;run.hp-=hullLoss;
   world.shieldDelay=3;world.inv=.38;
   if(run.support[0]&&absorbed>0){
     run.charge+=absorbed;
     if(run.charge>=30){
       run.charge=0;world.flash=.42;
       const r=(100+run.support[0]*27)*(1+run.area);
-      for(const t of world.targets)if(near(t,world,r))t.hp-=t.boss?120:t.max;
+      for(const t of world.targets)if(near(t,world,r))damageTarget(t,t.boss?120:t.max);
       world.hostile=world.hostile.filter(p=>!near(p,world,r));
     }
   }
@@ -1440,7 +1498,7 @@ function collect(type){
   if(type==='magnet')world.magnet=3;
   else if(type==='purge'){
     world.hostile=[];world.flash=.35;
-    for(const t of world.targets)t.hp-=t.boss?100:t.max;
+    for(const t of world.targets)damageTarget(t,t.boss?100:t.max);
   }else if(type==='loyalty'){permanent=true;store.set('or-discount',true);}
   else if(type==='sale')run.coupons.sale=true;
   else run.coupons[type]++;
@@ -1639,9 +1697,9 @@ function step(dt){
     s.x+=s.vx*dt;s.y+=s.vy*dt;s.life-=dt;
     const hit=world.targets.find(t=>t.hp>0&&near(t,s,t.r+5));
     if(hit){
-      hit.hp-=s.power;s.life=0;
+      damageTarget(hit,s.power,s.critical);s.life=0;
       if(s.kind==='missile'&&run.rank>=2)
-        for(const t of world.targets)if(t!==hit&&near(t,hit,(32+run.rank*4)*(1+run.area)))t.hp-=s.power*.55;
+        for(const t of world.targets)if(t!==hit&&near(t,hit,(32+run.rank*4)*(1+run.area)))damageTarget(t,s.power*.55,s.critical);
     }
   }
   world.shots=world.shots.filter(s=>s.life>0&&s.x>-30&&s.x<W+30&&s.y>-35&&s.y<H+35);
@@ -1937,6 +1995,7 @@ function paint(){
     ctx.restore();
   }
   if(world.inv<=0||Math.floor(last/55)%2===0)ship(world.x,world.y,1,false,run.rank,world.angle,run.hull??0);
+  paintDamageNumbers();
   if(mode==='boss-warning'){
     const elapsed=3.2-world.bossWarning,pulse=.82+.18*Math.sin(elapsed*18),appear=clamp(elapsed/.35,0,1),fade=clamp(world.bossWarning/.4,0,1);
     ctx.save();ctx.globalAlpha=.20*pulse*appear*fade;ctx.fillStyle='#ff1828';ctx.fillRect(0,0,W,H);
