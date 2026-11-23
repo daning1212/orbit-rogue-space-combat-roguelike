@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.38 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.39 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -398,12 +398,12 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
     <option value="repeat">한 곡 반복</option>
   </select>
 </section>
-<audio id="combatOst" src="orbit%20robgue%20bgm.mp3" preload="metadata"></audio>
+<audio id="combatOst" src="music/01.mp3" preload="metadata"></audio>
 <audio id="bossOst1" src="orbit-rogue-boss-01.mp3" preload="metadata" loop></audio>
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <audio id="warningAudio" src="orbit-rogue-warning.mp3" preload="auto"></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.38 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer>v0.2.39 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -525,7 +525,43 @@ const joystick=$('joystick'),knob=$('stickKnob'),stickToggle=$('stickToggle');
 const throttle=$('throttle'),touchDash=$('touchDash');
 const combatOst=$('combatOst');
 const combatTracks={
-  battle:{file:'orbit%20robgue%20bgm.mp3',ko:'기존 전투 BGM',en:'Original Battle BGM'},
+  "track-01":{file:"music/01.mp3",ko:"검은리본",en:"검은리본"},
+  "track-02":{file:"music/02.mp3",ko:"고장 난 천국",en:"고장 난 천국"},
+  "track-03":{file:"music/03.mp3",ko:"네온사탕",en:"네온사탕"},
+  "track-04":{file:"music/04.mp3",ko:"달빛엔진",en:"달빛엔진"},
+  "track-05":{file:"music/05.mp3",ko:"로그아웃",en:"로그아웃"},
+  "track-06":{file:"music/06.mp3",ko:"발간운동화",en:"발간운동화"},
+  "track-07":{file:"music/07.mp3",ko:"번개맛소다",en:"번개맛소다"},
+  "track-08":{file:"music/08.mp3",ko:"별을 씹는 아이",en:"별을 씹는 아이"},
+  "track-09":{file:"music/09.mp3",ko:"불꽃도둑",en:"불꽃도둑"},
+  "track-10":{file:"music/10.mp3",ko:"심장이두개",en:"심장이두개"},
+  "track-11":{file:"music/11.mp3",ko:"夜明けの 残像",en:"夜明けの 残像"},
+  "track-12":{file:"music/12.mp3",ko:"逆転ロケット",en:"逆転ロケット"},
+  "track-13":{file:"music/13.mp3",ko:"電光キャンディ",en:"電光キャンディ"},
+  "track-14":{file:"music/14.mp3",ko:"止まらない",en:"止まらない"},
+  "track-15":{file:"music/15.mp3",ko:"爆走プリンセス",en:"爆走プリンセス"},
+  "track-16":{file:"music/16.mp3",ko:"하얀 잔상",en:"하얀 잔상"},
+  "track-17":{file:"music/17.mp3",ko:"嘘の羽根",en:"嘘の羽根"},
+  "track-18":{file:"music/18.mp3",ko:"CRASH THE RAINBOW",en:"CRASH THE RAINBOW"},
+  "track-19":{file:"music/19.mp3",ko:"ELECTRIC WITCH",en:"ELECTRIC WITCH"},
+  "track-20":{file:"music/20.mp3",ko:"FINAL SPARK PARADE",en:"FINAL SPARK PARADE"},
+  "track-21":{file:"music/21.mp3",ko:"Flash! Bang!",en:"Flash! Bang!"},
+  "track-22":{file:"music/22.mp3",ko:"HYPER HEART ATTACK",en:"HYPER HEART ATTACK"},
+  "track-23":{file:"music/23.mp3",ko:"MIDNIGHT DETONATION",en:"MIDNIGHT DETONATION"},
+  "track-24":{file:"music/24.mp3",ko:"NEON REBELLION",en:"NEON REBELLION"},
+  "track-25":{file:"music/25.mp3",ko:"PINK THUNDER",en:"PINK THUNDER"},
+  "track-26":{file:"music/26.mp3",ko:"REDLINE KISS",en:"REDLINE KISS"},
+  "track-27":{file:"music/27.mp3",ko:"ROCKET HEART DISCO",en:"ROCKET HEART DISCO"},
+  "track-28":{file:"music/28.mp3",ko:"the trigger",en:"the trigger"},
+  "track-29":{file:"music/29.mp3",ko:"TURBO LOLLIPOP",en:"TURBO LOLLIPOP"},
+  "track-30":{file:"music/30.mp3",ko:"ZERO GRAVITY GIRL",en:"ZERO GRAVITY GIRL"},
+  "track-31":{file:"music/31.mp3",ko:"イナズマ・ルーレット",en:"イナズマ・ルーレット"},
+  "track-32":{file:"music/32.mp3",ko:"ギザギザ・ハートビート",en:"ギザギザ・ハートビート"},
+  "track-33":{file:"music/33.mp3",ko:"キラキラ反逆者",en:"キラキラ反逆者"},
+  "track-34":{file:"music/34.mp3",ko:"ドキドキ・マシンガン",en:"ドキドキ・マシンガン"},
+  "track-35":{file:"music/35.mp3",ko:"バチバチ・サマー",en:"バチバチ・サマー"},
+  "track-36":{file:"music/36.mp3",ko:"ピカピカ・パニック",en:"ピカピカ・パニック"},
+  "track-37":{file:"music/37.mp3",ko:"メロンソーダ戦争",en:"メロンソーダ戦争"},
   opening:{file:'orbit-rogue-main-ost.mp3',ko:'오프닝곡',en:'Opening Theme'},
 };
 const bgmPlayer=$('bgmPlayer'),bgmTrack=$('bgmTrack'),bgmOrder=$('bgmOrder'),bgmToggle=$('bgmToggle');
@@ -536,7 +572,7 @@ function bgmTitle(key){
   const number=numberedBgmKeys.indexOf(key);
   return number<0?title:String(number+1).padStart(2,'0')+' · '+title;
 }
-let combatTrack='battle', menuTrack='opening', combatPlayRequest=0;
+let combatTrack='track-01', menuTrack='opening', combatPlayRequest=0;
 let combatPlayPending=false,combatPlayFailed=false,bossPlayRequest=0,menuPlaying=false,combatMuted=false;
 const bossOsts=[$('bossOst1'),$('bossOst2')];
 const warningArt=$('warningArt'), warningAudio=$('warningAudio');
@@ -611,10 +647,10 @@ function previewingMusic(){
   return mode==='hangar'||mode==='settings';
 }
 function combatTrackKeys(){
-  return Object.keys(combatTracks).sort((a,b)=>combatTracks[a].ko.localeCompare(combatTracks[b].ko,'ko',{numeric:true}));
+  return Object.keys(combatTracks);
 }
 function trackForMode(){
-  return previewingMusic()?menuTrack:(Object.hasOwn(combatTracks,prefs.combatTrack)?prefs.combatTrack:'battle');
+  return previewingMusic()?menuTrack:(Object.hasOwn(combatTracks,prefs.combatTrack)?prefs.combatTrack:numberedBgmKeys[0]);
 }
 function playOrder(){
   return ['sequence','random','repeat'].includes(prefs.bgmOrder)?prefs.bgmOrder:'sequence';
@@ -629,11 +665,11 @@ function changeBgmTrack(key){
   syncCombatOst();
 }
 function skipBgm(direction,automatic=false){
-  const tracks=combatTrackKeys(),current=trackForMode();
+  const tracks=numberedBgmKeys,current=trackForMode();
   const order=playOrder(),index=tracks.indexOf(current);
   const next=automatic&&order==='repeat'?current:
     direction>0&&order==='random'&&tracks.length>1?pick(tracks.filter(track=>track!==current)):
-    tracks[(index+direction+tracks.length)%tracks.length];
+    tracks[index<0?(direction>0?0:tracks.length-1):(index+direction+tracks.length)%tracks.length];
   if(next===current)combatOst.currentTime=0;
   changeBgmTrack(next);
 }
@@ -1322,7 +1358,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.38',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.39',896,587);
   return card;
 }
 function downloadProof(){
