@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.39 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.40 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -343,19 +343,22 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 @media(max-width:620px){.shop-toolbar{gap:4px}.shop-toolbar-actions button{font-size:.68rem;padding:4px 5px}}
 </style>
 <style>
-.bgm-player{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:8px 0;padding:7px;
+.bgm-player{display:flex;align-items:center;gap:6px;margin:8px 0;padding:7px;
   border:1px solid #2f546e;border-radius:7px;background:#101b2b}
 .bgm-player[hidden]{display:none}
 .bgm-player button,.bgm-player select{min-height:36px;padding:5px 8px;color:#e5f7ff;background:#182c41;
   border:1px solid #466783;border-radius:5px;font:600 12px system-ui,sans-serif}
 .bgm-player button{text-align:center;min-width:34px}
-.bgm-song{flex:1;min-width:75px}
+.bgm-song{flex:1;min-width:0}
+#bgmVolume{width:clamp(42px,12vw,88px);margin:0;accent-color:#7de6ff;cursor:pointer}
+.bgm-player #bgmPrevious,.bgm-player #bgmNext{font-size:20px;line-height:1}
+@media(max-width:390px){.bgm-player{gap:3px;padding-inline:4px}.bgm-player button,.bgm-player select{padding-inline:4px}.bgm-player button{min-width:27px}}
 #bgmTrack{width:100%;min-width:0}
-@media(max-width:390px){.bgm-player:not(.in-combat) .bgm-song{order:1;flex-basis:100%}}
 .bgm-marquee{display:none}
 .bgm-player.in-combat{flex-wrap:nowrap;margin:4px 0;padding:2px 4px;gap:3px}
 .bgm-player.in-combat button,.bgm-player.in-combat select{min-height:26px;padding:2px 5px;font-size:11px}
 .bgm-player.in-combat button{min-width:27px}
+.bgm-player.in-combat #bgmVolume{width:clamp(36px,10vw,72px)}
 .bgm-player.in-combat .bgm-song{position:relative;flex:1;min-width:35px}
 .bgm-player.in-combat #bgmTrack{position:absolute;inset:0;width:100%;min-width:0;opacity:0;cursor:pointer}
 .bgm-player.in-combat .bgm-song:focus-within{outline:2px solid #7de6ff;border-radius:4px}
@@ -385,25 +388,26 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <section class="panel" id="panel"><div class="box" id="box"></div></section>
 </div>
 <section id="bgmPlayer" class="bgm-player" aria-label="BGM" hidden>
-  <button id="bgmPrevious" type="button" aria-label="이전 곡">⏮</button>
   <button id="bgmToggle" type="button" aria-label="재생">▶</button>
-  <button id="bgmNext" type="button" aria-label="다음 곡">⏭</button>
+  <button id="bgmPrevious" type="button" aria-label="이전 곡">‹</button>
   <div class="bgm-song">
     <div class="bgm-marquee" aria-hidden="true"><span class="bgm-marquee-loop"><span></span><span></span></span></div>
-    <select id="bgmTrack" aria-label="곡 제목"></select>
+    <select id="bgmTrack" size="5" aria-label="곡 목록"></select>
   </div>
+  <button id="bgmNext" type="button" aria-label="다음 곡">›</button>
   <select id="bgmOrder" aria-label="재생 방식">
     <option value="sequence">순서대로</option>
     <option value="random">랜덤</option>
     <option value="repeat">한 곡 반복</option>
   </select>
+  <input id="bgmVolume" type="range" min="0" max="100" aria-label="음악 볼륨" title="음악 볼륨">
 </section>
 <audio id="combatOst" src="music/01.mp3" preload="metadata"></audio>
 <audio id="bossOst1" src="orbit-rogue-boss-01.mp3" preload="metadata" loop></audio>
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <audio id="warningAudio" src="orbit-rogue-warning.mp3" preload="auto"></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.39 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer>v0.2.40 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -564,7 +568,7 @@ const combatTracks={
   "track-37":{file:"music/37.mp3",ko:"メロンソーダ戦争",en:"メロンソーダ戦争"},
   opening:{file:'orbit-rogue-main-ost.mp3',ko:'오프닝곡',en:'Opening Theme'},
 };
-const bgmPlayer=$('bgmPlayer'),bgmTrack=$('bgmTrack'),bgmOrder=$('bgmOrder'),bgmToggle=$('bgmToggle');
+const bgmPlayer=$('bgmPlayer'),bgmTrack=$('bgmTrack'),bgmOrder=$('bgmOrder'),bgmToggle=$('bgmToggle'),bgmVolume=$('bgmVolume');
 const bgmTitleCopies=bgmPlayer.querySelectorAll('.bgm-marquee-loop span');
 const numberedBgmKeys=combatTrackKeys().filter(key=>key!=='opening');
 function bgmTitle(key){
@@ -653,7 +657,7 @@ function trackForMode(){
   return previewingMusic()?menuTrack:(Object.hasOwn(combatTracks,prefs.combatTrack)?prefs.combatTrack:numberedBgmKeys[0]);
 }
 function playOrder(){
-  return ['sequence','random','repeat'].includes(prefs.bgmOrder)?prefs.bgmOrder:'sequence';
+  return ['sequence','random','repeat'].includes(prefs.bgmOrder)?prefs.bgmOrder:'random';
 }
 function musicShouldPlay(){
   return prefs.music>0&&(mode==='combat'&&!combatMuted||previewingMusic()&&menuPlaying);
@@ -668,7 +672,7 @@ function skipBgm(direction,automatic=false){
   const tracks=numberedBgmKeys,current=trackForMode();
   const order=playOrder(),index=tracks.indexOf(current);
   const next=automatic&&order==='repeat'?current:
-    direction>0&&order==='random'&&tracks.length>1?pick(tracks.filter(track=>track!==current)):
+    automatic&&order==='random'&&tracks.length>1?pick(tracks.filter(track=>track!==current)):
     tracks[index<0?(direction>0?0:tracks.length-1):(index+direction+tracks.length)%tracks.length];
   if(next===current)combatOst.currentTime=0;
   changeBgmTrack(next);
@@ -679,6 +683,9 @@ function updateBgmPlayer(){
   bgmPlayer.classList.toggle('in-combat',mode==='combat');
   if(bgmPlayer.hidden)return;
   const key=trackForMode(), order=playOrder();
+  const listSize=menu?5:1;
+  if(bgmTrack.size!==listSize)bgmTrack.size=listSize;
+  if(Number(bgmVolume.value)!==prefs.music)bgmVolume.value=prefs.music;
   if(bgmTrack.value!==key)bgmTrack.value=key;
   if(bgmOrder.value!==order)bgmOrder.value=order;
   const playing=menu?menuPlaying:!combatMuted;
@@ -728,11 +735,20 @@ function syncCombatOst(){
   }
 }
 function fillBgmPlayer(){
-  bgmTrack.replaceChildren(...combatTrackKeys().map(key=>new Option(bgmTitle(key),key)));
+  bgmTrack.replaceChildren(...['opening',...numberedBgmKeys].map(key=>new Option(bgmTitle(key),key)));
+  for(const [id,label] of [
+    ['bgmPrevious',tr('이전 곡','Previous track')],
+    ['bgmNext',tr('다음 곡','Next track')],
+    ['bgmVolume',tr('음악 볼륨','Music volume')]
+  ]){
+    $(id).setAttribute('aria-label',label);
+    $(id).title=label;
+  }
   const labels=[tr('순서대로','In order'),tr('랜덤','Random'),tr('한 곡 반복','Repeat one')];
   labels.forEach((label,i)=>{bgmOrder.options[i].textContent=label;});
   updateBgmPlayer();
 }
+bgmVolume.oninput=()=>saveAudioPreference('music',bgmVolume.value);
 bgmTrack.onchange=()=>changeBgmTrack(bgmTrack.value);
 bgmOrder.onchange=()=>{prefs.bgmOrder=bgmOrder.value;store.set('or-settings',prefs);};
 $('bgmPrevious').onclick=()=>skipBgm(-1);
@@ -767,6 +783,9 @@ function playMusic(now){
 function saveAudioPreference(key,value){
   prefs[key]=Number(value);store.set('or-settings',prefs);
   if(key==='music'){
+    const optionsVolume=$('music');
+    if(optionsVolume)optionsVolume.value=prefs.music;
+    bgmVolume.value=prefs.music;
     combatOst.volume=prefs.music/100;
     syncCombatOst();
     if(activeBossOst&&!activeBossOst.paused)activeBossOst.volume=prefs.music/100;
@@ -912,6 +931,8 @@ function resetWorld(){
 }
 function start(index,hull=starterHull,level=chosenDifficulty){
   combatMuted=false;
+  prefs.combatTrack=pick(numberedBgmKeys.filter(key=>key!==prefs.combatTrack));
+  store.set('or-settings',prefs);
   chosenDifficulty=Number.isInteger(level)?clamp(level,0,unlockedDifficulty()):0;
   const available=availableStarters();
   if(!available.includes(index))index=available[0];
@@ -1358,7 +1379,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.39',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.40',896,587);
   return card;
 }
 function downloadProof(){
