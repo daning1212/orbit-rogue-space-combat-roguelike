@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.29 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.30 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -358,7 +358,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <audio id="bossOst1" src="orbit-rogue-boss-01.mp3" preload="metadata" loop></audio>
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.29 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer>v0.2.30 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -1175,7 +1175,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.29',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.30',896,587);
   return card;
 }
 function downloadProof(){
@@ -1538,10 +1538,10 @@ function fireEnemy(target,aim,speed,profile){
   }
   return rng(profile.delay*.8,profile.delay*1.35)*cooldown;
 }
-function spawnTarget(rock=false,along=null,shift=0,pressure=wavePressure(run.time),side=world.entry%4){
+function spawnTarget(rock=false,along=null,shift=0,pressure=wavePressure(run.time),side=world.entry%4,artillery=false){
   const stage=run.stage, roll=Math.random(), fireProfile=enemyFireProfile(stage,pressure);
-  const armed=!rock&&Math.random()<fireProfile.chance;
-  const variant=rock?Math.floor(rng(0,4)):
+  const armed=!rock&&(artillery||Math.random()<fireProfile.chance);
+  const variant=rock?Math.floor(rng(0,4)):artillery?'fanfire':
     stage>=6&&roll<.10+pressure*.05?'warden':
     (stage>=3||pressure>=2)&&roll<.35+pressure*.08?'fanfire':'raider';
   const r=rock?rng(16,34):variant==='raider'?rng(14,17):rng(21,24);
@@ -1559,9 +1559,69 @@ function spawnTarget(rock=false,along=null,shift=0,pressure=wavePressure(run.tim
   const drift=rock?rng(-.52,.52):0;
   const heading=angle+drift;
   const design=rock?-1:((stage-1)*3+world.enemyDesignIndex[variant]++)%enemyLoadouts[variant].length;
-  world.targets.push({x,y,r,hp,max:hp,rock,speed,angle,variant,design,life:42,armed,fire:rng(fireProfile.delay*.7,fireProfile.delay*1.3),
+  world.targets.push({x,y,r,hp,max:hp,rock,speed,angle,variant,design,life:42,armed,artillery,fire:artillery?.65:rng(fireProfile.delay*.7,fireProfile.delay*1.3),
     vx:rock?Math.cos(heading)*speed:0,vy:rock?Math.sin(heading)*speed:0,
     rotation:rock?rng(0,Math.PI*2):0,spin:rock?rng(-.75,.75):0});
+}
+const ARTILLERY_SPREAD=[-.45,-.23,0,.23,.45];
+function spawnArtillery(pressure){
+  const side=Math.floor(rng(0,4)), vertical=side===0||side===2, length=vertical?W:H;
+  const count=run.stage>=8?3:2, gap=Math.min(66,length/(count+2));
+  const center=rng(length*.33,length*.67);
+  for(let i=0;i<count;i++){
+    spawnTarget(false,center+(i-(count-1)/2)*gap,Math.abs(i-(count-1)/2)*8,pressure,side,true);
+  }
+  world.notice=tr('포격기 편대 접근','ARTILLERY SQUADRON INBOUND');world.noticeFor=2;
+  sound(590,.12,.35);
+}
+function artilleryStep(target,dt){
+  if(target.x<=0||target.x>=W||target.y<=0||target.y>=H)return;
+  target.fire-=dt;
+  if(target.fire>0)return;
+  if(target.chargeAngle===undefined){
+    target.chargeAngle=Math.atan2(world.y-target.y,world.x-target.x);
+    target.fire=.86;
+    sound(375,.12,.25);
+    return;
+  }
+  for(const offset of ARTILLERY_SPREAD)hostile(target,target.chargeAngle+offset,148+run.stage*3,'bolt');
+  target.chargeAngle=undefined;
+  target.fire=2.4;
+  sound(168,.11,.35);
+}
+function rockClearance(px,py,x,y,rock,radius){
+  const dx=x-px,dy=y-py,wx=px-rock.x,wy=py-rock.y;
+  const rr=(rock.r+radius)**2;
+  const c=wx*wx+wy*wy-rr;
+  if(c<=0)return 0;
+  const a=dx*dx+dy*dy;
+  if(!a)return Infinity;
+  const b=wx*dx+wy*dy;
+  const d=b*b-a*c;
+  if(d<0)return Infinity;
+  const hit=(-b-Math.sqrt(d))/a;
+  return hit>=0&&hit<=1?hit:Infinity;
+}
+function moveEnemy(target,dt,rocks){
+  const goal=Math.atan2(world.y-target.y,world.x-target.x);
+  const distance=Math.hypot(world.x-target.x,world.y-target.y);
+  const charging=target.chargeAngle!==undefined;
+  const heading=charging?target.chargeAngle:goal;
+  const pace=target.artillery&&(charging||distance<170)?.34:1;
+  const travel=target.speed*dt*pace;
+  for(const offset of [0,.72,-.72,1.35,-1.35,1.95,-1.95]){
+    const angle=goal+offset;
+    const x=target.x+Math.cos(angle)*travel,y=target.y+Math.sin(angle)*travel;
+    const obstructed=rocks.some(rock=>{
+      const hit=rockClearance(target.x,target.y,x,y,rock,target.r);
+      return hit>0?Number.isFinite(hit):Math.hypot(x-rock.x,y-rock.y)<=Math.hypot(target.x-rock.x,target.y-rock.y);
+    });
+    if(!obstructed){
+      target.x=x;target.y=y;target.angle=charging?heading:angle;
+      return;
+    }
+  }
+  target.angle=heading;
 }
 function spawnWave(pressure){
   const side=world.entry++%4, vertical=side===0||side===2;
@@ -1576,6 +1636,13 @@ function spawnWave(pressure){
     spawnTarget(false,origin+i*gap,shift,pressure,side);
   }
   if(world.targets.length<tuning.cap&&Math.random()<.30)spawnTarget(true);
+  if(run.stage>=3&&world.targets.length<=tuning.cap-3&&!world.artilleryWave){
+    const elapsed=waveDuration(run.stage)-run.time;
+    if(elapsed>=(world.artilleryAt??=rng(8,16))){
+      world.artilleryWave=true;
+      if(run.stage===3||Math.random()<.55)spawnArtillery(pressure);
+    }
+  }
   return [1.25,1.55,1.65,1.72,1.68][pressure]*tuning.spawn/(1+(run.stage-1)*.019);
 }
 function explode(t){
@@ -1833,6 +1900,7 @@ function moveShip(dt){
   else run.dash=Math.min(1,run.dash+dt/DASH_FILL_TIME);
 }
 function stepHazards(dt){
+  const rocks=world.targets.filter(t=>t.rock&&t.hp>0);
   world.hostile=world.hostile.filter(p=>{
     const rounds=enemyOrdnance[p.kind];
     if(rounds?.turn){
@@ -1842,8 +1910,14 @@ function stepHazards(dt){
       const speed=Math.hypot(p.vx,p.vy);
       p.vx=Math.cos(next)*speed;p.vy=Math.sin(next)*speed;
     }
-    p.x+=p.vx*dt;p.y+=p.vy*dt;
-    if(near(p,world,9+(rounds?.r??4))){hurt((11+run.stage*.5)*(rounds?.power??1));return false;}
+    const x=p.x+p.vx*dt,y=p.y+p.vy*dt,radius=rounds?.r??4;
+    const playerHit=rockClearance(p.x,p.y,x,y,{x:world.x,y:world.y,r:9},radius);
+    if(rocks.some(rock=>{
+      const hit=rockClearance(p.x,p.y,x,y,rock,radius);
+      return Number.isFinite(hit)&&hit<=playerHit;
+    }))return false;
+    p.x=x;p.y=y;
+    if(Number.isFinite(playerHit)){hurt((11+run.stage*.5)*(rounds?.power??1));return false;}
     return (p.life-=dt)>0&&p.x>-25&&p.x<W+25&&p.y>-25&&p.y<H+25;
   });
   world.zones=world.zones.filter(z=>{
@@ -1916,16 +1990,15 @@ function step(dt){
     }
     world.drone=.68;
   }
+  const rocks=world.targets.filter(t=>t.rock&&t.hp>0);
   for(const t of world.targets){
     if(t.boss||t.hp<=0)continue;
     t.life-=dt;
     if(t.rock){
       t.x+=t.vx*dt;t.y+=t.vy*dt;t.rotation+=t.spin*dt;
-    }else{
-      t.angle=Math.atan2(world.y-t.y,world.x-t.x);
-      t.x+=Math.cos(t.angle)*t.speed*dt;t.y+=Math.sin(t.angle)*t.speed*dt;
-    }
-    if(t.armed){
+    }else moveEnemy(t,dt,rocks);
+    if(t.artillery)artilleryStep(t,dt);
+    else if(t.armed){
       t.fire-=dt;
       if(t.fire<0&&t.x>0&&t.x<W&&t.y>0&&t.y<H){
         const aim=Math.atan2(world.y-t.y,world.x-t.x), speed=116+run.stage*7;
@@ -2147,11 +2220,24 @@ function paint(){
   for(const t of world.targets){
     if(t.boss){drawBoss(t);continue;}
     if(!t.rock){
+      if(t.chargeAngle!==undefined){
+        ctx.save();ctx.translate(t.x,t.y);ctx.rotate(t.chargeAngle);
+        ctx.strokeStyle='#ffbf78aa';ctx.lineWidth=1.5;ctx.setLineDash([7,6]);
+        for(const offset of [-.45,.45]){
+          ctx.beginPath();ctx.moveTo(0,0);
+          ctx.lineTo(Math.cos(offset)*185,Math.sin(offset)*185);ctx.stroke();
+        }
+        ctx.restore();
+      }
       ctx.save();ctx.translate(t.x,t.y);ctx.rotate(t.angle+Math.PI/2);
       let painted=drawArt(enemySpriteName(t.variant,t.design),0,0,t.r*2.6,t.r*2.6);
       if(!painted){
         ctx.rotate(Math.PI);
         painted=drawArt(t.variant,0,0,t.r*2.7,t.r*2.7);
+      }
+      if(t.artillery){
+        ctx.fillStyle=t.chargeAngle===undefined?'#b48655':'#fff09b';
+        ctx.fillRect(-t.r*.56,-7,4,10);ctx.fillRect(t.r*.56-4,-7,4,10);
       }
       ctx.restore();
       if(!painted)ship(t.x,t.y,.75,true,0,t.angle);
