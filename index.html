@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.32 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.33 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -358,7 +358,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <audio id="bossOst1" src="orbit-rogue-boss-01.mp3" preload="metadata" loop></audio>
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.32 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer>v0.2.33 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -1175,7 +1175,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.32',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.33',896,587);
   return card;
 }
 function downloadProof(){
@@ -2184,6 +2184,33 @@ function drawBoss(t){
   ctx.shadowBlur=0;ctx.fillStyle=final?'#0c0521':'#f1742e';ctx.fill();
   ctx.restore();
 }
+function paintBossHealth(){
+  if(!boss)return;
+  const team=world.vulcanTeam;
+  const units=team??[boss];
+  if(!units.some(unit=>unit.hp>0))return;
+  const name=vulcanBosses[run.stage]?.name??(run.stage===10?'RIFT EXCAVATOR':'NULL CROWN');
+  const width=Math.min(480,W-36), x=(W-width)/2;
+  ctx.save();
+  ctx.textBaseline='middle';
+  ctx.font='700 12px system-ui,sans-serif';
+  units.forEach((unit,i)=>{
+    const y=8+i*27;
+    const health=Math.max(0,Math.ceil(unit.hp));
+    ctx.fillStyle='#0a1220e8';
+    ctx.fillRect(x-5,y,width+10,25);
+    ctx.fillStyle=health?'#fff1e3':'#98a8bb';
+    ctx.textAlign='left';
+    ctx.fillText(team?name+(i===0?' A':' B'):name,x,y+8,width*.59);
+    ctx.textAlign='right';
+    ctx.fillText(health.toLocaleString()+' / '+unit.max.toLocaleString(),x+width,y+8,width*.39);
+    ctx.fillStyle='#34213e';
+    ctx.fillRect(x,y+17,width,5);
+    ctx.fillStyle=run.stage===20?'#d987ff':'#ffa066';
+    ctx.fillRect(x,y+17,width*clamp(unit.hp/unit.max,0,1),5);
+  });
+  ctx.restore();
+}
 function paint(){
   ctx.fillStyle='#090f1d';ctx.fillRect(0,0,W,H);
   const sector=Math.min(3,Math.floor(((run?.stage??1)-1)/5));
@@ -2384,15 +2411,7 @@ function paint(){
     }
     ctx.strokeStyle='#ff273c';ctx.lineWidth=5;ctx.globalAlpha=.45*pulse*fade;ctx.strokeRect(8,8,W-16,H-16);ctx.restore();
   }
-  const bossUnits=boss?(world.vulcanTeam??[boss]):[];
-  const bossHealth=bossUnits.reduce((sum,unit)=>sum+Math.max(0,unit.hp),0);
-  if(bossHealth>0){
-    const bossMax=bossUnits.reduce((sum,unit)=>sum+unit.max,0);
-    const width=Math.min(500,W-42), x=(W-width)/2;
-    ctx.fillStyle='#361f49';ctx.fillRect(x,18,width,8);
-    ctx.fillStyle=run.stage===20?'#d987ff':'#ffa066';ctx.fillRect(x,18,width*bossHealth/bossMax,8);
-    ctx.fillStyle='#fff';ctx.fillText(vulcanBosses[run.stage]?.name??(run.stage===10?'RIFT EXCAVATOR':'NULL CROWN'),W/2,45);
-  }
+  paintBossHealth();
   if(world.noticeFor>0){
     ctx.fillStyle='#ffda92';ctx.fillText(world.notice,W/2,H-22);
   }
