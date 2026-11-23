@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.43 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.44 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -62,6 +62,10 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 .joystick::after{top:12%;bottom:12%;left:50%;width:1px}
 .joystick-knob{position:absolute;left:50%;top:50%;width:44%;height:44%;border-radius:50%;background:#121418;border:1px solid #9ea9b5;box-shadow:inset 0 0 8px #ffffff18;transform:translate(calc(-50% + var(--stick-x,0px)),calc(-50% + var(--stick-y,0px)));pointer-events:none;z-index:1}
 .panel{z-index:2}
+@media(min-width:681px) and (pointer:fine),(min-width:681px) and (min-height:781px){
+  main{width:min(1200px,100%,max(681px,calc((100dvh - 230px) * 16 / 9 + 48px)))}
+  #canvas{height:auto;min-height:0;aspect-ratio:16/9}
+}
 @media(max-width:680px),(pointer:coarse) and (max-height:780px){
   html,body{margin:0;overscroll-behavior:none}
   main{display:flex;flex-direction:column;height:100vh;height:100dvh;padding:7px 8px max(7px,env(safe-area-inset-bottom))}
@@ -103,10 +107,13 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 .dash-control{position:absolute;right:clamp(12px,3vw,28px);bottom:calc(clamp(12px,3vw,25px) + clamp(76px,22vw,98px) + 10px);z-index:1;width:clamp(59px,17vw,74px);aspect-ratio:1;border-radius:50%;border:1px solid #8a92aa;background:#121927ef;color:#e5e7ff;text-align:center;font-size:12px;font-weight:750;touch-action:none;user-select:none}
 .dash-control[hidden]{display:none}.dash-control:not(:disabled){border-color:#baabff;color:#e1d7ff;box-shadow:inset 0 0 16px #7a5bea70}
 @media(max-width:680px){.hud{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(pointer:coarse) and (orientation:portrait){
+  .dash-control{width:clamp(72px,21vw,86px);bottom:calc(clamp(12px,3vw,25px) + clamp(76px,22vw,98px) + 32px)}
+}
 @media(pointer:coarse) and (orientation:landscape){
   main{padding-left:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right))}
   .joystick{width:72px;bottom:9px}.throttle{width:60px;bottom:9px}
-  .dash-control{width:48px;bottom:77px;font-size:10px}
+  .dash-control{width:60px;bottom:91px;font-size:11px}
   .hud{grid-template-columns:auto auto repeat(4,minmax(35px,1fr)) auto auto;gap:8px}
   .hangar-preview{max-height:145px}
 }
@@ -419,14 +426,14 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <audio id="warningAudio" src="orbit-rogue-warning.mp3" preload="auto"></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.43 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer>v0.2.44 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
 const canvas = $('canvas'), ctx = canvas.getContext('2d');
+const H=640,DESKTOP_WIDTH=Math.round(H*16/9),MAX_STAGE=20;
 let W=960;
-const H=640,MAX_STAGE=20;
 const DASH_TIME=.32,DASH_FILL_TIME=8,DASH_KILL_CHARGE=.13;
 const REVERSE_RATE=Math.PI/.34;
 const artwork=Object.create(null);
@@ -1393,7 +1400,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.43',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.44',896,587);
   return card;
 }
 function downloadProof(){
@@ -1521,7 +1528,7 @@ stickToggle.onclick=()=>setStick(!stick.on);
 function fitArena(){
   const rect=canvas.getBoundingClientRect();
   if(!rect.width||!rect.height)return;
-  const width=mobileArena?.matches?clamp(Math.round(H*rect.width/rect.height),320,2400):960;
+  const width=mobileArena?.matches?clamp(Math.round(H*rect.width/rect.height),320,2400):DESKTOP_WIDTH;
   if(width===W)return;
   const ratio=width/W;W=width;canvas.width=width;
   if(!world)return;
