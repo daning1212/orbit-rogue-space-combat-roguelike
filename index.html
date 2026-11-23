@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.36 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.37 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -342,6 +342,16 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 .shop-toolbar-actions button{font-size:.77rem;padding:6px 8px;white-space:nowrap}
 @media(max-width:620px){.shop-toolbar{gap:4px}.shop-toolbar-actions button{font-size:.68rem;padding:4px 5px}}
 </style>
+<style>
+.bgm-player{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:8px 0;padding:7px;
+  border:1px solid #2f546e;border-radius:7px;background:#101b2b}
+.bgm-player[hidden]{display:none}
+.bgm-player button,.bgm-player select{min-height:36px;padding:5px 8px;color:#e5f7ff;background:#182c41;
+  border:1px solid #466783;border-radius:5px;font:600 12px system-ui,sans-serif}
+.bgm-player button{text-align:center;min-width:34px}
+#bgmTrack{flex:1;min-width:75px}
+@media(max-width:390px){#bgmTrack{order:1;flex-basis:100%}}
+</style>
 <style>.options select{color:#ecf6ff;background:#0b1929;border:1px solid #4a6980;border-radius:6px;padding:5px;max-width:100%;font:inherit}</style>
 <main>
 <header><div class="brand"><img class="header-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button></div></header>
@@ -353,13 +363,23 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <button id="touchDash" class="dash-control" type="button" aria-label="니트로 대시" hidden>대시</button>
 <section class="panel" id="panel"><div class="box" id="box"></div></section>
 </div>
-<audio id="combatOst" src="orbit%20robgue%20bgm.mp3" preload="metadata" loop></audio>
-<audio id="mainOst" src="orbit-rogue-main-ost.mp3" preload="metadata" loop></audio>
+<section id="bgmPlayer" class="bgm-player" aria-label="BGM" hidden>
+  <button id="bgmPrevious" type="button" aria-label="이전 곡">⏮</button>
+  <button id="bgmToggle" type="button" aria-label="재생">▶</button>
+  <button id="bgmNext" type="button" aria-label="다음 곡">⏭</button>
+  <select id="bgmTrack" aria-label="곡 제목"></select>
+  <select id="bgmOrder" aria-label="재생 방식">
+    <option value="sequence">순서대로</option>
+    <option value="random">랜덤</option>
+    <option value="repeat">한 곡 반복</option>
+  </select>
+</section>
+<audio id="combatOst" src="orbit%20robgue%20bgm.mp3" preload="metadata"></audio>
 <audio id="bossOst1" src="orbit-rogue-boss-01.mp3" preload="metadata" loop></audio>
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <audio id="warningAudio" src="orbit-rogue-warning.mp3" preload="auto"></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.36 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer>v0.2.37 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -479,18 +499,21 @@ const mobileArena=typeof matchMedia==='function'?matchMedia('(max-width:680px),(
 const coarsePointer=typeof matchMedia==='function'&&matchMedia('(pointer:coarse)').matches;
 const joystick=$('joystick'),knob=$('stickKnob'),stickToggle=$('stickToggle');
 const throttle=$('throttle'),touchDash=$('touchDash');
-const mainOst=$('mainOst');
 const combatOst=$('combatOst');
-const combatTracks={battle:'orbit%20robgue%20bgm.mp3',opening:'orbit-rogue-main-ost.mp3'};
-let combatTrack='battle',combatPlayRequest=0;
-let combatPlayPending=false, combatPlayFailed=false, bossPlayRequest=0;
+const combatTracks={
+  battle:{file:'orbit%20robgue%20bgm.mp3',ko:'기존 전투 BGM',en:'Original Battle BGM'},
+  opening:{file:'orbit-rogue-main-ost.mp3',ko:'오프닝곡',en:'Opening Theme'},
+};
+const bgmPlayer=$('bgmPlayer'),bgmTrack=$('bgmTrack'),bgmOrder=$('bgmOrder'),bgmToggle=$('bgmToggle');
+let combatTrack='battle', menuTrack='opening', combatPlayRequest=0;
+let combatPlayPending=false,combatPlayFailed=false,bossPlayRequest=0,menuPlaying=false,combatMuted=false;
 const bossOsts=[$('bossOst1'),$('bossOst2')];
 const warningArt=$('warningArt'), warningAudio=$('warningAudio');
 const WARNING_DURATION=4.3;
 const stick={on:coarsePointer||store.get('or-stick',false),id:null,x:0,y:0};
 let hangarHull=0, starterHull=0, mouseThrust=false, throttleId=null;
 let best=store.get('or-best',0), mode='hangar', run, world, boss, starter=4;
-let audio, musicAt=0, musicStep=0, musicPhase='',ostFade=null,bossFade=null,activeBossOst=null, pointer=null, last=0,lastClock=null,cards=[], stock=[], previousMode;
+let audio, musicAt=0, musicStep=0, musicPhase='',bossFade=null,activeBossOst=null, pointer=null, last=0,lastClock=null,cards=[], stock=[], previousMode;
 let permanent=!!store.get('or-discount',false);
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const rng=(a,b)=>a+Math.random()*(b-a);
@@ -553,33 +576,77 @@ const musicBars=[
 function musicTone(note,length,gain,wave='square'){
   sound(440*2**((note-69)/12),length,gain,true,wave);
 }
-function syncCombatOst(){
-  const shouldPlay=mode==='combat'&&prefs.music>0;
-  if(!shouldPlay){
-    if(!combatOst.paused)combatOst.pause();
-    if(!['combat','pause','level'].includes(mode)&&combatOst.currentTime)combatOst.currentTime=0;
-    return;
+function previewingMusic(){
+  return mode==='hangar'||mode==='settings';
+}
+function combatTrackKeys(){
+  return Object.keys(combatTracks).sort((a,b)=>combatTracks[a].ko.localeCompare(combatTracks[b].ko,'ko',{numeric:true}));
+}
+function trackForMode(){
+  return previewingMusic()?menuTrack:(Object.hasOwn(combatTracks,prefs.combatTrack)?prefs.combatTrack:'battle');
+}
+function playOrder(){
+  return ['sequence','random','repeat'].includes(prefs.bgmOrder)?prefs.bgmOrder:'sequence';
+}
+function musicShouldPlay(){
+  return prefs.music>0&&(mode==='combat'&&!combatMuted||previewingMusic()&&menuPlaying);
+}
+function changeBgmTrack(key){
+  if(!Object.hasOwn(combatTracks,key))return;
+  if(previewingMusic())menuTrack=key;
+  else{prefs.combatTrack=key;store.set('or-settings',prefs);}
+  syncCombatOst();
+}
+function skipBgm(direction,automatic=false){
+  const tracks=combatTrackKeys(),current=trackForMode();
+  const order=playOrder(),index=tracks.indexOf(current);
+  const next=automatic&&order==='repeat'?current:
+    direction>0&&order==='random'&&tracks.length>1?pick(tracks.filter(track=>track!==current)):
+    tracks[(index+direction+tracks.length)%tracks.length];
+  if(next===current)combatOst.currentTime=0;
+  changeBgmTrack(next);
+}
+function updateBgmPlayer(){
+  const menu=previewingMusic();
+  bgmPlayer.hidden=!(menu||mode==='combat');
+  if(bgmPlayer.hidden)return;
+  const key=trackForMode(), order=playOrder();
+  if(bgmTrack.value!==key)bgmTrack.value=key;
+  if(bgmOrder.value!==order)bgmOrder.value=order;
+  const playing=menu?menuPlaying:!combatMuted;
+  const label=playing?tr('일시정지','Pause music'):tr('재생','Play music');
+  if(bgmToggle.getAttribute('aria-label')!==label){
+    bgmToggle.setAttribute('aria-label',label);
+    bgmToggle.textContent=playing?'❚❚':'▶';
   }
-  const selected=prefs.combatTrack==='opening'?'opening':'battle';
+}
+function syncCombatOst(){
+  updateBgmPlayer();
+  const selected=trackForMode();
   if(selected!==combatTrack){
     combatTrack=selected;
     combatPlayRequest++;
     combatPlayPending=false;combatPlayFailed=false;
-    combatOst.pause();combatOst.src=combatTracks[selected];
+    combatOst.pause();combatOst.src=combatTracks[selected].file;
   }
-  combatOst.volume=prefs.music/100;
-  if(combatOst.paused&&!combatPlayPending&&!combatPlayFailed){
+  if(!musicShouldPlay()){
+    if(!combatOst.paused)combatOst.pause();
+    if(mode==='result'&&combatOst.currentTime)combatOst.currentTime=0;
+    return;
+  }
+  combatOst.volume=previewingMusic()?Math.min(.32,prefs.music/100*.48):prefs.music/100;
+  if(combatOst.paused&&!combatOst.ended&&!combatPlayPending&&!combatPlayFailed){
     const request=++combatPlayRequest;
     combatPlayPending=true;
     combatOst.play().then(()=>{
       if(request!==combatPlayRequest)return;
       combatPlayPending=false;
-      if(mode!=='combat'||!prefs.music)combatOst.pause();
+      if(!musicShouldPlay())combatOst.pause();
     }).catch(error=>{
       if(request!==combatPlayRequest)return;
       combatPlayPending=false;
-      if(mode!=='combat'||!prefs.music||error?.name==='AbortError')return;
-      const backup='https://raw.githubusercontent.com/daning1212/orbit-rogue-space-combat-roguelike/main/'+combatTracks[combatTrack];
+      if(!musicShouldPlay()||error?.name==='AbortError')return;
+      const backup='https://raw.githubusercontent.com/daning1212/orbit-rogue-space-combat-roguelike/main/'+combatTracks[combatTrack].file;
       if(error?.name!=='NotAllowedError'&&combatOst.getAttribute('src')!==backup){
         combatOst.src=backup;
         syncCombatOst();
@@ -587,9 +654,26 @@ function syncCombatOst(){
     });
   }
 }
+function fillBgmPlayer(){
+  bgmTrack.replaceChildren(...combatTrackKeys().map(key=>new Option(tr(combatTracks[key].ko,combatTracks[key].en),key)));
+  const labels=[tr('순서대로','In order'),tr('랜덤','Random'),tr('한 곡 반복','Repeat one')];
+  labels.forEach((label,i)=>{bgmOrder.options[i].textContent=label;});
+  updateBgmPlayer();
+}
+bgmTrack.onchange=()=>changeBgmTrack(bgmTrack.value);
+bgmOrder.onchange=()=>{prefs.bgmOrder=bgmOrder.value;store.set('or-settings',prefs);};
+$('bgmPrevious').onclick=()=>skipBgm(-1);
+$('bgmNext').onclick=()=>skipBgm(1);
+bgmToggle.onclick=()=>{
+  if(previewingMusic())menuPlaying=!menuPlaying;
+  else combatMuted=!combatMuted;
+  combatPlayFailed=false;
+  syncCombatOst();
+};
+combatOst.onended=()=>{if(musicShouldPlay())skipBgm(1,true);};
 function playMusic(now){
   syncCombatOst();
-  if(mode==='combat'&&!combatPlayFailed)return;
+  if(mode==='combat'&&(combatMuted||!combatPlayFailed))return;
   if(!flightActive()||!audio||audio.state!=='running'||!prefs.music)return;
   if(mode==='boss'&&activeBossOst&&!activeBossOst.paused)return;
   if(musicPhase!==mode){musicPhase=mode;musicStep=0;musicAt=now;}
@@ -607,45 +691,9 @@ function playMusic(now){
   if(note!==null)musicTone(note,beat%4===0?.18:.12,beat%4===0?.72:.57,'square');
   musicStep++;
 }
-function menuOstVolume(){return Math.min(.32,prefs.music/100*.48);}
-function updateOstButton(){
-  const button=$('ostToggle');
-  if(button)button.textContent=mainOst.paused?tr('♪ Main OST 듣기','♪ Play Main OST'):tr('Ⅱ OST 정지','Ⅱ Pause OST');
-}
-function fadeMainOst(target,duration=700,done){
-  clearInterval(ostFade);
-  const from=mainOst.volume,start=performance.now();
-  ostFade=setInterval(()=>{
-    const p=Math.min(1,(performance.now()-start)/duration);
-    mainOst.volume=from+(target-from)*p;
-    if(p>=1){clearInterval(ostFade);ostFade=null;if(done)done();}
-  },30);
-}
-let menuOstRequest=0;
-function stopMenuOst(){
-  menuOstRequest++;
-  clearInterval(ostFade);ostFade=null;
-  mainOst.pause();
-  if(mainOst.currentTime)mainOst.currentTime=0;
-  updateOstButton();
-}
-function startMenuOst(){
-  if(!prefs.music)return;
-  const target=menuOstVolume();
-  if(mainOst.paused){
-    const request=++menuOstRequest;
-    mainOst.volume=0;
-    mainOst.play().then(()=>{
-      if(request===menuOstRequest&&['hangar','settings'].includes(mode))fadeMainOst(target,900);
-    }).catch(()=>{});
-  }
-  else fadeMainOst(target,250);
-  updateOstButton();
-}
 function saveAudioPreference(key,value){
   prefs[key]=Number(value);store.set('or-settings',prefs);
   if(key==='music'){
-    if(!mainOst.paused)mainOst.volume=menuOstVolume();
     combatOst.volume=prefs.music/100;
     syncCombatOst();
     if(activeBossOst&&!activeBossOst.paused)activeBossOst.volume=prefs.music/100;
@@ -689,6 +737,7 @@ function stopBossOst(duration=650){
 }
 function stopBattleAudio(){
   stopWarningAudio();
+  menuPlaying=false;
   stopBossOst(0);
   combatPlayRequest++;
   combatPlayPending=false;
@@ -697,7 +746,6 @@ function stopBattleAudio(){
 document.addEventListener('pointerdown',()=>{
   const Audio=window.AudioContext||window.webkitAudioContext;
   if(Audio){audio ||= new Audio();audio.resume().catch(()=>{});}
-  if(mode==='hangar'||mode==='settings')startMenuOst();
   combatPlayFailed=false;
   syncCombatOst();
 });
@@ -739,7 +787,6 @@ function hangar(){
     hulls.map((h,i)=>'<button id="hull'+i+'" class="hull-card" aria-pressed="'+(i===hangarHull)+'"><span class="hull-card-head"><strong>'+tr(h.name,i?'Power':'Speed')+'</strong><small>'+tr(h.brief,i?'Damage +20% · Hull 110':'Speed +10% · Hull 82')+'</small></span><span class="hull-display"><canvas id="hangarShip'+i+'" class="hull-ship" width="300" height="170" aria-label="'+tr(h.name,i?'Power ship':'Speed ship')+'"></canvas><img class="hull-pilot" src="orbit-rogue-pilot-'+(i?'power':'speed')+'.png" alt="'+tr(i?'파워 기체 파일럿':'스피드 기체 파일럿',i?'Power pilot':'Speed pilot')+'"></span><span class="hull-card-choice">'+tr('선택','Select')+'</span></button>').join('')+
     '</div><div class="buttons launch-actions launch-actions-top"><button id="launch" class="primary" type="button" aria-labelledby="engineTitle"><span class="engine-icon" aria-hidden="true">⏻</span><span class="engine-label"><strong class="engine-title" id="engineTitle" lang="en">ENGINE START</strong><small class="engine-weapon" id="engineWeapon" lang="en">'+weaponNamesEn[chosen]+'</small></span><span class="engine-stripes" aria-hidden="true"></span></button>'+
     '<button id="startOptions" type="button">'+tr('옵션','Options')+'</button>'+
-    '<button id="ostToggle" type="button">'+tr('♪ Main OST 듣기','♪ Play Main OST')+'</button>'+
     '<button id="stickRecommend" class="stick-recommend" type="button">'+tr('조이스틱 추천','Joystick')+'</button>'+
     (store.get('or-save',null)?'<button id="resume">저장한 작전 이어하기</button>':'')+'</div>'+
     '<p class="loadout-label">'+tr('난이도','Difficulty')+
@@ -774,12 +821,12 @@ function hangar(){
   };
   $('launch').onclick=()=>start(chosen,hangarHull,chosenDifficulty);
   $('startOptions').onclick=openStartOptions;
-  $('ostToggle').onclick=()=>{if(mainOst.paused)startMenuOst();else{mainOst.pause();updateOstButton();}};
   $('stickRecommend').onclick=()=>setStick(true);
   syncStick(false);
-  updateOstButton();
+  fillBgmPlayer();
   if($('resume'))$('resume').onclick=()=>{
-    stopMenuOst();
+    menuPlaying=false;
+    combatOst.pause();
     run=store.get('or-save',null);starter=run.starter;starterHull=run.hull??0;run.hull=starterHull;run.dash??=1;
     if(!Number.isFinite(run.elapsed)){run.elapsed=Array.from({length:run.stage},(_,i)=>waveDuration(i+1)).reduce((a,b)=>a+b,0);run.partialTiming=true;}
     lastClock=null;inventory();stock=run.stock?.length<=4&&run.stock?.every(c=>!c||c.type!=='swap'&&(c.type!=='copy'||c.id!==undefined))?run.stock.map(c=>c?refreshWeaponOffer(c,c.price):null):newStock();resetWorld();openShop(false);
@@ -791,6 +838,7 @@ function resetWorld(){
   boss=null;
 }
 function start(index,hull=starterHull,level=chosenDifficulty){
+  combatMuted=false;
   chosenDifficulty=Number.isInteger(level)?clamp(level,0,unlockedDifficulty()):0;
   const available=availableStarters();
   if(!available.includes(index))index=available[0];
@@ -806,7 +854,8 @@ function start(index,hull=starterHull,level=chosenDifficulty){
   enterStage();
 }
 function enterStage(){
-  stopMenuOst();
+  menuPlaying=false;
+  combatOst.pause();
   resetWorld();pointer=null;releaseThrust();run.time=waveDuration(run.stage); world.loot={coins:0,levels:0,items:{}}; mode='combat'; combatPlayFailed=false; syncCombatOst(); hide();
   if(run.stage===10||run.stage===20||vulcanBosses[run.stage])startBossWarning();
 }
@@ -1236,7 +1285,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.36',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.37',896,587);
   return card;
 }
 function downloadProof(){
@@ -1244,16 +1293,6 @@ function downloadProof(){
   link.download='Orbit-Rogue-Clear-'+formatRunTime(run.elapsed).replaceAll(':','-')+'-'+run.score+'.png';
   link.href=card.toDataURL('image/png');
   document.body.append(link);link.click();link.remove();
-}
-function combatMusicOption(){
-  return '<label>'+tr('전투 음악','Combat music')+'<select id="combatTrack">'+
-    '<option value="battle"'+(prefs.combatTrack==='opening'?'':' selected')+'>'+tr('기존 전투 BGM','Original battle BGM')+'</option>'+
-    '<option value="opening"'+(prefs.combatTrack==='opening'?' selected':'')+'>'+tr('오프닝곡','Opening theme')+'</option></select></label>';
-}
-function bindCombatMusicOption(){
-  $('combatTrack').onchange=e=>{
-    prefs.combatTrack=e.target.value;store.set('or-settings',prefs);
-  };
 }
 function damageNumbersOption(){
   return '<label>'+tr('피해 숫자','Damage numbers')+'<input id="damageNumbers" type="checkbox"'+
@@ -1271,15 +1310,15 @@ function openStartOptions(){
   screen(tr('옵션','Options'),'<div class="options start-options">'+
     '<label>'+tr('음악 볼륨','Music volume')+'<input id="music" type="range" min="0" max="100" value="'+prefs.music+'"></label>'+
     '<label>'+tr('효과음 볼륨','Effects volume')+'<input id="fx" type="range" min="0" max="100" value="'+prefs.fx+'"></label>'+
-    combatMusicOption()+damageNumbersOption()+'<div class="language-option"><span>'+tr('언어','Language')+'</span><div class="buttons">'+
+    damageNumbersOption()+'<div class="language-option"><span>'+tr('언어','Language')+'</span><div class="buttons">'+
     '<button id="langKo" aria-pressed="'+(prefs.lang==='ko')+'">한국어</button>'+
     '<button id="langEn" aria-pressed="'+(prefs.lang==='en')+'">English</button></div></div></div>'+
     '<div class="buttons"><button id="optionsBack" class="primary">'+tr('완료','Done')+'</button></div>');
   for(const key of ['music','fx'])$(key).oninput=e=>saveAudioPreference(key,e.target.value);
-  bindCombatMusicOption();
   bindDamageNumbersOption();
   $('langKo').onclick=()=>{prefs.lang='ko';store.set('or-settings',prefs);openStartOptions();};
   $('langEn').onclick=()=>{prefs.lang='en';store.set('or-settings',prefs);openStartOptions();};
+  fillBgmPlayer();
   $('optionsBack').onclick=hangar;
 }
 function pause(){
@@ -1293,9 +1332,8 @@ function pause(){
   previousMode=mode;mode='pause';keys.clear();pointer=null;
   screen('일시정지','<div class="build-layout">'+shipStats()+'<div class="build-content"><div class="options"><label>음악 볼륨<input id="music" type="range" min="0" max="100" value="'+prefs.music+
     '"></label><label>효과음 볼륨<input id="fx" type="range" min="0" max="100" value="'+prefs.fx+
-    '"></label>'+combatMusicOption()+damageNumbersOption()+'</div><div class="buttons"><button id="continue" class="primary">계속하기</button><button id="leaveRun">그만하기</button></div></div></div>');
+    '"></label>'+damageNumbersOption()+'</div><div class="buttons"><button id="continue" class="primary">계속하기</button><button id="leaveRun">그만하기</button></div></div></div>');
   for(const key of ['music','fx'])$(key).oninput=e=>saveAudioPreference(key,e.target.value);
-  bindCombatMusicOption();
   bindDamageNumbersOption();
   controls({continue:pause,leaveRun:()=>{
     screen('이번 전투를 그만할까요?','<p>이번 전투의 진행이 끝납니다.</p><div class="buttons"><button id="confirmQuit">그만하기</button><button id="backRun">계속하기</button></div>');
@@ -1402,6 +1440,7 @@ function menuKey(e){
 }
 addEventListener('keydown',e=>{
   if(e.code==='Escape'){e.preventDefault();if(!e.repeat)pause();return;}
+  if(e.target instanceof Element&&e.target.closest('#bgmPlayer'))return;
   if(mode==='level'&&/^[123]$/.test(e.key)){choose(Number(e.key)-1);return;}
   if(!flightActive()){if(!$('panel').hidden)menuKey(e);return;}
   if(!arrows.includes(e.code)&&e.code!=='ShiftLeft'&&e.code!=='ShiftRight')return;
@@ -1870,6 +1909,7 @@ function startBoss(){
 }
 function startBossWarning(){
   mode='boss-warning';
+  syncCombatOst();
   world.bossWarning=WARNING_DURATION;world.warningBeat=0;world.warningWait=0;world.warningPosition=0;
   stopWarningAudio();
   playWarningAudio();
