@@ -392,6 +392,9 @@ function drawArt(name,x,y,width,height){
   return true;
 }
 const weapons=['직사 미사일','유도 미사일','직사 레이저','유도 레이저','직사 탄환','분사 탄환'];
+const weaponNamesEn=['Direct Missile','Homing Missile','Direct Laser','Homing Laser','Rapid Cannon','Scatter Cannon'];
+const starterUnlockOrder=[4,5,0,1,2,3];
+
 const hulls=[
   {name:'스피드형',brief:'스피드 +10% · 내구도 82',speed:320,hp:82,shield:30,bonus:0,turn:15,keyTurn:2.0,turnThrust:.62,art:'player0'},
   {name:'파워형',brief:'화력 +20% · 내구도 110',speed:234,hp:110,shield:36,bonus:.20,turn:10,keyTurn:1.85,turnThrust:1,art:'power'}
@@ -593,9 +596,21 @@ function screen(title,html){
   if(mode==='level')$('level0')?.focus?.({preventScroll:true});
 }
 function hide(){ $('panel').hidden=true;syncStick(['combat','boss'].includes(mode)); }
+function availableStarters(){
+  const count=store.get('or-starter-unlocks',1);
+  return starterUnlockOrder.slice(0,Number.isInteger(count)?clamp(count,1,starterUnlockOrder.length):1);
+}
+function unlockStarter(){
+  const count=availableStarters().length;
+  const next=starterUnlockOrder[count];
+  if(next===undefined)return null;
+  store.set('or-starter-unlocks',count+1);
+  return next;
+}
 function hangar(){
   mode='hangar'; keys.clear();pointer=null;
-  let chosen=starter;
+  const available=availableStarters();
+  let chosen=available.includes(starter)?starter:available[0];
   hangarHull=starterHull;
   screen('<img class="hangar-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE">',
     '<p class="hangar-subtitle">'+tr('기체와 기본 무기를 고르고 출격하세요.','Choose a ship and primary weapon.')+'</p><div class="hull-pick">'+
@@ -605,10 +620,18 @@ function hangar(){
     '<button id="ostToggle" type="button">'+tr('♪ Main OST 듣기','♪ Play Main OST')+'</button>'+
     '<button id="stickRecommend" class="stick-recommend" type="button">'+tr('조이스틱 추천','Joystick')+'</button>'+
     (store.get('or-save',null)?'<button id="resume">저장한 작전 이어하기</button>':'')+'</div>'+
-    '<p class="loadout-label">'+tr('기본 무기 선택','Primary weapon')+'</p><div class="weapon-grid grid">'+
-    weapons.map((w,i)=>'<button id="w'+i+'" class="card" aria-pressed="'+(chosen===i)+'"><strong>'+tr(w,['Direct Missile','Homing Missile','Direct Laser','Homing Laser','Rapid Cannon','Scatter Cannon'][i])+'</strong><span>'+tr(['빠른 폭발탄','목표 추적','직선 관통','근거리 추적 빔','집중 연사','부채꼴 산탄'][i],['Fast explosive','Target tracking','Piercing beam','Tracking beam','Focused fire','Wide spread'][i])+'</span></button>').join('')+
+    '<p class="loadout-label">'+tr('시작 무기','Starting weapons')+' · '+available.length+' / '+weapons.length+
+    ' <small>'+tr('20구역 클리어마다 1개 해금','Clear Sector 20 to unlock one per run')+'</small></p><div class="weapon-grid grid">'+
+    weapons.map((w,i)=>{
+      const unlocked=available.includes(i);
+      const detail=unlocked
+        ? tr(['빠른 폭발탄','목표 추적','직선 관통','근거리 추적 빔','집중 연사','부채꼴 산탄'][i],['Fast explosive','Target tracking','Piercing beam','Tracking beam','Focused fire','Wide spread'][i])
+        : tr('잠김','Locked');
+      return '<button id="w'+i+'" class="card" aria-pressed="'+(chosen===i)+'"'+(unlocked?'':' disabled')+
+        '><strong>'+tr(w,weaponNamesEn[i])+'</strong><span>'+detail+'</span></button>';
+    }).join('')+
     '</div><div class="stage-route" aria-label="스테이지 경로">01<i></i><strong>10 · 리프트 엑스커베이터</strong><i></i><strong>20 · 널 크라운</strong></div><small>최고 점수 '+best.toLocaleString()+'</small>');
-  weapons.forEach((_,i)=>$('w'+i).onclick=()=>{
+  available.forEach(i=>$('w'+i).onclick=()=>{
     $('w'+chosen).setAttribute('aria-pressed','false');chosen=i;
     $('w'+chosen).setAttribute('aria-pressed','true');
     $('launch').textContent=tr(weapons[chosen]+'로 출격 ↗','Launch ↗');
@@ -636,6 +659,8 @@ function resetWorld(){
   boss=null;
 }
 function start(index,hull=starterHull){
+  const available=availableStarters();
+  if(!available.includes(index))index=available[0];
   starter=index;
   starterHull=hull;
   lastClock=null;
@@ -1022,12 +1047,16 @@ function buy(i,free){
   sound(520,.17);openShop(false);
 }
 function end(win){
+  if(mode==='result')return;
+  const unlocked=win&&run.stage===20?unlockStarter():null;
+  const canReplay=availableStarters().includes(starter);
   mode='result';best=Math.max(best,run.score);store.set('or-best',best);store.clear('or-save');
   screen(win?'20구역 최종 클리어':'작전 종료','<p>도달 '+run.stage+' / 20 · 점수 '+run.score.toLocaleString()+
     ' · 최고 '+best.toLocaleString()+'</p><p>전체 시간 <strong>'+formatRunTime(run.elapsed)+'</strong>'+
     (run.partialTiming?' · 이전 구간 시간 추정':'')+'</p><p>격추 '+run.kills+' · 최종 레벨 '+run.level+'</p>'+gear()+
+    (unlocked!==null?'<p class="sym">'+tr('시작 무기 해금','Starting weapon unlocked')+' · <strong>'+tr(weapons[unlocked],weaponNamesEn[unlocked])+'</strong></p>':'')+
     (win?'<div class="buttons"><button id="proof" class="primary">클리어 카드 PNG 저장 ↓</button></div>':'')+
-    '<div class="buttons"><button id="again" class="primary">같은 기체·무기로 다시 하기</button><button id="quit">그만하기</button></div>');
+    '<div class="buttons"><button id="again" class="primary">'+(canReplay?'같은 기체·무기로 다시 하기':'기본 무기로 다시 하기')+'</button><button id="quit">격납고</button></div>');
   if(win)$('proof').onclick=downloadProof;
   controls({again:()=>start(starter),quit:hangar});
 }
