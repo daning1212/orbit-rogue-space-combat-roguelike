@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.34 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.35 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -357,8 +357,9 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <audio id="mainOst" src="orbit-rogue-main-ost.mp3" preload="metadata" loop></audio>
 <audio id="bossOst1" src="orbit-rogue-boss-01.mp3" preload="metadata" loop></audio>
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
+<audio id="warningAudio" src="orbit-rogue-warning.mp3" preload="auto"></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.34 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer>v0.2.35 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -484,7 +485,8 @@ const combatTracks={battle:'orbit%20robgue%20bgm.mp3',opening:'orbit-rogue-main-
 let combatTrack='battle',combatPlayRequest=0;
 let combatPlayPending=false, combatPlayFailed=false;
 const bossOsts=[$('bossOst1'),$('bossOst2')];
-const warningArt=$('warningArt');
+const warningArt=$('warningArt'), warningAudio=$('warningAudio');
+const WARNING_DURATION=4.3;
 const stick={on:coarsePointer||store.get('or-stick',false),id:null,x:0,y:0};
 let hangarHull=0, starterHull=0, mouseThrust=false, throttleId=null;
 let best=store.get('or-best',0), mode='hangar', run, world, boss, starter=4;
@@ -523,6 +525,20 @@ function bossSiren(duration){
     voice.frequency.exponentialRampToValueAtTime(frequency,now+duration);
     voice.connect(filter);voice.start(now);voice.stop(now+duration);
   }
+}
+function playWarningAudio(){
+  const currentWorld=world;
+  if(currentWorld.warningFallback)return;
+  warningAudio.volume=clamp(prefs.fx/100,0,1);
+  warningAudio.play().catch(error=>{
+    if(world===currentWorld&&mode==='boss-warning'&&error.name!=='AbortError'){
+      currentWorld.warningFallback=true;
+    }
+  });
+}
+function stopWarningAudio(){
+  warningAudio.pause();
+  warningAudio.currentTime=0;
 }
 const musicBars=[
   {bass:40,chord:[52,55,59],lead:[76,null,79,81,79,null,76,74,76,null,79,83,81,null,79,null]},
@@ -633,7 +649,10 @@ function saveAudioPreference(key,value){
     combatOst.volume=prefs.music/100;
     syncCombatOst();
     if(activeBossOst&&!activeBossOst.paused)activeBossOst.volume=prefs.music/100;
-  }else sound(420,.13);
+  }else{
+    warningAudio.volume=clamp(prefs.fx/100,0,1);
+    sound(420,.13);
+  }
 }
 function fadeBossOst(track,target,duration=850,done){
   clearInterval(bossFade);
@@ -689,6 +708,7 @@ function unlockStarter(){
   return next;
 }
 function hangar(){
+  stopWarningAudio();
   mode='hangar'; keys.clear();pointer=null;
   const available=availableStarters();
   const difficultyLimit=unlockedDifficulty();
@@ -1140,6 +1160,7 @@ function buy(i,free){
   sound(520,.17);openShop(false);
 }
 function end(win){
+  stopWarningAudio();
   if(mode==='result')return;
   const unlocked=win&&run.stage===20?unlockStarter():null;
   const resultDifficulty=difficultyIndex();
@@ -1195,7 +1216,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.34',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.35',896,587);
   return card;
 }
 function downloadProof(){
@@ -1242,8 +1263,13 @@ function openStartOptions(){
   $('optionsBack').onclick=hangar;
 }
 function pause(){
-  if(mode==='pause'){mode=previousMode;hide();return;}
+  if(mode==='pause'){
+    mode=previousMode;hide();
+    if(mode==='boss-warning')playWarningAudio();
+    return;
+  }
   if(!flightActive())return;
+  if(mode==='boss-warning')warningAudio.pause();
   previousMode=mode;mode='pause';keys.clear();pointer=null;
   screen('일시정지','<div class="build-layout">'+shipStats()+'<div class="build-content"><div class="options"><label>음악 볼륨<input id="music" type="range" min="0" max="100" value="'+prefs.music+
     '"></label><label>효과음 볼륨<input id="fx" type="range" min="0" max="100" value="'+prefs.fx+
@@ -1794,7 +1820,7 @@ function vulcanStep(dt){
 }
 function vulcanApproach(dt){
   const warning=world.vulcanApproach;
-  const elapsed=3.2-world.bossWarning;
+  const elapsed=WARNING_DURATION-world.bossWarning;
   if(warning.fired<8&&elapsed>=1.33+warning.fired*.14){
     for(const lane of warning.lanes)hostile({x:lane,y:-8},Math.PI/2,310,'cannon');
     if(!warning.fired)sound(130,.20,.5,false,'sawtooth',80);
@@ -1806,6 +1832,7 @@ function vulcanApproach(dt){
 }
 
 function startBoss(){
+  stopWarningAudio();
   mode='boss';
   const vulcan=vulcanBosses[run.stage];
   const hp=Math.round((vulcan?.hp??(run.stage===10?20000:200000))*difficulty().bossHp);
@@ -1822,7 +1849,10 @@ function startBoss(){
   syncCombatOst();startBossOst();
 }
 function startBossWarning(){
-  mode='boss-warning';world.bossWarning=3.2;world.warningBeat=0;
+  mode='boss-warning';
+  world.bossWarning=WARNING_DURATION;world.warningBeat=0;world.warningWait=0;world.warningPosition=0;
+  stopWarningAudio();
+  playWarningAudio();
   world.hostile=[];
   if(vulcanBosses[run.stage]){
     const count=run.stage===5?2:3, width=vulcanBosses[run.stage].zoneWidth;
@@ -1964,21 +1994,37 @@ function stepHazards(dt){
     return z.age<z.warning+.33;
   });
 }
-function step(dt){
-  if(mode==='boss-warning'){
-    animateExplosions(dt);
+function stepBossWarning(dt){
+  if(warningAudio.ended){startBoss();return;}
+  if(!world.warningFallback){
+    if(warningAudio.currentTime>world.warningPosition){
+      world.warningPosition=warningAudio.currentTime;
+      world.warningWait=0;
+    }else world.warningWait+=dt;
+    if(world.warningWait>=1){
+      world.warningFallback=true;
+      warningAudio.pause();
+    }else{
+      const duration=Number.isFinite(warningAudio.duration)?warningAudio.duration:WARNING_DURATION;
+      world.bossWarning=Math.max(0,WARNING_DURATION-(world.warningPosition/duration)*WARNING_DURATION);
+    }
+  }
+  if(world.warningFallback){
     world.bossWarning-=dt;world.warningBeat-=dt;
     if(world.warningBeat<=0&&world.bossWarning>0){
       bossSiren(Math.min(1.55,world.bossWarning));
       world.warningBeat=1.55;
     }
-    if(world.vulcanApproach){
-      vulcanApproach(dt);
-      if(run.hp<=0){end(false);return;}
-    }
-    if(world.bossWarning<=0)startBoss();
-    return;
   }
+  animateExplosions(dt);
+  if(world.vulcanApproach){
+    vulcanApproach(dt);
+    if(run.hp<=0){end(false);return;}
+  }
+  if(world.warningFallback&&world.bossWarning<=0)startBoss();
+}
+function step(dt){
+  if(mode==='boss-warning'){stepBossWarning(dt);return;}
   if(mode==='boss-clear'){
     animateExplosions(dt);
     world.clearDelay-=dt;
@@ -2418,15 +2464,15 @@ function paint(){
   if(world.inv<=0||Math.floor(last/55)%2===0)ship(world.x,world.y,1,false,run.rank,world.angle,run.hull??0);
   paintDamageNumbers();
   if(mode==='boss-warning'){
-    const elapsed=3.2-world.bossWarning,pulse=.82+.18*Math.sin(elapsed*18),appear=clamp(elapsed/.35,0,1),fade=clamp(world.bossWarning/.4,0,1);
-    ctx.save();ctx.globalAlpha=.20*pulse*appear*fade;ctx.fillStyle='#ff1828';ctx.fillRect(0,0,W,H);
-    ctx.globalAlpha=pulse*appear*fade;
+    const elapsed=WARNING_DURATION-world.bossWarning,pulse=.82+.18*Math.sin(elapsed*18),appear=world.warningPosition>0||world.warningFallback?1:0;
+    ctx.save();ctx.globalAlpha=.20*pulse*appear;ctx.fillStyle='#ff1828';ctx.fillRect(0,0,W,H);
+    ctx.globalAlpha=pulse*appear;
     if(warningArt.complete&&warningArt.naturalWidth){
       const maxWidth=Math.min(W*.9,920),scale=Math.min(maxWidth/warningArt.naturalWidth,(H*.42)/warningArt.naturalHeight)*(1+.035*Math.sin(elapsed*8));
       const ww=warningArt.naturalWidth*scale,hh=warningArt.naturalHeight*scale;
       ctx.drawImage(warningArt,(W-ww)/2,(H-hh)/2,ww,hh);
     }
-    ctx.strokeStyle='#ff273c';ctx.lineWidth=5;ctx.globalAlpha=.45*pulse*fade;ctx.strokeRect(8,8,W-16,H-16);ctx.restore();
+    ctx.strokeStyle='#ff273c';ctx.lineWidth=5;ctx.globalAlpha=.45*pulse*appear;ctx.strokeRect(8,8,W-16,H-16);ctx.restore();
   }
   paintBossHealth();
   if(world.noticeFor>0){
