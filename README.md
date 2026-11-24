@@ -10,10 +10,6 @@
   <a href="https://rawcdn.githack.com/daning1212/orbit-rogue-space-combat-roguelike/bb71b910c6db7b978ec3b8956570c5e00a76ec4d/index.html"><strong>게임 시작 · v0.2.49</strong></a>
 </p>
 
-<p align="center">
-  <a href="https://daning1212.github.io/healingarty/games/orbit-rogue-ost.html"><strong>♫ OST 40곡 듣기</strong></a>
-</p>
-
 ## 게임 소개
 
 스피드형과 파워형 기체 중 하나를 골라 적과 운석을 돌파하고, 레벨업과 보급 상점에서 무기·기체·보조 장비를 강화합니다.
