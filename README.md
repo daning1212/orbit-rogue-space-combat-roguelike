@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="https://daning1212.github.io/healingarty/games/orbit-rogue-ost.html"><strong>♫ 전투 OST 37곡 듣기</strong></a>
+  <a href="https://daning1212.github.io/healingarty/games/orbit-rogue-ost.html"><strong>♫ OST 40곡 듣기</strong></a>
 </p>
 
 ## 게임 소개
