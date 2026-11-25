@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://rawcdn.githack.com/daning1212/orbit-rogue-space-combat-roguelike/36cd1d3d88a03172c79faf99af8d872a91b6d6e7/index.html"><strong>게임 시작 · v0.2.51</strong></a>
+  <a href="https://rawcdn.githack.com/daning1212/orbit-rogue-space-combat-roguelike/a43d6e54166fdef407c9ddda7a30362ef552674f/index.html"><strong>게임 시작 · v0.2.52</strong></a>
 </p>
 
 <p align="center">
@@ -43,11 +43,11 @@
 
 별도의 설치 없이 `index.html`을 브라우저에서 열면 실행됩니다.
 
-## 작업 이어가기 · v0.2.51
+## 작업 이어가기 · v0.2.52
 
-- 현재 공개 버전은 **v0.2.51**입니다. 게임 로직과 화면은 이 저장소의 `index.html`에 있습니다. [공개 버전 소스](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/tree/36cd1d3d88a03172c79faf99af8d872a91b6d6e7)
+- 현재 공개 버전은 **v0.2.52**입니다. 게임 로직과 화면은 이 저장소의 `index.html`에 있습니다. [공개 버전 소스](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/tree/a43d6e54166fdef407c9ddda7a30362ef552674f)
 - 모바일 보급 상점은 상품을 가로 두 열로 배치합니다. 코인과 내구도·실드 요약은 상품 위에 있고, 요약을 누르면 상세 능력치가 펼쳐집니다. **다음 구역으로** 버튼은 상품을 스크롤해도 하단에 보입니다.
-- 홈페이지는 별도 `daning1212/healingarty` 저장소입니다. 모바일 ORBIT ROGUE 카드의 PLAY·링크 복사·다운로드를 설명 아래로 옮겨 설명이 한 단어씩 끊기던 문제를 해결했습니다. 카드의 PLAY와 ZIP은 v0.2.51 커밋을 가리킵니다. [홈페이지 소스](https://github.com/daning1212/healingarty) · [공개 게임 섹션](https://daning1212.github.io/healingarty/#games)
+- 홈페이지는 별도 `daning1212/healingarty` 저장소입니다. 모바일 ORBIT ROGUE 카드의 PLAY·링크 복사·다운로드를 설명 아래로 옮겨 설명이 한 단어씩 끊기던 문제를 해결했습니다. 카드의 PLAY와 ZIP은 v0.2.52 커밋을 가리킵니다. [홈페이지 소스](https://github.com/daning1212/healingarty) · [공개 게임 섹션](https://daning1212.github.io/healingarty/#games)
 - 갤럭시 S23 울트라에서 찍은 v0.2.41 화면을 기준으로 수정했습니다. v0.2.42는 Chromium 모바일 에뮬레이션의 세로 폭 360·393·412px에서 카드 배치, 상세 능력치 펼치기, 상품 구매, 다음 구역 이동을 검증했습니다. 사용자가 S23 울트라 실기에서 v0.2.42의 모바일 배치 개선을 확인했습니다.
 - v0.2.43에서는 조이스틱을 누른 채 두 번째 손가락으로 대시를 누를 수 있도록 터치 입력을 수정했습니다. Chromium 모바일 모의 화면에서 단독 터치와 두 손가락 입력을 확인했습니다.
 - v0.2.44에서는 PC 전투 공간을 16:9로 넓히고 브라우저 높이에 맞췄습니다. 모바일 대시 버튼은 세로와 가로 화면에서 위로 옮기고 터치 영역을 넓혔습니다.
@@ -58,6 +58,7 @@
 - v0.2.49에서는 내구도가 0이 되면 기체 폭발 연출을 먼저 재생한 뒤 재출격과 격납고 선택을 표시합니다.
 - v0.2.50에서는 상점 추천과 표적 연계를 추가했습니다. 유도 미사일과 조준 위성을 갖추면 표적 연계를 살 수 있고, 20구역 보스를 격파하면 연쇄 폭발 뒤 감사 문구와 특전 일러스트가 표시됩니다.
 - v0.2.51에서는 5·10·15·20구역 보스에 횡이동을 추가했습니다. 10·15·20구역은 경고선을 표시한 후 전진하고 후퇴하며, 20구역은 플레이어 위치를 향해 비스듬히 돌진합니다.
+- v0.2.52에서는 10구역 보스의 크기와 충돌 범위를 약 15% 키웠습니다. 유도 레이저는 보스 몸체가 사거리 안에 들어오면 우선 추적합니다.
 
 ### 다른 컴퓨터에서 이어서 작업하기
 
