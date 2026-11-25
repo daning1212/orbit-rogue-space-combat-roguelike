@@ -655,6 +655,49 @@ main:has(.panel[data-screen="hangar"]:not([hidden])) #bgmTrack{height:34px}
   .hull-card .pilot-name{padding-inline:5px;font-size:12px}
   .panel[data-screen="hangar"] .hull-card-head{padding-inline:2px;text-align:center}
 }
+
+header .brand{flex-direction:column;align-items:flex-start;gap:2px}
+header .header-logo{width:auto;max-width:135px}
+header .game-version{align-self:center;font-size:10px}
+.panel[data-screen="level"] .box{width:min(890px,100%)}
+.panel[data-screen="level"] .level-cards{gap:9px}
+.panel:is([data-screen="level"],[data-screen="shop"]) .card{
+  --cut:10px;
+  clip-path:polygon(var(--cut) 0,calc(100% - var(--cut)) 0,100% var(--cut),100% calc(100% - var(--cut)),
+    calc(100% - var(--cut)) 100%,var(--cut) 100%,0 calc(100% - var(--cut)),0 var(--cut));
+  outline:0;border:0;box-shadow:none;
+  background:linear-gradient(165deg,var(--card-light),#081321 70%);
+  position:relative;isolation:isolate;
+}
+.panel:is([data-screen="level"],[data-screen="shop"]) .card::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;clip-path:inherit;
+  background:var(--card-edge);
+}
+.panel:is([data-screen="level"],[data-screen="shop"]) .card::after{
+  content:"";position:absolute;inset:2px;z-index:-1;pointer-events:none;clip-path:inherit;
+  background:linear-gradient(165deg,var(--card-light),#081321 72%);
+}
+.panel[data-screen="level"] .level-cards .card{
+  display:flex;flex-direction:column;align-items:stretch;min-height:230px;padding:12px 9px;
+}
+.panel[data-screen="level"] .level-cards .card:is(:hover,:focus-visible)::before{background:#fff}
+.panel:is([data-screen="level"],[data-screen="shop"]) .card>strong{
+  text-align:center;padding:5px 0;border-bottom:1px solid var(--card-edge);
+}
+.panel[data-screen="level"] .level-cards .card>strong{font-size:clamp(12px,2vw,21px)}
+.panel[data-screen="level"] .card-art{flex:1;min-height:80px}
+.panel[data-screen="level"] .card-art svg{width:54px;height:54px}
+.panel[data-screen="level"] .card-art :is(.card-icon,.part-icon){width:62px;height:62px}
+.panel[data-screen="level"] .card>span:not(.choice,.card-grade,.card-art){
+  background:#081321b8;border:1px solid #a8dfff48;border-radius:4px;padding:4px;
+}
+@media(max-width:480px){
+  .panel[data-screen="level"] .level-cards{gap:4px}
+  .panel[data-screen="level"] .level-cards .card{min-height:170px;padding:8px 5px}
+  .panel[data-screen="level"] .card-art{min-height:50px}
+  .panel[data-screen="level"] .card-art svg{width:34px;height:34px}
+  .panel[data-screen="level"] .card-art :is(.card-icon,.part-icon){width:40px;height:40px}
+}
 </style>
 <main>
 <header><div class="brand"><img class="header-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"><small class="game-version">v0.2.63</small></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button><button id="fullscreenDisplay" class="mobile-fullscreen" type="button" aria-pressed="false">전체화면</button></div><p id="displayStatus" class="display-status" role="status" hidden></p></header>
