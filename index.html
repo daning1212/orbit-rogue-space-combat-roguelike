@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.60 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.61 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -521,9 +521,34 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 }
 .shop-offer .card:disabled .shop-afford{opacity:.6}
 .panel[data-screen="shop"] #next{background:#ffbc3d;color:#261800;border-color:#ffe196;font-weight:800}
+
+.panel[data-screen="level"] .box{width:min(760px,100%)}
+.panel[data-screen="level"] .level-cards .card{
+  min-height:164px;text-align:center;padding:9px 5px;gap:4px;
+}
+.panel .card[data-kind="equip"]{--card-edge:#72dfff;--card-light:#123e59}
+.panel .card[data-kind="heal"]{--card-edge:#79ecc0;--card-light:#124339}
+.panel .card .card-art{
+  display:grid;place-items:center;min-height:54px;
+  background:radial-gradient(ellipse,var(--card-light),transparent 72%);
+  color:var(--card-edge);
+}
+.card .card-art .card-icon,.card .card-art .part-icon{
+  margin:0;width:44px;height:44px;border:0;background:none;color:inherit;
+}
+.card .card-art svg{width:37px;height:37px;filter:drop-shadow(0 0 5px currentColor)}
+.panel[data-screen="level"] .level-cards .card:is(:hover,:focus-visible){
+  outline:2px solid var(--card-edge);outline-offset:-3px;
+}
+@media(max-width:480px){
+  .panel[data-screen="level"] .level-cards .card{min-height:137px}
+  .panel .card .card-art{min-height:42px}
+  .card .card-art .card-icon,.card .card-art .part-icon{width:34px;height:34px}
+  .card .card-art svg{width:28px;height:28px}
+}
 </style>
 <main>
-<header><div class="brand"><img class="header-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"><small class="game-version">v0.2.60</small></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button><button id="fullscreenDisplay" class="mobile-fullscreen" type="button" aria-pressed="false">전체화면</button></div><p id="displayStatus" class="display-status" role="status" hidden></p></header>
+<header><div class="brand"><img class="header-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"><small class="game-version">v0.2.61</small></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button><button id="fullscreenDisplay" class="mobile-fullscreen" type="button" aria-pressed="false">전체화면</button></div><p id="displayStatus" class="display-status" role="status" hidden></p></header>
 <div class="hud" id="hud" aria-live="off"></div>
 <div class="field">
 <canvas id="canvas" width="960" height="640" aria-label="우주 슈팅 전투 화면"></canvas>
@@ -552,7 +577,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <audio id="warningAudio" src="orbit-rogue-warning.mp3" preload="auto"></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.60 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer>v0.2.61 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -1346,7 +1371,7 @@ function cardButton(c,id,shortcut=''){
     (shortcut?'<span class="choice">'+shortcut+' · '+({copy:'무기 중첩',equip:'새 무기',stat:'기체 능력치',support:'보조장비',heal:'정비'})[c.type]+'</span>':
       c.group?'<span class="choice">'+({ship:'기체 강화',weapon:'무기',support:'보조장비'})[c.group]+'</span>':'')+
     (weapon?'<span class="card-grade">'+ranks[c.rank??0]+'</span>':'')+
-    '<strong>'+(weapon?weaponIcon(c.id):rewardIcon(c.type,c.id))+c.name+'</strong>'+
+    '<strong>'+c.name+'</strong><span class="card-art">'+(weapon?weaponIcon(c.id):rewardIcon(c.type,c.id))+'</span>'+
     (c.type==='trade'?(c.repairCore?'<span class="effect effect-gain">초당 내구도 +3 회복</span><span class="effect effect-loss">남은 작전에서 내구도 카드·광석 자석 제외</span>':rewardLabel(c.changes)):'<span>'+c.text+'</span>')+
     (shop?'<span class="shop-purchase"><span class="card-price"><b>'+c.cost.toLocaleString()+'</b> 코인</span>'+
       '<span class="shop-afford '+(blocked?'shop-blocked':'')+'">'+(!c.eligible?'장착 조건 부족':c.short?c.short.toLocaleString()+' 코인 부족':'구매하기 ↗')+'</span></span>':'')+'</button>';
@@ -1671,7 +1696,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.60',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.61',896,587);
   return card;
 }
 function downloadProof(){
