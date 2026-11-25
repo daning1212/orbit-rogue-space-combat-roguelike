@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.57 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.58 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -430,6 +430,43 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 .ending-thanks strong{color:#9eefff;letter-spacing:.08em}
 </style>
 <style>.options select{color:#ecf6ff;background:#0b1929;border:1px solid #4a6980;border-radius:6px;padding:5px;max-width:100%;font:inherit}</style>
+<style>
+.hud.flight-hud{
+  grid-template-columns:1.15fr 1.45fr 1fr .9fr;gap:4px;padding:0;
+  border:0;background:none;border-radius:0;
+}
+.flight-hud .hud-group,.bgm-player.in-combat{
+  --panel-corner:polygon(9px 0,calc(100% - 9px) 0,100% 9px,100% calc(100% - 9px),calc(100% - 9px) 100%,9px 100%,0 calc(100% - 9px),0 9px);
+  border:1px solid #3a88a9;background:linear-gradient(180deg,#173952,#081624 38%,#0e273c);
+  box-shadow:inset 0 -2px #144862,inset 0 1px #68dcff75;
+  clip-path:var(--panel-corner);
+}
+.flight-hud .hud-group{
+  display:grid;align-content:center;gap:3px 9px;min-width:0;padding:6px 9px;align-self:stretch;
+}
+.flight-hud .hud-mission{grid-template-columns:repeat(3,minmax(0,1fr));align-items:center}
+.flight-hud .hud-mission strong{font-size:clamp(11px,1.5vw,16px);font-variant-numeric:tabular-nums}
+.flight-hud .hud-mission>span+span{border-inline-start:1px solid #356580;padding-inline-start:5px}
+.flight-hud .hud-meter{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:5px;align-items:center}
+.flight-hud .hud-meter strong,.flight-hud .hud-totals strong{font-size:11px;font-variant-numeric:tabular-nums}
+.flight-hud .hud-totals>span{display:flex;justify-content:space-between;gap:5px}
+.flight-hud meter::-webkit-meter-optimum-value{
+  background:repeating-linear-gradient(115deg,transparent 0 9px,#08162490 10px 11px),var(--meter);
+}
+.flight-hud meter::-moz-meter-bar{
+  background:repeating-linear-gradient(115deg,transparent 0 9px,#08162490 10px 11px),var(--meter);
+}
+.bgm-player.in-combat{width:min(620px,100%);align-self:center;margin:4px auto;padding-inline:8px}
+.bgm-player.in-combat button,.bgm-player.in-combat select{background:#10283c}
+.field{border-inline-color:transparent}
+@media(max-width:860px),(pointer:coarse){
+  .hud.flight-hud{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .flight-hud .hud-group{padding:4px 7px}
+}
+@media(pointer:coarse){
+  .bgm-player.in-combat button,.bgm-player.in-combat select{min-height:36px}
+}
+</style>
 <main>
 <header><div class="brand"><img class="header-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button><button id="fullscreenDisplay" class="mobile-fullscreen" type="button" aria-pressed="false">전체화면</button></div><p id="displayStatus" class="display-status" role="status" hidden></p></header>
 <div class="hud" id="hud" aria-live="off"></div>
@@ -460,7 +497,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <audio id="warningAudio" src="orbit-rogue-warning.mp3" preload="auto"></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.57 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer>v0.2.58 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -1579,7 +1616,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.57',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.58',896,587);
   return card;
 }
 function downloadProof(){
@@ -2827,10 +2864,16 @@ function paintBossHealth(){
     ctx.fillText(team?name+(i===0?' A':' B'):name,x,y+8,width*.59);
     ctx.textAlign='right';
     ctx.fillText(health.toLocaleString()+' / '+unit.max.toLocaleString(),x+width,y+8,width*.39);
-    ctx.fillStyle='#34213e';
-    ctx.fillRect(x,y+17,width,5);
-    ctx.fillStyle=run.stage===20?'#d987ff':'#ffa066';
-    ctx.fillRect(x,y+17,width*clamp(unit.hp/unit.max,0,1),5);
+    const trackY=y+16;
+    path([[x-5,trackY+4],[x,trackY],[x+width,trackY],[x+width+5,trackY+4],
+      [x+width,trackY+8],[x,trackY+8]],'#26354a','#809cb7');
+    const fill=width*clamp(unit.hp/unit.max,0,1);
+    if(fill>0){
+      ctx.fillStyle=run.stage===20?'#ff4567':'#ffa066';
+      ctx.fillRect(x,trackY+2,fill,4);
+      ctx.fillStyle='#ffffff80';
+      ctx.fillRect(x,trackY+2,fill,1);
+    }
   });
   ctx.restore();
 }
@@ -2873,9 +2916,9 @@ function paintPlayerMeters(){
   ctx.fillStyle='#34445a';
   ctx.fillRect(x,y,width,height);
   ctx.fillRect(x,y+height+gap,width,height);
-  ctx.fillStyle='#64dfff';
+  ctx.fillStyle='#38daff';
   ctx.fillRect(x,y,width*shield,height);
-  ctx.fillStyle=hull<=.25?'#ff6678':'#73e4ae';
+  ctx.fillStyle=hull<=.25?'#ff6678':'#79ee82';
   ctx.fillRect(x,y+height+gap,width*hull,height);
   ctx.restore();
 }
@@ -2950,10 +2993,10 @@ function paintMissileLock(){
   ctx.save();
   ctx.translate(target.x,target.y);
   ctx.globalAlpha=animated ? .74+.22*Math.sin(age*Math.PI*5) : .9;
-  ctx.strokeStyle='#88e4ff';ctx.lineWidth=1.5;
+  ctx.strokeStyle='#ffd48c';ctx.lineWidth=1.5;
   ctx.beginPath();ctx.arc(0,0,radius,0,Math.PI*2);ctx.stroke();
   ctx.rotate(animated?age*.65:0);
-  ctx.strokeStyle='#d1a6ff';ctx.lineWidth=2;
+  ctx.strokeStyle='#ff9e46';ctx.lineWidth=2;
   for(let i=0;i<4;i++){
     ctx.beginPath();
     ctx.arc(0,0,radius+5,.18,.98);ctx.stroke();
@@ -2994,8 +3037,10 @@ function paint(){
   for(const z of world.zones){
     if(z.age<0)continue;
     const p=clamp(z.age/z.warning,0,1),c=run.stage===20?'200,110,255':'255,139,61';
-    ctx.fillStyle='rgba('+c+','+(z.done?.76:.07+p*.36)+')';
-    ctx.strokeStyle='rgba('+c+','+(z.done||p>.88?1:.48)+')';ctx.lineWidth=p>.88?3:1;
+    const opacity=z.radius?(z.done?.22:.06+p*.12):(z.done?.76:.07+p*.36);
+    ctx.fillStyle='rgba('+c+','+opacity+')';
+    ctx.strokeStyle='rgba('+c+','+(z.done||p>.88?1:.48)+')';
+    ctx.lineWidth=z.radius?(p>.88?3:2):(p>.88?3:1);
     if(z.radius){
       ctx.beginPath();ctx.arc(z.x,z.y,z.radius,0,Math.PI*2);ctx.fill();ctx.stroke();
       if(!z.done&&p>0){ctx.beginPath();ctx.arc(z.x,z.y,z.radius*p,0,Math.PI*2);ctx.stroke();}
@@ -3157,18 +3202,22 @@ function setHud(markup){
   $('hud').innerHTML=markup;lastHud=markup;
 }
 function showHud(){
-  if(!run||mode==='hangar'){setHud('<span><small>원정 경로</small><strong>01–20</strong></span><span><small>최고 점수</small><strong>'+best.toLocaleString()+'</strong></span>');return;}
+  const active=Boolean(run&&mode!=='hangar');
+  $('hud').classList.toggle('flight-hud',active);
+  if(!active){setHud('<span><small>원정 경로</small><strong>01–20</strong></span><span><small>최고 점수</small><strong>'+best.toLocaleString()+'</strong></span>');return;}
   const seconds=Math.ceil(run.time), time=Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0');
   const field=(label,value,style='')=>'<span class="'+style+'"><small>'+label+'</small><strong>'+value+'</strong></span>';
-  const meter=(label,value,max,color)=>'<span><small>'+label+' '+value+'/'+max+'</small><meter min="0" max="'+max+
-    '" value="'+clamp(value,0,max)+'" aria-label="'+label+'" style="--meter:'+color+'"></meter></span>';
+  const group=(name,content)=>'<div class="hud-group hud-'+name+'">'+content+'</div>';
+  const meter=(label,value,max,color)=>'<span class="hud-meter"><small>'+label+'</small><meter min="0" max="'+max+
+    '" value="'+clamp(value,0,max)+'" aria-label="'+label+'" style="--meter:'+color+'"></meter><strong>'+value+'/'+max+'</strong></span>';
   touchDash.disabled=run.dash<1||world.dashRemaining>0||world.stun>0;
-  setHud(field(tr(difficulty().ko,difficulty().en),run.stage+' / 20')+field(boss?'보스전':'공세 '+(wavePressure(run.time)+1)+'/5',time)+
-    meter('실드',Math.ceil(run.shield),run.shieldMax,'#64dfff')+
-    meter('내구도',Math.max(0,Math.ceil(run.hp)),run.max,'#73e4ae')+
-    meter('경험치 · Lv.'+run.level,run.xp,xpGoal(),'#b995ff')+
-    meter('대시',Math.floor(100*run.dash),100,'#d1acff')+
-    field('코인',run.coin,'credits')+field('점수',run.score.toLocaleString()));
+  setHud(group('mission',field(tr(difficulty().ko,difficulty().en),run.stage+' / 20')+
+    field('공세',boss?'보스전':(wavePressure(run.time)+1)+' / 5')+field('남은 시간',time))+
+    group('integrity',meter('실드',Math.ceil(run.shield),run.shieldMax,'#38daff')+
+    meter('내구도',Math.max(0,Math.ceil(run.hp)),run.max,'#79ee82'))+
+    group('progress',meter('Lv.'+run.level,run.xp,xpGoal(),'#b995ff')+
+    meter('대시',Math.floor(100*run.dash),100,'#64dfff'))+
+    group('totals',field('코인',run.coin.toLocaleString(),'credits')+field('점수',run.score.toLocaleString())));
 }
 function frame(now){
   const dt=Math.min(.05,(now-(last||now))/1000);last=now;
