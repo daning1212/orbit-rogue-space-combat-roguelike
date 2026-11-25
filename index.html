@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.55 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.56 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -293,6 +293,9 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <style>
 .panel[data-screen="shop"] .box{width:min(940px,100%)}
 .shop-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:8px 0 0}
+.shop-ship-preview{width:clamp(120px,17vw,170px);margin:0;overflow:hidden;border:1px solid #36536a;border-radius:8px;background:linear-gradient(#79b9e019 1px,transparent 1px),linear-gradient(90deg,#79b9e019 1px,transparent 1px),#0a1a2b;background-size:12px 12px}
+.shop-ship-preview canvas{display:block;width:100%;height:auto;min-height:0;aspect-ratio:3/2;touch-action:auto}
+.shop-ship-preview figcaption{padding:2px 5px;text-align:center;color:#b8d9ee;background:#0b1a29;font-size:.68rem}
 .shop-wallet{margin:0;display:grid;gap:0}.shop-wallet span,.shop-perks{font-size:.75rem;color:#a3b9cb}
 .shop-wallet strong{color:#ffe3a2;font-size:clamp(23px,4vw,33px);line-height:1.1;font-variant-numeric:tabular-nums}
 .shop-wallet small{font-size:.8rem}.shop-reroll span{color:#ffe3a2;margin-inline-start:6px}
@@ -359,7 +362,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <style>
 .shop-toolbar-actions{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:5px}
 .shop-toolbar-actions button{font-size:.77rem;padding:6px 8px;white-space:nowrap}
-@media(max-width:620px){.shop-toolbar{gap:4px}.shop-toolbar-actions button{font-size:.68rem;padding:4px 5px}}
+@media(max-width:620px){.shop-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px}.shop-toolbar-actions{grid-column:1/-1}.shop-toolbar-actions button{font-size:.68rem;padding:4px 5px}}
 </style>
 <style>
 .bgm-player{display:flex;align-items:center;gap:6px;margin:8px 0;padding:7px;
@@ -457,7 +460,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <audio id="warningAudio" src="orbit-rogue-warning.mp3" preload="auto"></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.55 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer>v0.2.56 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -534,12 +537,12 @@ function loadArtwork(){
     source.src=data;
   }
 }
-function drawArt(name,x,y,width,height){
+function drawArt(name,x,y,width,height,surface=ctx){
   const image=artwork[name];
   if(!image)return false;
   const scale=Math.min(width/image.width,height/image.height);
   const w=image.width*scale,h=image.height*scale;
-  ctx.drawImage(image,x-w/2,y-h/2,w,h);
+  surface.drawImage(image,x-w/2,y-h/2,w,h);
   return true;
 }
 const weapons=['직사 미사일','유도 미사일','직사 레이저','유도 레이저','직사 탄환','분사 탄환'];
@@ -1405,6 +1408,7 @@ function openShop(fresh=true){
     '<div class="build-layout shop-layout"><div class="shop-sidebar">'+shipStats()+
     '<div class="buttons shop-actions"><button id="next" class="primary">다음 구역으로 ↗</button></div>'+
     '</div><div class="build-content"><div class="shop-toolbar"><p class="shop-wallet"><span>보유 코인</span><strong>'+run.coin.toLocaleString()+' <small>코인</small></strong></p>'+
+    '<figure class="shop-ship-preview"><canvas id="shopShip" width="300" height="200" aria-label="현재 기체와 장착 파츠"></canvas><figcaption>현재 기체</figcaption></figure>'+
     '<div class="shop-toolbar-actions"><button id="shopRoll" class="shop-reroll">다시 뽑기 <span>'+rerollLabel()+'</span></button><button id="leave">저장하고 나가기</button></div></div>'+
     '<p class="shop-perks">주사위 '+run.coupons.dice+' · 반값권 '+run.coupons.half+
     (run.coupons.sale?' · 이번 판 50%':'')+(permanent?' · 단골 10%':'')+'</p>'+
@@ -1549,7 +1553,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.55',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.56',896,587);
   return card;
 }
 function downloadProof(){
@@ -2663,69 +2667,69 @@ function step(dt){
   updateRank();
 }
 const stars=Array.from({length:112},()=>[rng(0,W),rng(0,H),rng(.2,1.5)]);
-function path(points,fill,stroke){
-  ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();
-  ctx.fillStyle=fill;ctx.fill();
-  if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke();}
+function path(points,fill,stroke,surface=ctx){
+  surface.beginPath();points.forEach(([x,y],i)=>i?surface.lineTo(x,y):surface.moveTo(x,y));surface.closePath();
+  surface.fillStyle=fill;surface.fill();
+  if(stroke){surface.strokeStyle=stroke;surface.lineWidth=1;surface.stroke();}
 }
-function drawWeaponMounts(weapon,hull){
+function drawWeaponMounts(weapon,hull,surface=ctx){
   if(!weapon||weapon.rank<1)return;
   const upgraded=weapon.rank>=3;
   const asset='weapon-'+weapon.id+'-'+(upgraded?'upgraded':'basic');
   const spacing=hull?23:20;
-  ctx.save();
-  ctx.shadowBlur=0;
+  surface.save();
+  surface.shadowBlur=0;
   for(const side of [-1,1]){
-    drawArt(asset,spacing*side,hull?1:4,upgraded?20:15,upgraded?38:29);
+    drawArt(asset,spacing*side,hull?1:4,upgraded?20:15,upgraded?38:29,surface);
   }
-  ctx.restore();
+  surface.restore();
 }
-function ship(x,y,size,enemy=false,tier=0,angle=enemy?Math.PI/2:-Math.PI/2,hull=0,weapon=null){
-  ctx.save();ctx.translate(x,y);ctx.rotate(angle+Math.PI/2);
+function ship(x,y,size,enemy=false,tier=0,angle=enemy?Math.PI/2:-Math.PI/2,hull=0,weapon=null,surface=ctx){
+  surface.save();surface.translate(x,y);surface.rotate(angle+Math.PI/2);
   if(!enemy){
     const width=hull?69:63;
-    if(hull&&tier){ctx.shadowColor=tier>=3?'#eabbff':'#ffb261';ctx.shadowBlur=6+tier*2;}
-    if(drawArt(hull?'power':'player0',0,0,width*size,79*size)){
+    if(hull&&tier){surface.shadowColor=tier>=3?'#eabbff':'#ffb261';surface.shadowBlur=6+tier*2;}
+    if(drawArt(hull?'power':'player0',0,0,width*size,79*size,surface)){
       if(world&&run){
-        ctx.save();ctx.scale(size,size);
+        surface.save();surface.scale(size,size);
         if(run.max>hulls[hull].hp){
-          path([[-19,9],[-11,12],[-9,20],[-20,17]],'#819ab5','#b8dded');
-          path([[19,9],[11,12],[9,20],[20,17]],'#819ab5','#b8dded');
+          path([[-19,9],[-11,12],[-9,20],[-20,17]],'#819ab5','#b8dded',surface);
+          path([[19,9],[11,12],[9,20],[20,17]],'#819ab5','#b8dded',surface);
         }
         if(tier>0){
           const glow=tier>=3?'#d5a8ff':'#8ee9ff';
-          path([[-22,9],[-17,4],[-12,13],[-18,16]],'#577caa',glow);
-          path([[22,9],[17,4],[12,13],[18,16]],'#577caa',glow);
+          path([[-22,9],[-17,4],[-12,13],[-18,16]],'#577caa',glow,surface);
+          path([[22,9],[17,4],[12,13],[18,16]],'#577caa',glow,surface);
         }
         if(tier>2){
-          path([[-7,-20],[0,-26],[7,-20],[0,-13]],'#7b73bc','#e0c8ff');
+          path([[-7,-20],[0,-26],[7,-20],[0,-13]],'#7b73bc','#e0c8ff',surface);
         }
         if(run.armor>0){
-          path([[-27,-3],[-19,-8],[-14,1],[-22,8]],'#a9bbc9','#e9f6ff');
-          path([[27,-3],[19,-8],[14,1],[22,8]],'#a9bbc9','#e9f6ff');
+          path([[-27,-3],[-19,-8],[-14,1],[-22,8]],'#a9bbc9','#e9f6ff',surface);
+          path([[27,-3],[19,-8],[14,1],[22,8]],'#a9bbc9','#e9f6ff',surface);
         }
-        drawWeaponMounts(weapon,hull);
+        drawWeaponMounts(weapon,hull,surface);
         if(run.shieldMax>hulls[hull].shield){
-          ctx.strokeStyle='#75e7ff';ctx.lineWidth=2;ctx.globalAlpha=.55;
-          ctx.beginPath();ctx.arc(0,1,37,-2.5,-.65);ctx.arc(0,1,37,.65,2.5);ctx.stroke();
+          surface.strokeStyle='#75e7ff';surface.lineWidth=2;surface.globalAlpha=.55;
+          surface.beginPath();surface.arc(0,1,37,-2.5,-.65);surface.arc(0,1,37,.65,2.5);surface.stroke();
         }
-        ctx.restore();
+        surface.restore();
       }
-      ctx.restore();return;
+      surface.restore();return;
     }
   }
-  ctx.scale(size,size);
+  surface.scale(size,size);
   const stroke=enemy?'#ff6f7e':tier>2?'#d4a9ff':'#86dbff';
-  path([[-17,15],[-9,-1],[0,-28],[9,-1],[17,15],[6,11],[0,18],[-6,11]],enemy?'#913546':'#325a8d',stroke);
-  path([[0,-23],[6,2],[0,10],[-6,2]],enemy?'#ff9b99':'#c7f0ff');
-  path([[-6,14],[0,29],[6,14]],enemy?'#f54f79':tier>2?'#bf77ff':'#44dfff');
+  path([[-17,15],[-9,-1],[0,-28],[9,-1],[17,15],[6,11],[0,18],[-6,11]],enemy?'#913546':'#325a8d',stroke,surface);
+  path([[0,-23],[6,2],[0,10],[-6,2]],enemy?'#ff9b99':'#c7f0ff',undefined,surface);
+  path([[-6,14],[0,29],[6,14]],enemy?'#f54f79':tier>2?'#bf77ff':'#44dfff',undefined,surface);
   if(tier>0){
     const wing=17+2*tier;
-    path([[-wing,12],[-wing+5,-4],[-8,11]],'#5379a5',stroke);
-    path([[wing,12],[wing-5,-4],[8,11]],'#5379a5',stroke);
+    path([[-wing,12],[-wing+5,-4],[-8,11]],'#5379a5',stroke,surface);
+    path([[wing,12],[wing-5,-4],[8,11]],'#5379a5',stroke,surface);
   }
-  if(!enemy)drawWeaponMounts(weapon,hull);
-  ctx.restore();
+  if(!enemy)drawWeaponMounts(weapon,hull,surface);
+  surface.restore();
 }
 function drawBoss(t){
   const pass=t.motion?.pass;
@@ -2848,6 +2852,17 @@ function paintPlayerMeters(){
   ctx.fillRect(x,y+height+gap,width*hull,height);
   ctx.restore();
 }
+function highestRankedWeapon(){
+  return inventory().reduce((best,slot)=>slot.rank>best.rank?slot:best);
+}
+function paintShopShip(now){
+  const preview=$('shopShip');
+  if(!preview)return;
+  const surface=preview.getContext('2d');
+  surface.clearRect(0,0,preview.width,preview.height);
+  const angle=reducedMotion.matches?-Math.PI/2:-Math.PI/2+now*Math.PI*2/18000;
+  ship(preview.width/2,preview.height/2,2,false,run.rank,angle,run.hull??0,highestRankedWeapon(),surface);
+}
 function paintPlayer(){
   if(run.support[0]||world.flash>0){
     if(run.support[0]&&world.flash<=0){
@@ -2881,7 +2896,7 @@ function paintPlayer(){
     ctx.restore();
   }
   if(world.inv<=0||Math.floor(last/55)%2===0){
-    const weapon=inventory().reduce((best,slot)=>slot.rank>best.rank?slot:best);
+    const weapon=highestRankedWeapon();
     ship(world.x,world.y,1,false,run.rank,world.angle,run.hull??0,weapon);
   }
   if(flightActive())paintPlayerMeters();
@@ -3133,7 +3148,9 @@ function frame(now){
   tickRunClock(now);
   step(dt);
   playMusic(now);
-  paint();showHud();requestAnimationFrame(frame);
+  paint();showHud();
+  if(mode==='shop')paintShopShip(now);
+  requestAnimationFrame(frame);
 }
 loadArtwork();hangar();fitArena();
 if(typeof ResizeObserver!=='undefined')new ResizeObserver(fitArena).observe(canvas);
