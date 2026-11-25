@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.54 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.55 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -457,7 +457,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <audio id="warningAudio" src="orbit-rogue-warning.mp3" preload="auto"></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.54 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer>v0.2.55 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -1154,6 +1154,8 @@ const tradeoffGear=[
   {name:'강화 실드 셀',changes:{shieldMax:16,speed:-12}},
   {name:'인양 드론',changes:{salvage:5,armor:-2}},
   {name:'자력 견인기',changes:{pickup:45,shieldMax:-5}},
+  {name:'경량 연사 모듈',changes:{speed:16,rate:.12,shieldMax:-9}},
+  {name:'방벽 프레임',changes:{armor:2,shieldMax:12,speed:-22}},
   {name:'정비 보조 칩',changes:{engineering:8,crit:-.06}}
 ];
 function canInstallTradeoff(card){
@@ -1547,7 +1549,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.54',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.55',896,587);
   return card;
 }
 function downloadProof(){
@@ -2581,6 +2583,9 @@ function step(dt){
     const hit=world.targets.find(t=>t.hp>0&&near(t,s,t.r+5));
     if(hit){
       if(s.marksTarget&&!hit.rock)world.linkedTarget=hit;
+      if(s.kind==='missile'&&s.seek){
+        world.blasts.push({x:s.x,y:s.y,r:13,color:'#bd8cff',life:.26,duration:.26});
+      }
       damageTarget(hit,s.power,s.critical);s.life=0;
       if(s.kind==='missile'&&run.rank>=2)
         for(const t of world.targets)if(t!==hit&&near(t,hit,(32+run.rank*4)*(1+run.area)))damageTarget(t,s.power*.55,s.critical);
@@ -2890,21 +2895,28 @@ function paintPlayer(){
     ctx.restore();
   }
 }
+const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
 function paintMissileLock(){
-  const shot=world.shots.find(s=>s.lockedTarget?.hp>0);
-  if(!shot)return;
+  const shot=world.shots.find(s=>s.lockedTarget?.hp>0&&!s.lockedTarget.rock);
+  if(!shot){world.missileReticle=null;return;}
   const target=shot.lockedTarget;
-  const radius=target.r+9,corner=Math.min(12,radius*.5);
+  if(world.missileReticle?.target!==target)world.missileReticle={target,start:last};
+  const age=(last-world.missileReticle.start)/1000;
+  const animated=!reducedMotion.matches;
+  const expansion=animated?1-Math.min(age/.23,1):0;
+  const radius=target.r+10+expansion*15;
   ctx.save();
   ctx.translate(target.x,target.y);
-  ctx.strokeStyle='#e5a5ff';ctx.lineWidth=2;
-  ctx.beginPath();
-  for(const x of [-1,1])for(const y of [-1,1]){
-    ctx.moveTo(x*(radius-corner),y*radius);
-    ctx.lineTo(x*radius,y*radius);
-    ctx.lineTo(x*radius,y*(radius-corner));
+  ctx.globalAlpha=animated ? .74+.22*Math.sin(age*Math.PI*5) : .9;
+  ctx.strokeStyle='#88e4ff';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(0,0,radius,0,Math.PI*2);ctx.stroke();
+  ctx.rotate(animated?age*.65:0);
+  ctx.strokeStyle='#d1a6ff';ctx.lineWidth=2;
+  for(let i=0;i<4;i++){
+    ctx.beginPath();
+    ctx.arc(0,0,radius+5,.18,.98);ctx.stroke();
+    ctx.rotate(Math.PI/2);
   }
-  ctx.stroke();
   ctx.restore();
 }
 function paint(){
