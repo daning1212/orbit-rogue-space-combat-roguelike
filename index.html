@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.63 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.64 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -698,9 +698,77 @@ header .game-version{align-self:center;font-size:10px}
   .panel[data-screen="level"] .card-art svg{width:34px;height:34px}
   .panel[data-screen="level"] .card-art :is(.card-icon,.part-icon){width:40px;height:40px}
 }
+
+/* Keep the launch bays visible through the interactive ship selectors. */
+.panel[data-screen="hangar"] .box .hull-pick :is(#hull0,#hull1){
+  background:transparent;border:0;box-shadow:none;
+}
+.panel[data-screen="hangar"] .box{justify-content:safe center}
+.panel[data-screen="hangar"] .hangar-logo{max-height:clamp(50px,11vh,110px)}
+@media(min-width:621px){
+  .panel[data-screen="hangar"] .hull-pilot{height:clamp(130px,28vh,300px)}
+  .panel[data-screen="hangar"] .hull-ship{height:clamp(100px,24vh,245px)}
+}
+.panel[data-screen="shop"]{padding:0}
+.panel[data-screen="shop"] .box{
+  display:grid;grid-template-columns:29% minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;
+  gap:8px;width:100%;height:100%;padding:8px;
+  background:linear-gradient(#06152245,#06152280),url("orbit-rogue-shop.webp") center/cover #0b2032;
+}
+.panel[data-screen="shop"] .box>h2,.panel[data-screen="shop"] .shop-toolbar,
+.shop-dock-actions,.shop-status,.panel[data-screen="shop"] .ship-stats{
+  margin:0;border:1px solid #367e9f;background:linear-gradient(#14354deb,#081727f0);
+  border-radius:5px;box-shadow:inset 0 1px #7be6ff80;
+}
+.panel[data-screen="shop"] .box>h2{
+  grid-column:1;display:flex;align-items:center;gap:8px;padding:5px;
+  font-size:clamp(13px,1.9vw,24px);
+}
+.shop-logo{width:28%;max-width:112px;height:auto}
+.panel[data-screen="shop"] .shop-toolbar{grid-column:2;justify-content:flex-end;gap:12px;padding:4px 8px}
+.panel[data-screen="shop"] .shop-toolbar button{font-size:12px}
+.panel[data-screen="shop"] .shop-layout{grid-column:1/-1;grid-row:2;grid-template-columns:29% minmax(0,1fr);gap:8px}
+.panel[data-screen="shop"] .shop-ship-preview{
+  margin:0;background:radial-gradient(ellipse,#2588b624,transparent 68%);border-color:#398baa;
+}
+.panel[data-screen="shop"] .shop-ship-preview canvas{aspect-ratio:5/4;max-height:27vh}
+.shop-status{padding:5px;margin:4px 0}
+.shop-status-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:6px;font-size:11px}
+.shop-status-row meter{width:100%;height:10px;accent-color:#59ddff}
+.shop-status-row .hull-meter{accent-color:#8cf56a}
+.shop-status-row meter::-webkit-meter-bar{background:#153148;border:0}
+.shop-status-row .hull-meter::-webkit-meter-optimum-value{background:#8cf56a}
+.shop-status-row .shield-meter::-webkit-meter-optimum-value{background:#59ddff}
+.shop-dock-actions{
+  grid-column:2;grid-row:3;display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:5px;padding:5px;
+}
+.shop-dock-actions button{text-align:center;font-weight:750}
+.panel[data-screen="shop"] #next{
+  background:linear-gradient(#ffe375,#efa520 70%,#d47c14);box-shadow:inset 0 0 0 2px #ffe48b;
+}
+.panel[data-screen="shop"] .shop-offer .card{min-height:clamp(210px,32vh,340px)}
+.panel[data-screen="shop"] .shop-offer .card-art{flex:1;min-height:55px}
+.panel[data-screen="shop"] .shop-afford{background:linear-gradient(var(--card-light),var(--card-edge));color:#061322;font-weight:900}
+.panel[data-screen="shop"] .shop-recommend strong{color:#ffe590}
+@media(max-width:740px){
+  .panel[data-screen="shop"] .box{grid-template-columns:minmax(0,1fr) auto;gap:5px;padding:5px}
+  .panel[data-screen="shop"] .shop-toolbar{display:flex;gap:4px;padding:3px}
+  .panel[data-screen="shop"] .shop-toolbar button{padding:5px;font-size:10px}
+  .panel[data-screen="shop"] .shop-wallet strong{font-size:14px}
+  .panel[data-screen="shop"] .shop-layout{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr)}
+  .panel[data-screen="shop"] .shop-sidebar{display:contents}
+  .panel[data-screen="shop"] .shop-sidebar>.ship-stats{display:none}
+  .panel[data-screen="shop"] .shop-stats-mobile{display:block}
+  .panel[data-screen="shop"] .shop-ship-preview{grid-row:1;width:min(130px,45%);margin:0 auto}
+  .panel[data-screen="shop"] .shop-status{grid-row:2}
+  .panel[data-screen="shop"] .build-content{grid-row:3}
+  .panel[data-screen="shop"] .shop-offer .card{min-height:175px}
+  .shop-dock-actions{grid-column:1/-1}
+  .shop-dock-actions button{font-size:11px;padding:5px;min-height:40px}
+}
 </style>
 <main>
-<header><div class="brand"><img class="header-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"><small class="game-version">v0.2.63</small></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button><button id="fullscreenDisplay" class="mobile-fullscreen" type="button" aria-pressed="false">전체화면</button></div><p id="displayStatus" class="display-status" role="status" hidden></p></header>
+<header><div class="brand"><img class="header-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"><small class="game-version">v0.2.64</small></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button><button id="fullscreenDisplay" class="mobile-fullscreen" type="button" aria-pressed="false">전체화면</button></div><p id="displayStatus" class="display-status" role="status" hidden></p></header>
 <div class="hud" id="hud" aria-live="off"></div>
 <div class="field">
 <canvas id="canvas" width="960" height="640" aria-label="우주 슈팅 전투 화면"></canvas>
@@ -729,7 +797,7 @@ header .game-version{align-self:center;font-size:10px}
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <audio id="warningAudio" src="orbit-rogue-warning.mp3" preload="auto"></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.63 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer>v0.2.64 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -1690,14 +1758,18 @@ function openShop(fresh=true){
   const repair=shopRepairAmount();
   const recommended=stock.map((card,index)=>({index,reason:shopRecommendation(card)}))
     .filter(item=>item.reason).sort((a,b)=>b.reason[0]-a.reason[0])[0];
-  showPanel('보급 상점 · '+run.stage+'구역',
+  const statusBar=(label,value,max,kind)=>'<div class="shop-status-row"><span>'+label+'</span>'+
+    '<meter class="'+kind+'" aria-label="'+label+'" min="0" max="'+max+'" value="'+clamp(value,0,max)+'"></meter>'+
+    '<strong>'+Math.ceil(value)+' / '+max+'</strong></div>';
+  showPanel('<img class="shop-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"><span>보급 상점 · '+run.stage+'구역</span>',
+    '<div class="shop-toolbar"><p class="shop-wallet"><span>보유 코인</span><strong>'+run.coin.toLocaleString()+' <small>코인</small></strong></p>'+
+    '<button id="shopRepair" type="button"'+(!repair||run.coin<SHOP_REPAIR_COST?' disabled':'')+'>'+
+    (!repair?'내구도 가득 참':'추가 수리 +'+roundStat(repair)+' · '+SHOP_REPAIR_COST+' 코인')+'</button></div>'+
     '<div class="build-layout shop-layout"><div class="shop-sidebar">'+
-    '<figure class="shop-ship-preview"><canvas id="shopShip" width="300" height="200" aria-label="현재 기체와 장착 파츠"></canvas><figcaption>현재 기체</figcaption></figure>'+
-    shipStats()+
-    '<div class="buttons shop-actions"><button id="next" class="primary">다음 구역으로 ↗</button></div>'+
-    '</div><div class="build-content"><div class="shop-toolbar"><p class="shop-wallet"><span>보유 코인</span><strong>'+run.coin.toLocaleString()+' <small>코인</small></strong></p>'+
-    '<div class="shop-toolbar-actions"><button id="shopRepair" type="button"'+(!repair||run.coin<SHOP_REPAIR_COST?' disabled':'')+'>'+
-    (!repair?'내구도 가득 참':'수리 +'+roundStat(repair)+' · '+SHOP_REPAIR_COST+' 코인')+'</button><button id="shopRoll" class="shop-reroll">다시 뽑기 <span>'+rerollLabel()+'</span></button><button id="leave">저장하고 나가기</button></div></div>'+
+    '<figure class="shop-ship-preview"><canvas id="shopShip" width="300" height="240" aria-label="현재 기체와 장착 파츠"></canvas></figure>'+
+    '<div class="shop-status">'+statusBar('내구도',Math.max(0,run.hp),run.max,'hull-meter')+
+    statusBar('실드',run.shield,run.shieldMax,'shield-meter')+'</div>'+shipStats()+
+    '</div><div class="build-content">'+
     '<p class="shop-perks">주사위 '+run.coupons.dice+' · 반값권 '+run.coupons.half+
     (run.coupons.sale?' · 이번 판 50%':'')+(permanent?' · 단골 10%':'')+'</p>'+
     '<details class="shop-stats-mobile"><summary>내구도 '+Math.max(0,Math.ceil(run.hp))+'/'+run.max+
@@ -1711,7 +1783,8 @@ function openShop(fresh=true){
         (run.coupons.dice?'<button id="dice'+i+'" class="shop-dice"'+(eligible?'':' disabled')+'>주사위 사용</button>':'')+'</div>';
     }).join('')+'</div>'+
     '<p class="shop-message" role="status">'+(run.shopMessage||'')+'</p>'+shopInventory()+
-    '</div></div>'+
+    '</div></div><div class="shop-dock-actions"><button id="shopRoll" class="shop-reroll">다시 뽑기 <span>'+rerollLabel()+'</span></button>'+
+    '<button id="leave">저장하고 나가기</button><button id="next" class="primary">다음 구역으로 ↗</button></div>'+
     '<dialog id="sellDialog" class="sell-dialog"><form method="dialog"><h3>판매하시겠어요?</h3><p id="sellDescription"></p><div class="buttons"><button value="cancel" autofocus>취소</button><button value="sell" class="primary">판매</button></div></form></dialog>');
   stock.forEach((c,i)=>{
     if(!c)return;
@@ -1842,7 +1915,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.63',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.64',896,587);
   return card;
 }
 function downloadProof(){
