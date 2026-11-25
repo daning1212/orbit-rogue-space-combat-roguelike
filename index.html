@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.69 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.70 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -790,9 +790,34 @@ header .game-version{align-self:center;font-size:10px}
   .panel[data-screen="hangar"] .launch-actions-top #launch{text-align:center}
   .panel[data-screen="hangar"] .engine-title{font-size:clamp(18px,2.25vw,32px)}
 }
+
+.panel[data-screen="hangar"] .pilot-name{
+  display:inline-flex;align-items:center;gap:7px;
+  background:linear-gradient(145deg,#163347,#061320 70%);
+  border-radius:5px;font-variant-numeric:tabular-nums;
+}
+.pilot-rank{display:inline-flex;align-items:center;justify-content:center;gap:3px;flex:none;color:var(--bay)}
+.pilot-rank i{width:5px;height:5px;transform:rotate(45deg);background:currentColor}
+#hull0 .pilot-rank{flex-direction:column;gap:0}
+.pilot-rank b{display:block;width:11px;height:5px;background:currentColor;
+  clip-path:polygon(0 65%,50% 0,100% 65%,100% 100%,50% 35%,0 100%)}
+.panel[data-screen="hangar"] .hull-specs{
+  grid-row:2;grid-column:1/-1;justify-self:center;text-align:center;
+  padding:4px 7px;border:1px solid var(--bay);border-radius:4px;
+  color:var(--bay);background:#061522eb;font-size:clamp(9px,1.15vw,12px);line-height:1.25;
+}
+.hull-specs span{display:block;color:#e5f3ff}
+@media(min-width:621px){
+  .panel[data-screen="hangar"] .box{container-type:inline-size}
+  .panel[data-screen="hangar"] .hull-specs{
+    position:absolute;top:calc(43% + 8.1cqw);transform:translateX(-50%);z-index:1;
+  }
+  .panel[data-screen="hangar"] #hull0 .hull-specs{left:33.4%}
+  .panel[data-screen="hangar"] #hull1 .hull-specs{left:66.7%}
+}
 </style>
 <main>
-<header><div class="brand"><img class="header-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"><small class="game-version">v0.2.69</small></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button><button id="fullscreenDisplay" class="mobile-fullscreen" type="button" aria-pressed="false">전체화면</button></div><p id="displayStatus" class="display-status" role="status" hidden></p></header>
+<header><div class="brand"><img class="header-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"><small class="game-version">v0.2.70</small></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button><button id="fullscreenDisplay" class="mobile-fullscreen" type="button" aria-pressed="false">전체화면</button></div><p id="displayStatus" class="display-status" role="status" hidden></p></header>
 <div class="hud" id="hud" aria-live="off"></div>
 <div class="field">
 <canvas id="canvas" width="960" height="640" aria-label="우주 슈팅 전투 화면"></canvas>
@@ -821,7 +846,7 @@ header .game-version{align-self:center;font-size:10px}
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <audio id="warningAudio" src="orbit-rogue-warning.mp3" preload="auto"></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.69 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer>v0.2.70 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -1323,7 +1348,7 @@ function hangar(){
   hangarHull=starterHull;
   showPanel('<img class="hangar-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE">',
     '<p class="hangar-subtitle">'+tr('기체와 기본 무기를 고르고 출격하세요.','Choose a ship and primary weapon.')+'</p><div class="hull-pick">'+
-    hulls.map((h,i)=>'<button id="hull'+i+'" class="hull-card" aria-pressed="'+(i===hangarHull)+'"><span class="hull-card-head"><strong class="pilot-name">'+tr(i?'김마리아 대위':'하영서 중사',i?'Capt. Kim Maria':'Sgt. Ha Yeongseo')+'</strong><small>'+tr(h.name,i?'Power':'Speed')+' · '+tr(h.brief,i?'Damage +20% · Hull 110':'Speed +10% · Hull 82')+'</small></span><span class="hull-display"><canvas id="hangarShip'+i+'" class="hull-ship" width="300" height="170" aria-label="'+tr(h.name,i?'Power ship':'Speed ship')+'"></canvas><img class="hull-pilot" src="orbit-rogue-pilot-'+(i?'power':'speed')+'-full.webp" alt="'+tr(i?'파워 기체 파일럿':'스피드 기체 파일럿',i?'Power pilot':'Speed pilot')+'"></span><span class="hull-card-choice">'+tr('선택','Select')+'</span></button>').join('')+
+    hulls.map((h,i)=>'<button id="hull'+i+'" class="hull-card" aria-pressed="'+(i===hangarHull)+'"><span class="hull-card-head"><strong class="pilot-name"><span class="pilot-rank" aria-hidden="true">'+(i?'<i></i><i></i><i></i>':'<b></b><b></b>')+'</span>'+tr(i?'김마리아 대위':'하영서 중사',i?'Capt. Kim Maria':'Sgt. Ha Yeongseo')+'</strong></span><span class="hull-display"><canvas id="hangarShip'+i+'" class="hull-ship" width="300" height="170" aria-label="'+tr(h.name,i?'Power ship':'Speed ship')+'"></canvas><small class="hull-specs">'+tr(h.name,i?'Power':'Speed')+' <span>'+tr(h.brief,i?'Damage +20% · Hull 110':'Speed +10% · Hull 82')+'</span></small><img class="hull-pilot" src="orbit-rogue-pilot-'+(i?'power':'speed')+'-full.webp" alt="'+tr(i?'파워 기체 파일럿':'스피드 기체 파일럿',i?'Power pilot':'Speed pilot')+'"></span><span class="hull-card-choice">'+tr('선택','Select')+'</span></button>').join('')+
     '</div><div class="hangar-selectors">'+
     ['weapon','difficulty'].map((name,i)=>'<fieldset class="hangar-selector"><legend>'+tr(i?'난이도':'시작 무기',i?'Difficulty':'Starting weapon')+'</legend>'+
       '<button id="'+name+'Prev" aria-label="'+tr(i?'이전 난이도':'이전 무기','Previous '+name)+'">‹</button>'+
@@ -1939,7 +1964,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.69',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.70',896,587);
   return card;
 }
 function downloadProof(){
