@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.50 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.51 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -457,7 +457,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <audio id="warningAudio" src="orbit-rogue-warning.mp3" preload="auto"></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.50 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer>v0.2.51 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -1540,7 +1540,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.50',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.51',896,587);
   return card;
 }
 function downloadProof(){
@@ -1698,6 +1698,7 @@ function fitArena(){
   for(const zone of world.zones){zone.x*=ratio;zone.w*=ratio;}
   for(const target of world.targets){
     if(target.attack?.x!==undefined)target.attack.x*=ratio;
+    if(target.motion?.pass){target.motion.pass.fromX*=ratio;target.motion.pass.toX*=ratio;}
   }
   if(world.vulcanApproach)world.vulcanApproach.lanes=world.vulcanApproach.lanes.map(x=>x*ratio);
   for(const entry of world.edgeAlerts)entry.x*=ratio;
@@ -2169,6 +2170,51 @@ const vulcanBosses={
   5:{name:'VULCAN SENTINEL',hp:5000,r:39,shots:12,interval:.10,recovery:1.25,speed:195,zoneWidth:42,zoneDelay:6.4,zoneDamage:20},
   15:{name:'VULCAN OVERSEER',hp:10000,r:49,shots:20,interval:.075,recovery:1.05,speed:245,zoneWidth:52,zoneDelay:5.2,zoneDamage:30},
 };
+const BOSS_RAM_WARNING=.85;
+const bossManeuvers={
+  5:{sweep:.065,pace:1.3},
+  10:{sweep:.25,pace:.85,interval:8,depth:.57,ram:26,hold:.38},
+  15:{sweep:.10,pace:1.45,interval:9,depth:.49,ram:23},
+  20:{sweep:.32,pace:1.05,interval:7,depth:.76,ram:36,aimed:true}
+};
+function moveBoss(unit,dt){
+  const config=bossManeuvers[run.stage];
+  const motion=unit.motion;
+  motion.age+=dt;
+  const pass=motion.pass;
+  if(pass){
+    const previousX=unit.x,previousY=unit.y;
+    pass.age+=dt;
+    const warning=BOSS_RAM_WARNING,dive=.65,hold=config.hold??.20,retreat=.80;
+    const progress=clamp((pass.age-warning)/dive,0,1);
+    const returning=clamp((pass.age-warning-dive-hold)/retreat,0,1);
+    const travel=progress*progress*(1-returning*returning*(3-2*returning));
+    const windup=pass.age<warning?Math.sin(Math.PI*pass.age/warning)*14:0;
+    const angle=Math.atan2(pass.toY-pass.fromY,pass.toX-pass.fromX);
+    unit.x=pass.fromX+(pass.toX-pass.fromX)*travel-Math.cos(angle)*windup;
+    unit.y=pass.fromY+(pass.toY-pass.fromY)*travel-Math.sin(angle)*windup;
+    if(progress>0&&pass.age-dt<warning+dive+hold&&!pass.hit&&
+      Number.isFinite(rockClearance(previousX,previousY,unit.x,unit.y,{x:world.x,y:world.y,r:10},unit.r))){
+      pass.hit=true;
+      hurt(config.ram);
+    }
+    if(returning===1){motion.pass=null;motion.wait=config.interval;}
+    return true;
+  }
+
+  const phase=motion.age*config.pace;
+  const lane=unit.partner ? .68 : vulcanBosses[run.stage] ? .32 : .5;
+  const margin=Math.max(unit.r+12,40);
+  unit.x=clamp(W*(lane+Math.sin(phase+(unit.partner?Math.PI:0))*config.sweep),margin,W-margin);
+  unit.y=118+Math.sin(phase*.72+(unit.partner?1.5:0))*22;
+  if(config.interval&&(motion.wait-=dt)<=0){
+    motion.pass={age:0,fromX:unit.x,fromY:unit.y,
+      toX:config.aimed?clamp(world.x,margin,W-margin):unit.x,
+      toY:H*config.depth,hit:false};
+    return true;
+  }
+  return false;
+}
 function vulcanStep(dt){
   const config=vulcanBosses[run.stage];
   boss.pattern-=dt;
@@ -2180,7 +2226,7 @@ function vulcanStep(dt){
   }
 
   for(const unit of world.vulcanTeam){
-    if(unit.hp<=0)continue;
+    if(unit.hp<=0||moveBoss(unit,dt))continue;
     unit.fire-=dt;
     if(unit.fire>0)continue;
     if(!unit.burst){
@@ -2215,11 +2261,11 @@ function startBoss(){
   const vulcan=vulcanBosses[run.stage];
   const hp=Math.round((vulcan?.hp??(run.stage===10?20000:200000))*difficulty().bossHp);
   boss={boss:true,x:W/2,y:118,r:vulcan?.r??(run.stage===10?57:72),hp,max:hp,
-    fire:.9,pattern:vulcan?2.8:run.stage===10?1.1:2,phase:0,angle:Math.PI/2,burst:0};
+    fire:.9,pattern:vulcan?2.8:run.stage===10?1.1:2,phase:0,angle:Math.PI/2,burst:0,motion:{age:0,wait:4.2}};
   if(vulcan){
     boss.hp=boss.max=Math.ceil(hp/2);
     boss.x=W*.32;
-    const partner={...boss,x:W*.68,hp:Math.floor(hp/2),max:Math.floor(hp/2),fire:1.45,partner:true};
+    const partner={...boss,x:W*.68,hp:Math.floor(hp/2),max:Math.floor(hp/2),fire:1.45,partner:true,motion:{age:0,wait:7.6}};
     world.vulcanTeam=[boss,partner];
     world.targets.push(...world.vulcanTeam);
   }else world.targets.push(boss);
@@ -2250,6 +2296,7 @@ function addBossZone(x,y,w,h,delay=0,warning=1.65){
 }
 function bossStep(dt){
   if(vulcanBosses[run.stage]){vulcanStep(dt);return;}
+  if(moveBoss(boss,dt))return;
   boss.pattern-=dt;boss.fire-=dt;
   if(boss.fire<=0){
     const angle=Math.atan2(world.y-boss.y,world.x-boss.x);
@@ -2628,6 +2675,26 @@ function ship(x,y,size,enemy=false,tier=0,angle=enemy?Math.PI/2:-Math.PI/2,hull=
   ctx.restore();
 }
 function drawBoss(t){
+  const pass=t.motion?.pass;
+  if(pass&&pass.age<BOSS_RAM_WARNING){
+    ctx.save();
+    const angle=Math.atan2(pass.toY-pass.fromY,pass.toX-pass.fromX);
+    const width=t.r+10,nx=-Math.sin(angle)*width,ny=Math.cos(angle)*width;
+    ctx.fillStyle='#ff80562e';
+    ctx.beginPath();
+    ctx.moveTo(pass.fromX+nx,pass.fromY+ny);
+    ctx.lineTo(pass.toX+nx,pass.toY+ny);
+    ctx.lineTo(pass.toX-nx,pass.toY-ny);
+    ctx.lineTo(pass.fromX-nx,pass.fromY-ny);
+    ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.arc(pass.toX,pass.toY,width,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#ffbf89';ctx.lineWidth=2;ctx.setLineDash([8,6]);
+    ctx.beginPath();ctx.moveTo(pass.fromX,pass.fromY);ctx.lineTo(pass.toX,pass.toY);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.translate(pass.toX,pass.toY);ctx.rotate(angle);
+    path([[-16,-10],[0,0],[-16,10]],'#ffbf89');
+    ctx.restore();
+  }
   if(vulcanBosses[run.stage]){
     ctx.save();ctx.translate(t.x,t.y);ctx.rotate(t.angle+Math.PI/2);
     const width=t.r*2.25;
