@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ORBIT ROGUE v0.2.61 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.62 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -546,9 +546,61 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
   .card .card-art .card-icon,.card .card-art .part-icon{width:34px;height:34px}
   .card .card-art svg{width:28px;height:28px}
 }
+
+.panel[data-screen="hangar"] .box,.panel[data-screen="shop"] .box{width:min(1100px,100%)}
+.panel[data-screen="hangar"] .box{
+  background:repeating-linear-gradient(90deg,#5cb5df0c 0 1px,transparent 1px 36px),
+    linear-gradient(145deg,#183d59,#071321 53%,#302514);
+}
+.panel[data-screen="hangar"] .box>h2{padding:8px 0 0;margin:0}
+.panel[data-screen="hangar"] .box>.hangar-subtitle{padding-top:4px}
+.panel[data-screen="hangar"] .hull-display{gap:5px;align-items:center}
+.panel[data-screen="hangar"] .hull-ship{
+  height:clamp(100px,23vh,205px);border:1px solid var(--bay);
+  background:linear-gradient(90deg,#7bdcff12 1px,transparent 1px) center/20px 20px,
+    linear-gradient(#7bdcff12 1px,transparent 1px) center/20px 20px,
+    radial-gradient(ellipse,var(--bay-light),#081322 75%);
+  box-shadow:inset 0 0 15px var(--bay-light);
+}
+.panel[data-screen="hangar"] .hull-pilot{
+  width:clamp(65px,13vw,146px);height:clamp(100px,23vh,205px);
+  object-fit:cover;border:0;background:none;
+}
+.hangar-selectors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 auto;width:min(600px,95%)}
+.hangar-selector{
+  display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;
+  margin:0;min-width:0;padding:3px 5px 5px;border:1px solid #4699bb;border-radius:6px;background:#0b2437;
+}
+.hangar-selector legend{padding:0 5px;color:#9ce7ff;font-size:11px}
+.hangar-selector button{padding:3px 10px;text-align:center;font-weight:800}
+.hangar-selector output{text-align:center;color:#effaff;font-weight:750;font-size:clamp(11px,2vw,15px)}
+.panel[data-screen="hangar"] .launch-actions-top{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr) minmax(0,1fr);gap:7px;
+}
+.panel[data-screen="hangar"] #resume{grid-column:1;grid-row:1;text-align:center;min-height:40px}
+.panel[data-screen="hangar"] .launch-actions-top #launch{grid-column:2;grid-row:1;min-width:0}
+.panel[data-screen="hangar"] #startOptions{grid-column:3;grid-row:1;text-align:center;min-height:40px}
+.panel[data-screen="hangar"] #stickRecommend{grid-column:1/-1;justify-self:center}
+.panel[data-screen="shop"] .shop-ship-preview{width:100%;flex:none;margin:0 0 8px}
+.panel[data-screen="shop"] .shop-layout{grid-template-columns:minmax(145px,25%) minmax(0,1fr)}
+.panel[data-screen="shop"] .shop-offer .card{min-height:190px;text-align:center}
+.panel[data-screen="shop"] .shop-offer .card strong{font-size:clamp(13px,1.5vw,18px)}
+@media(max-width:620px){
+  .panel[data-screen="hangar"] .hull-display{grid-template-columns:minmax(0,1fr) minmax(0,.65fr)}
+  .panel[data-screen="hangar"] #hull0 .hull-display{grid-template-columns:minmax(0,.65fr) minmax(0,1fr)}
+  .panel[data-screen="hangar"] .hull-pilot{width:100%}
+  .panel[data-screen="hangar"] .launch-actions-top{margin-inline:10px}
+  #launch .engine-icon,#launch .engine-stripes{display:none}
+  .panel[data-screen="hangar"] .launch-actions-top #launch{display:block;text-align:center;padding-inline:4px}
+  .panel[data-screen="shop"] .shop-layout{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto}
+  .panel[data-screen="shop"] .shop-ship-preview{grid-row:1;width:min(130px,45%);margin:0 auto}
+  .panel[data-screen="shop"] .build-content{grid-row:2}
+  .panel[data-screen="shop"] .shop-actions{grid-row:3}
+  .panel[data-screen="shop"] .shop-offer .card{min-height:155px}
+}
 </style>
 <main>
-<header><div class="brand"><img class="header-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"><small class="game-version">v0.2.61</small></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button><button id="fullscreenDisplay" class="mobile-fullscreen" type="button" aria-pressed="false">전체화면</button></div><p id="displayStatus" class="display-status" role="status" hidden></p></header>
+<header><div class="brand"><img class="header-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"><small class="game-version">v0.2.62</small></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button><button id="fullscreenDisplay" class="mobile-fullscreen" type="button" aria-pressed="false">전체화면</button></div><p id="displayStatus" class="display-status" role="status" hidden></p></header>
 <div class="hud" id="hud" aria-live="off"></div>
 <div class="field">
 <canvas id="canvas" width="960" height="640" aria-label="우주 슈팅 전투 화면"></canvas>
@@ -577,7 +629,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <audio id="warningAudio" src="orbit-rogue-warning.mp3" preload="auto"></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer>v0.2.61 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer>v0.2.62 · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -1080,46 +1132,39 @@ function hangar(){
   showPanel('<img class="hangar-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE">',
     '<p class="hangar-subtitle">'+tr('기체와 기본 무기를 고르고 출격하세요.','Choose a ship and primary weapon.')+'</p><div class="hull-pick">'+
     hulls.map((h,i)=>'<button id="hull'+i+'" class="hull-card" aria-pressed="'+(i===hangarHull)+'"><span class="hull-card-head"><strong class="pilot-name">'+tr(i?'김마리아 대위':'하영서 중사',i?'Capt. Kim Maria':'Sgt. Ha Yeongseo')+'</strong><small>'+tr(h.name,i?'Power':'Speed')+' · '+tr(h.brief,i?'Damage +20% · Hull 110':'Speed +10% · Hull 82')+'</small></span><span class="hull-display"><canvas id="hangarShip'+i+'" class="hull-ship" width="300" height="170" aria-label="'+tr(h.name,i?'Power ship':'Speed ship')+'"></canvas><img class="hull-pilot" src="orbit-rogue-pilot-'+(i?'power':'speed')+'.png" alt="'+tr(i?'파워 기체 파일럿':'스피드 기체 파일럿',i?'Power pilot':'Speed pilot')+'"></span><span class="hull-card-choice">'+tr('선택','Select')+'</span></button>').join('')+
-    '</div><div class="buttons launch-actions launch-actions-top"><button id="launch" class="primary" type="button" aria-labelledby="engineTitle"><span class="engine-icon" aria-hidden="true">⏻</span><span class="engine-label"><strong class="engine-title" id="engineTitle" lang="en">ENGINE START</strong><small class="engine-weapon" id="engineWeapon" lang="en">'+weaponNamesEn[chosen]+'</small></span><span class="engine-stripes" aria-hidden="true"></span></button>'+
+    '</div><div class="hangar-selectors">'+
+    ['weapon','difficulty'].map((name,i)=>'<fieldset class="hangar-selector"><legend>'+tr(i?'난이도':'시작 무기',i?'Difficulty':'Starting weapon')+'</legend>'+
+      '<button id="'+name+'Prev" aria-label="'+tr(i?'이전 난이도':'이전 무기','Previous '+name)+'">‹</button>'+
+      '<output id="'+name+'Value" aria-live="polite"></output>'+
+      '<button id="'+name+'Next" aria-label="'+tr(i?'다음 난이도':'다음 무기','Next '+name)+'">›</button></fieldset>').join('')+'</div>'+
+    '<div class="buttons launch-actions launch-actions-top"><button id="launch" class="primary" type="button" aria-labelledby="engineTitle"><span class="engine-icon" aria-hidden="true">⏻</span><span class="engine-label"><strong class="engine-title" id="engineTitle" lang="en">ENGINE START</strong><small class="engine-weapon" id="engineWeapon" lang="en">'+weaponNamesEn[chosen]+'</small></span><span class="engine-stripes" aria-hidden="true"></span></button>'+
     '<button id="startOptions" type="button">'+tr('옵션','Options')+'</button>'+
     '<button id="stickRecommend" class="stick-recommend" type="button">'+tr('조이스틱 추천','Joystick')+'</button>'+
-    (store.get('or-save',null)?'<button id="resume">저장한 작전 이어하기</button>':'')+'</div>'+
-    '<p class="loadout-label">'+tr('난이도','Difficulty')+
-    (difficultyLimit<2?' <small>'+tr('20구역 클리어로 다음 난이도 해금','Clear Sector 20 to unlock the next difficulty')+'</small>':'')+
-    '</p><div class="weapon-grid grid difficulty-grid">'+
-    difficulties.map(({ko,en},i)=>'<button id="difficulty'+i+'" aria-pressed="'+(chosenDifficulty===i)+'"'+
-      (i>difficultyLimit?' disabled':'')+'>'+tr(ko,en)+(i>difficultyLimit?' · '+tr('잠김','Locked'):'')+'</button>').join('')+
-    '</div><p class="loadout-label">'+tr('시작 무기','Starting weapons')+' · '+available.length+' / '+weapons.length+
-    ' <small>'+tr('20구역 클리어마다 1개 해금','Clear Sector 20 to unlock one per run')+'</small></p><div class="weapon-grid grid">'+
-    weapons.map((w,i)=>{
-      const unlocked=available.includes(i);
-      const detail=unlocked
-        ? tr(['빠른 폭발탄','목표 추적','직선 관통','근거리 추적 빔','집중 연사','부채꼴 산탄'][i],['Fast explosive','Target tracking','Piercing beam','Tracking beam','Focused fire','Wide spread'][i])
-        : tr('잠김','Locked');
-      return '<button id="w'+i+'" class="card" aria-pressed="'+(chosen===i)+'"'+(unlocked?'':' disabled')+
-        '><strong>'+tr(w,weaponNamesEn[i])+'</strong><span>'+detail+'</span></button>';
-    }).join('')+
-    '</div><div class="stage-route" aria-label="스테이지 경로">01<i></i><strong>10 · 리프트 엑스커베이터</strong><i></i><strong>20 · 널 크라운</strong></div><small>최고 점수 '+best.toLocaleString()+'</small>');
-  available.forEach(i=>$('w'+i).onclick=()=>{
-    $('w'+chosen).setAttribute('aria-pressed','false');chosen=i;
-    $('w'+chosen).setAttribute('aria-pressed','true');
-    $('engineWeapon').textContent=weaponNamesEn[chosen];
+    '<button id="resume"'+(store.get('or-save',null)?'':' disabled')+'>'+tr('저장한 작전 이어하기','Resume saved run')+'</button></div>');
+
+  const choices=[
+    {name:'weapon',items:available,index:()=>available.indexOf(chosen),set:value=>{chosen=value;$('engineWeapon').textContent=weaponNamesEn[chosen];},label:value=>tr(weapons[value],weaponNamesEn[value])},
+    {name:'difficulty',items:difficulties.slice(0,difficultyLimit+1).map((_,i)=>i),index:()=>chosenDifficulty,set:value=>{chosenDifficulty=value;},label:value=>tr(difficulties[value].ko,difficulties[value].en)}
+  ];
+  choices.forEach(({name,items,index,set,label})=>{
+    const render=()=>{$(name+'Value').textContent=label(items[index()]);};
+    for(const [suffix,offset] of [['Prev',-1],['Next',1]]){
+      const button=$(name+suffix);
+      button.disabled=items.length<2;
+      button.onclick=()=>{set(items[(index()+offset+items.length)%items.length]);render();};
+    }
+    render();
   });
   hulls.forEach((_,i)=>$('hull'+i).onclick=()=>{
     $('hull'+hangarHull).setAttribute('aria-pressed','false');
     hangarHull=i;$('hull'+i).setAttribute('aria-pressed','true');
   });
-  for(let i=0;i<=difficultyLimit;i++)$('difficulty'+i).onclick=()=>{
-    $('difficulty'+chosenDifficulty).setAttribute('aria-pressed','false');
-    chosenDifficulty=i;
-    $('difficulty'+i).setAttribute('aria-pressed','true');
-  };
   $('launch').onclick=()=>start(chosen,hangarHull,chosenDifficulty);
   $('startOptions').onclick=openStartOptions;
   $('stickRecommend').onclick=()=>setStick(true);
   syncStick(false);
   fillBgmPlayer();
-  if($('resume'))$('resume').onclick=()=>{
+  if(!$('resume').disabled)$('resume').onclick=()=>{
     menuPlaying=false;
     combatOst.pause();
     run=store.get('or-save',null);starter=run.starter;starterHull=run.hull??0;run.hull=starterHull;run.dash??=1;
@@ -1546,10 +1591,11 @@ function openShop(fresh=true){
   const recommended=stock.map((card,index)=>({index,reason:shopRecommendation(card)}))
     .filter(item=>item.reason).sort((a,b)=>b.reason[0]-a.reason[0])[0];
   showPanel('보급 상점 · '+run.stage+'구역',
-    '<div class="build-layout shop-layout"><div class="shop-sidebar">'+shipStats()+
+    '<div class="build-layout shop-layout"><div class="shop-sidebar">'+
+    '<figure class="shop-ship-preview"><canvas id="shopShip" width="300" height="200" aria-label="현재 기체와 장착 파츠"></canvas><figcaption>현재 기체</figcaption></figure>'+
+    shipStats()+
     '<div class="buttons shop-actions"><button id="next" class="primary">다음 구역으로 ↗</button></div>'+
     '</div><div class="build-content"><div class="shop-toolbar"><p class="shop-wallet"><span>보유 코인</span><strong>'+run.coin.toLocaleString()+' <small>코인</small></strong></p>'+
-    '<figure class="shop-ship-preview"><canvas id="shopShip" width="300" height="200" aria-label="현재 기체와 장착 파츠"></canvas><figcaption>현재 기체</figcaption></figure>'+
     '<div class="shop-toolbar-actions"><button id="shopRepair" type="button"'+(!repair||run.coin<SHOP_REPAIR_COST?' disabled':'')+'>'+
     (!repair?'내구도 가득 참':'수리 +'+roundStat(repair)+' · '+SHOP_REPAIR_COST+' 코인')+'</button><button id="shopRoll" class="shop-reroll">다시 뽑기 <span>'+rerollLabel()+'</span></button><button id="leave">저장하고 나가기</button></div></div>'+
     '<p class="shop-perks">주사위 '+run.coupons.dice+' · 반값권 '+run.coupons.half+
@@ -1696,7 +1742,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.61',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.62',896,587);
   return card;
 }
 function downloadProof(){
