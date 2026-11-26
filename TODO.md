@@ -85,7 +85,7 @@
 
 - [x] 하영서 중사를 중위로, 김마리아 대위를 중령으로 변경하고 위관급·영관급 표식을 각각 다이아몬드·꽃 모양으로 구분했다.
 - [x] ORBIT ROGUE 제목·버전 다음 기존 `assets/branding/healingarty-games-logo.png`를 2초간 보여주고 격납고로 진입하는 순서를 브라우저에서 확인했다.
-- [ ] 게임 코드를 먼저 커밋·푸시한 SHA `da25bafe88b9f482d36733358da0ed00d0fb81d6`로 README와 홈페이지의 PLAY·ZIP·미리보기 링크를 갱신한 뒤 각 저장소를 순서대로 푸시한다. 참고 PNG 세 장은 계속 제외한다.
+- [x] 게임 코드 SHA `da25bafe88b9f482d36733358da0ed00d0fb81d6`로 README와 홈페이지의 PLAY·ZIP·미리보기 링크를 갱신했다. 게임 문서 커밋 `ba0626780f6106214dc68f565e061b49d748ecc9`를 먼저, 홈페이지 커밋 `2fe01d517ce153d6d49e3a6afd8ffcfd2bfa54f2`를 이어서 순서대로 푸시했다. 참고 PNG 세 장은 계속 제외한다.
 
 ## 버전·PLAY·ZIP 연결 및 순차 배포 — 완료
 
