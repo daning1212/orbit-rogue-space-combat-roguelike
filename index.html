@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:,">
-<title>ORBIT ROGUE v0.2.77 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.78 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -922,7 +922,7 @@ header .game-version{align-self:center;font-size:10px}
 }
 </style>
 <main>
-<header><div class="brand"><img class="header-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"><small class="game-version" data-game-version>v0.2.77</small></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button><button id="fullscreenDisplay" class="mobile-fullscreen" type="button" aria-pressed="false">전체화면</button></div><p id="displayStatus" class="display-status" role="status" hidden></p></header>
+<header><div class="brand"><img class="header-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"><small class="game-version" data-game-version>v0.2.78</small></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button><button id="fullscreenDisplay" class="mobile-fullscreen" type="button" aria-pressed="false">전체화면</button></div><p id="displayStatus" class="display-status" role="status" hidden></p></header>
 <div class="hud" id="hud" aria-live="off"></div>
 <div class="field">
 <canvas id="canvas" width="960" height="640" aria-label="우주 슈팅 전투 화면"></canvas>
@@ -951,16 +951,17 @@ header .game-version{align-self:center;font-size:10px}
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <audio id="warningAudio" src="orbit-rogue-warning.mp3" preload="auto"></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer><span data-game-version>v0.2.77</span> · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer><span data-game-version>v0.2.78</span> · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
 const canvas = $('canvas'), ctx = canvas.getContext('2d');
-const GAME_VERSION='0.2.77';
+const GAME_VERSION='0.2.78';
 const H=640,DESKTOP_WIDTH=Math.round(H*16/9),MAX_STAGE=20,MAP_SIDE=3;
 let W=960;
 const DASH_TIME=.32,DASH_FILL_TIME=8,DASH_KILL_CHARGE=.13;
+const RELIC_CAPTURE_RADIUS=112;
 const DOCKING_APPROACH=3,DOCKING_WINDOW=12;
 const REVERSE_RATE=Math.PI/.34;
 const artwork=Object.create(null);
@@ -2013,8 +2014,8 @@ function stepSectorExit(dt){
 }
 function prepareDockingStation(){
   if(world.docking)return world.docking;
-  const image=artwork.dockingStation,aspect=image?.width&&image?.height?image.width/image.height:930/887;
-  const width=Math.min(W*.42,H*.48*aspect),height=width/aspect;
+  const image=artwork.dockingStation,aspect=image?.width&&image?.height?image.width/image.height:16/9;
+  const width=Math.min(W*.72,H*.82*aspect),height=width/aspect;
   const targetX=clamp(world.x+W*.06,18,W-width-18),targetY=clamp(world.y-height*.54,12,H-height-12),startX=W+width*.8;
   return world.docking={x:startX,y:targetY,width,height,startX,targetX,elapsed:0,timer:0,phase:'approach'};
 }
@@ -2031,13 +2032,70 @@ function enterDockingWindow(){
   d.phase='window';d.x=d.targetX;d.timer=DOCKING_WINDOW;
   if(boss)stopBossOst();
   boss=null;world.vulcanTeam=null;world.linkedTarget=null;world.stun=0;
-  for(const key of ['targets','shots','hostile','beams','zones','gems','drops','edgeAlerts'])world[key]=[];
+  world.targets=world.targets.filter(target=>!target.boss);
+  for(const key of ['shots','hostile','beams','zones','gems','drops','edgeAlerts'])world[key]=[];
   world.blasts=[];world.sparks=[];world.damageNumbers=[];world.noticeFor=0;
+  world.dockingDefense={cooldown:.35,nextTurret:0,beams:[]};
   mode='docking';keys.clear();pointer=null;resetStick();releaseThrust();syncCombatOst();hide();
 }
 function dockingBayContains(d){
   const x=(world.x-d.x)/d.width,y=(world.y-d.y)/d.height;
-  return x>=.10&&x<=.49&&y>=.38&&y<=.70;
+  return x>=.09&&x<=.27&&y>=.40&&y<=.66;
+}
+function dockingTurretPositions(d){
+  return [[.32,.19],[.58,.19],[.32,.81],[.58,.81]].map(([x,y])=>({x:d.x+d.width*x,y:d.y+d.height*y}));
+}
+function stepDockingDefense(dt){
+  const defense=world.dockingDefense??={cooldown:.35,nextTurret:0,beams:[]};
+  defense.beams=defense.beams.filter(beam=>(beam.life-=dt)>0);
+  defense.cooldown-=dt;
+  if(defense.cooldown>0)return;
+  const targets=world.targets.filter(target=>!target.rock&&!target.boss&&target.hp>0&&target.x>-80&&target.x<W+80&&target.y>-80&&target.y<H+80);
+  if(!targets.length){defense.cooldown=.22;return;}
+  const turrets=dockingTurretPositions(world.docking),index=defense.nextTurret%turrets.length,origin=turrets[index];
+  const target=targets.reduce((nearest,candidate)=>Math.hypot(candidate.x-origin.x,candidate.y-origin.y)<Math.hypot(nearest.x-origin.x,nearest.y-origin.y)?candidate:nearest);
+  const damage=9+run.stage*.9;
+  defense.beams.push({x:origin.x,y:origin.y,tx:target.x,ty:target.y,life:.18,duration:.18,turret:index});
+  damageTarget(target,damage);
+  defense.nextTurret=(index+1)%turrets.length;
+  defense.cooldown=.78;
+}
+function resolveDockingDefeats(){
+  world.targets=world.targets.filter(target=>{
+    if(target.hp>0)return true;
+    explode(target);
+    if(!target.rock)run.dash=Math.min(1,run.dash+DASH_KILL_CHARGE);
+    run.score+=target.rock?25:70;
+    run.kills+=target.rock?0:1;
+    const coins=target.rock?1:2;
+    run.coin+=coins;world.loot.coins+=coins;drop(target);
+    return false;
+  });
+}
+function stepDockingThreats(dt){
+  animateExplosions(dt);
+  world.inv=Math.max(0,world.inv-dt);world.flash=Math.max(0,world.flash-dt);world.shieldDelay-=dt;
+  if(world.shieldDelay<=0)run.shield=Math.min(run.shieldMax,run.shield+7*dt);
+  run.hp=Math.min(run.max,run.hp+run.regen*dt);
+  const rocks=world.targets.filter(target=>target.rock&&target.hp>0);
+  for(const target of world.targets){
+    if(target.hp<=0)continue;
+    if(target.rock){target.x+=target.vx*dt;target.y+=target.vy*dt;target.rotation+=target.spin*dt;continue;}
+    if(target.attack){stepEnemyAttack(target,dt,rocks);continue;}
+    moveEnemy(target,dt,rocks);
+    if(target.artillery)artilleryStep(target,dt);
+    else if(target.armed){
+      target.fire-=dt;
+      if(target.fire<0&&target.x>0&&target.x<W&&target.y>0&&target.y<H){
+        const aim=Math.atan2(world.y-target.y,world.x-target.x),speed=116+run.stage*7;
+        target.fire=fireEnemy(target,aim,speed,enemyFireProfile(run.stage,wavePressure(run.time)));
+      }
+    }
+    if(near(target,world,target.r+12)){hurt(15);target.hp=0;}
+  }
+  stepDockingDefense(dt);
+  stepHazards(dt);
+  resolveDockingDefeats();
 }
 function stepDocking(dt){
   const d=world.docking;
@@ -2045,7 +2103,12 @@ function stepDocking(dt){
   const dashBefore=run.dash;
   moveShip(dt);
   run.dash=Math.min(dashBefore,run.dash);
-  if(dockingBayContains(d)){sound(520,.22);openShop(true);return;}
+  stepDockingThreats(dt);
+  if(run.hp<=0){startPlayerDestruction();return;}
+  if(dockingBayContains(d)){
+    world.targets=[];world.hostile=[];world.dockingDefense.beams=[];
+    sound(520,.22);openShop(true);return;
+  }
   d.timer=Math.max(0,d.timer-dt);
   if(d.timer<=0){run.stage++;delete run.shopReserved;enterStage(true);}
 }
@@ -2412,7 +2475,11 @@ function fitArena(){
   if(run?.map){run.map.x*=ratio;for(const site of run.map.sites??[])site.x*=ratio;}
   if(!world)return;
   world.x=clamp(world.x*ratio,16,W-16);
-  if(world.docking){world.docking.x*=ratio;world.docking.targetX*=ratio;world.docking.startX*=ratio;world.docking.width*=ratio;world.docking.height=world.docking.width*887/930;}
+  if(world.docking){
+    world.docking.x*=ratio;world.docking.targetX*=ratio;world.docking.startX*=ratio;world.docking.width*=ratio;
+    const image=artwork.dockingStation,aspect=image?.width&&image?.height?image.width/image.height:16/9;
+    world.docking.height=world.docking.width/aspect;
+  }
   for(const group of [world.targets,world.shots,world.hostile,world.gems,world.drops,world.sparks,world.blasts,world.damageNumbers]){
     for(const entity of group)entity.x*=ratio;
   }
@@ -2421,6 +2488,7 @@ function fitArena(){
     if(beam.bend)beam.bend.x*=ratio;
     if(beam.points)for(const point of beam.points)point.x*=ratio;
   }
+  for(const beam of world.dockingDefense?.beams??[]){beam.x*=ratio;beam.tx*=ratio;}
   for(const zone of world.zones){zone.x*=ratio;if(!zone.radius)zone.w*=ratio;}
   for(const target of world.targets){
     if(target.attack?.x!==undefined)target.attack.x*=ratio;
@@ -3117,8 +3185,12 @@ function shiftScene(dx,dy){
     if(Number.isFinite(point.x))point.x+=dx;
     if(Number.isFinite(point.y))point.y+=dy;
   };
-  for(const group of [world.targets,world.shots,world.hostile,world.gems,world.drops,world.sparks,world.blasts,world.damageNumbers,world.edgeAlerts,world.zones,world.beams])
+  for(const group of [world.targets,world.shots,world.hostile,world.gems,world.drops,world.sparks,world.blasts,world.damageNumbers,world.edgeAlerts,world.zones,world.beams,world.dockingDefense?.beams])
     for(const entity of group??[])move(entity);
+  for(const beam of world.dockingDefense?.beams??[]){
+    if(Number.isFinite(beam.tx))beam.tx+=dx;
+    if(Number.isFinite(beam.ty))beam.ty+=dy;
+  }
   for(const beam of world.beams){
     move(beam.bend);
     for(const point of beam.points??[])move(point);
@@ -3154,7 +3226,7 @@ function advanceRelics(dt){
   const playerPosition={x:map.x+world.x,y:map.y+world.y};
   for(const site of map.sites){
     if(site.claimed)continue;
-    if(near(site,playerPosition,72)&&Math.hypot(world.vx,world.vy)<42){
+    if(near(site,playerPosition,RELIC_CAPTURE_RADIUS)&&Math.hypot(world.vx,world.vy)<42){
       site.progress=clamp((site.progress??0)+dt,0,8);
       if(site.progress>=8-1e-8){
         site.claimed=true;run.coin+=40;run.score+=600;run.xp+=6;
@@ -3765,6 +3837,24 @@ function paintDockingStation(){
   ctx.drawImage(image,d.x,d.y+bob,d.width,d.height);
   ctx.restore();
 }
+function paintDockingDefense(){
+  const d=world?.docking,defense=world?.dockingDefense;
+  if(!d||mode!=='docking'||!defense)return;
+  const pulse=reducedMotion.matches?0:.35+.65*(.5+.5*Math.sin(last*.018));
+  ctx.save();
+  for(const point of dockingTurretPositions(d)){
+    ctx.globalAlpha=.56+pulse*.44;ctx.fillStyle='#6cecff';ctx.shadowColor='#39dfff';ctx.shadowBlur=9;
+    ctx.beginPath();ctx.arc(point.x,point.y,2.4+pulse*1.5,0,Math.PI*2);ctx.fill();
+  }
+  for(const beam of defense.beams){
+    const alpha=clamp(beam.life/beam.duration,0,1);
+    ctx.globalAlpha=alpha;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(beam.x,beam.y);ctx.lineTo(beam.tx,beam.ty);
+    ctx.strokeStyle='#32dcff';ctx.lineWidth=6;ctx.shadowColor='#32dcff';ctx.shadowBlur=15;ctx.stroke();
+    ctx.strokeStyle='#e6fcff';ctx.lineWidth=1.8;ctx.shadowBlur=4;ctx.stroke();
+    ctx.globalAlpha=alpha*.9;ctx.fillStyle='#ddfbff';ctx.beginPath();ctx.arc(beam.tx,beam.ty,3.2,0,Math.PI*2);ctx.fill();
+  }
+  ctx.restore();
+}
 function paintGuidanceArrow(targetX,targetY,color,label,forceEdge=false){
   const dx=targetX-world.x,dy=targetY-world.y,distance=Math.hypot(dx,dy);
   const angle=distance>1?Math.atan2(dy,dx):-Math.PI/2,inset=52;
@@ -3790,9 +3880,9 @@ function paintGuidanceArrow(targetX,targetY,color,label,forceEdge=false){
 }
 function paintDockingNotice(){
   if(!world?.docking||!(world.docking.phase==='approach'||mode==='docking'))return;
-  const d=world.docking,bayX=d.x+d.width*.295,bayY=d.y+d.height*.54;
+  const d=world.docking,bayX=d.x+d.width*.20,bayY=d.y+d.height*.52;
   paintGuidanceArrow(bayX,bayY,'#65e2ff','DOCK BAY');
-  const text=mode==='docking'?'화살표를 따라 도킹 베이로 진입 · '+Math.ceil(d.timer)+'초':'정거장 접근 중 · 화살표를 따라 도킹 베이로 이동';
+  const text=mode==='docking'?'정거장 방어 가동 · 베이 진입 · '+Math.ceil(d.timer)+'초':'정거장 접근 중 · 화살표를 따라 도킹 베이로 이동';
   ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='700 13px system-ui,sans-serif';
   const width=Math.min(W-24,ctx.measureText(text).width+24),x=(W-width)/2,y=H-28;
   ctx.fillStyle='#071321d9';ctx.fillRect(x,y-13,width,26);
@@ -3823,15 +3913,17 @@ function paintRelicSites(){
   for(const site of map.sites){
     if(site.claimed)continue;
     const x=site.x-map.x,y=site.y-map.y;
-    if(x<-72||x>W+72||y<-72||y>H+72)continue;
+    const area=RELIC_CAPTURE_RADIUS;
+    if(x<-area||x>W+area||y<-area||y>H+area)continue;
     const relic=relicProfile(site),color=relic.color,progress=clamp((site.progress??0)/8,0,1),pulse=reducedMotion.matches?0:Math.sin(last*.004)*2;
     ctx.save();ctx.translate(x,y);ctx.globalAlpha=.94;
-    const glow=ctx.createRadialGradient(0,0,3,0,0,58);glow.addColorStop(0,color+'40');glow.addColorStop(.5,color+'18');glow.addColorStop(1,color+'00');
-    ctx.fillStyle=glow;ctx.beginPath();ctx.arc(0,0,58,0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle=color;ctx.lineWidth=1.4;ctx.setLineDash([6,5]);ctx.beginPath();ctx.arc(0,0,43+pulse,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
-    ctx.globalAlpha=.72;ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,0,32,0,Math.PI*2);ctx.stroke();
+    const glow=ctx.createRadialGradient(0,0,3,0,0,area*1.28);glow.addColorStop(0,color+'36');glow.addColorStop(.56,color+'18');glow.addColorStop(1,color+'00');
+    ctx.fillStyle=glow;ctx.beginPath();ctx.arc(0,0,area*1.28,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=.055;ctx.fillStyle=color;ctx.beginPath();ctx.arc(0,0,area,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=.88;ctx.strokeStyle=color;ctx.lineWidth=1.7;ctx.setLineDash([8,7]);ctx.beginPath();ctx.arc(0,0,area+pulse,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+    ctx.globalAlpha=.62;ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,0,area*.72,0,Math.PI*2);ctx.stroke();
     for(let i=0;i<8;i++){
-      const a=i*Math.PI/4;ctx.beginPath();ctx.moveTo(Math.cos(a)*35,Math.sin(a)*35);ctx.lineTo(Math.cos(a)*41,Math.sin(a)*41);ctx.stroke();
+      const a=i*Math.PI/4;ctx.beginPath();ctx.moveTo(Math.cos(a)*area*.91,Math.sin(a)*area*.91);ctx.lineTo(Math.cos(a)*area*.98,Math.sin(a)*area*.98);ctx.stroke();
     }
     ctx.globalAlpha=.92;ctx.fillStyle='#071522e8';ctx.beginPath();ctx.arc(0,0,25,0,Math.PI*2);ctx.fill();ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke();
     ctx.save();ctx.rotate(reducedMotion.matches?0:last*.00035);
@@ -3844,10 +3936,11 @@ function paintRelicSites(){
       ctx.moveTo(0,-10);ctx.lineTo(12,0);ctx.lineTo(4,0);ctx.lineTo(15,10);ctx.lineTo(0,4);ctx.lineTo(-15,10);ctx.lineTo(-4,0);ctx.lineTo(-12,0);
     }
     ctx.closePath();ctx.fillStyle=color;ctx.shadowColor=color;ctx.shadowBlur=13;ctx.fill();ctx.restore();
-    ctx.shadowBlur=0;ctx.strokeStyle=color;ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,0,51,-Math.PI/2,-Math.PI/2+Math.PI*2*progress);ctx.stroke();
+    ctx.shadowBlur=0;ctx.strokeStyle=color;ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,0,area*.82,-Math.PI/2,-Math.PI/2+Math.PI*2*progress);ctx.stroke();
     ctx.font='900 9px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#f3fbff';
-    ctx.fillText(site.id+' · '+relic.short,0,-58);
-    ctx.fillStyle=color;ctx.fillText(progress>0?Math.ceil(8-site.progress)+'초':'8초 점령',0,59);
+    const labelY=clamp(-area-18,12-y,H-12-y),timerY=clamp(area+20,12-y,H-12-y);
+    ctx.fillText(site.id+' · '+relic.short,0,labelY);
+    ctx.fillStyle=color;ctx.fillText(progress>0?Math.ceil(8-site.progress)+'초':'8초 점령',0,timerY);
     ctx.restore();
   }
 }
@@ -4053,6 +4146,7 @@ function paint(){
       }
     }
   }
+  paintDockingDefense();
   for(const b of world.beams){
     ctx.save();ctx.globalAlpha=Math.min(1,b.life/.09);ctx.lineCap='round';
     ctx.beginPath();ctx.moveTo(b.x,b.y);
