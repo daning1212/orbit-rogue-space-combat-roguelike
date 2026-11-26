@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:,">
-<title>ORBIT ROGUE v0.2.73 · 우주전투 로그라이크</title>
+<title>ORBIT ROGUE v0.2.75 · 우주전투 로그라이크</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#080d19;color:#ecf6ff;font:15px system-ui,sans-serif}main{width:min(1010px,100%);margin:auto;padding:16px}header,.hud{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}header{margin-bottom:10px}strong,h1,h2{letter-spacing:-.035em}header strong{font-size:22px}.hud{background:#101b2b;padding:9px 12px;border:1px solid #254563;color:#b4dcf8;font-size:13px;margin-bottom:8px}.field{position:relative;border:1px solid #315777;border-radius:9px;overflow:hidden;background:#090f1d}canvas{display:block;width:100%;height:min(74vh,680px);min-height:355px;touch-action:none}.panel{position:absolute;inset:0;display:grid;place-items:center;background:#050a14d9;padding:12px;overflow:auto}.panel[hidden]{display:none}.box{width:min(720px,100%);max-height:100%;overflow:auto;background:#101b2bf5;border:1px solid #38607d;border-radius:10px;padding:clamp(14px,3vw,26px)}h1,h2,p{margin:0 0 10px}p,small{color:#b4c8df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}.split{display:grid;grid-template-columns:1fr 2fr;gap:14px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}button{border:1px solid #47718d;background:#17283c;color:#eff9ff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer;text-align:left}button:hover,button:focus-visible{border-color:#6be2ff;outline:1px solid #6be2ff}button[disabled]{cursor:default;opacity:.45}.primary{background:#075269;border-color:#64dcff}.card{display:grid;align-content:start;gap:4px}.card span{color:#82e1ff;font-size:13px}.sym{color:#f8ce72}.stat{margin:0;padding-left:18px;color:#b2c9df}.options{display:grid;gap:10px;margin:12px 0}.options label{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:8px}footer{margin-top:8px;color:#a6bdd4;font-size:12px}@media(max-width:560px){main{padding:8px}.split{grid-template-columns:1fr;gap:6px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hud{font-size:11px}.box{padding:12px}}
 </style>
@@ -348,11 +348,34 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 .ship-stats h3{margin:0 0 7px;font-size:.9rem}.ship-stats dl{margin:0}
 .ship-stats dl div{display:flex;justify-content:space-between;gap:5px;padding:4px 0;border-bottom:1px solid #233c51;font-size:.75rem}
 .ship-stats dd{margin:0;color:#a8e7ff;white-space:nowrap;font-variant-numeric:tabular-nums}
+.panel[data-screen="pause"]{background:radial-gradient(ellipse at 50% 45%,#142940dc,#050a14ef 78%)}
+.panel[data-screen="pause"] .box{width:min(790px,100%);padding:clamp(14px,2.8vw,24px);border-color:#456b85;background:linear-gradient(145deg,#10243af7,#091321fa 72%);box-shadow:0 20px 70px #000b,inset 0 1px #9deaff20}
+.panel[data-screen="pause"] .box>h2{margin:0 0 14px;font-size:clamp(25px,4vw,36px)}
+.pause-layout{grid-template-columns:minmax(190px,.78fr) minmax(0,1.22fr);gap:14px;align-items:stretch}
+.pause-layout .ship-stats{height:100%;padding:12px;background:linear-gradient(160deg,#0e2031,#091521);border-color:#31516a;box-shadow:inset 0 1px #d4f4ff0c}
+.pause-layout .ship-stats h3{padding-bottom:8px;border-bottom:1px solid #34566d;color:#d9f5ff;font-size:.92rem}
+.pause-layout .ship-stats dl div{padding:5px 0;font-size:.72rem}
+.pause-content{display:grid;align-content:start;gap:12px}
+.pause-control-panel{padding:14px;border:1px solid #2f526a;border-radius:9px;background:linear-gradient(150deg,#11263a,#0b1827);box-shadow:inset 0 1px #d2f6ff0c}
+.pause-kicker{margin:0 0 14px;color:#84e7ff;font:750 10px/1.3 ui-monospace,monospace;letter-spacing:.13em}
+.pause-control-panel .options{gap:13px;margin:0}
+.pause-control-panel .pause-slider{display:grid;grid-template-columns:1fr;gap:5px;color:#e1edf7;font-size:13px}
+.pause-control-panel .pause-slider>span{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pause-control-panel .pause-slider output{color:#86e5ff;font:750 11px ui-monospace,monospace}
+.pause-control-panel input[type="range"]{width:100%;margin:2px 0 5px;accent-color:#62ddff;cursor:pointer}
+.pause-control-panel .damage-numbers-option{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:9px;border-top:1px solid #2a455c;color:#d9e9f5;font-size:12px}
+.pause-control-panel .damage-numbers-option input{width:18px;height:18px;margin:0;accent-color:#62ddff}
+.pause-actions{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(112px,.65fr);gap:8px;margin:0}
+.pause-actions button{min-height:44px;text-align:center}
+.pause-actions #continue{font-weight:800;background:linear-gradient(120deg,#0b5269,#103850);border-color:#69e2ff;box-shadow:inset 0 0 15px #4bd7ff20}
+.pause-actions #leaveRun{border-color:#59687b;background:#151f30;color:#d5deea}
+@media(max-width:620px){.panel[data-screen="pause"] .box{padding:11px}.pause-layout{grid-template-columns:minmax(0,1fr);gap:8px}.pause-layout .ship-stats{max-height:170px;overflow:auto;padding:8px}.pause-layout .ship-stats dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 10px}.pause-layout .ship-stats dl div{padding:3px 0;font-size:.65rem}.pause-control-panel{padding:10px}.pause-control-panel .options{gap:8px}.pause-kicker{margin-bottom:9px}.pause-actions{grid-template-columns:minmax(0,1.25fr) minmax(100px,.75fr)}}
 .weapon-cell{position:relative;padding-right:42px}.slot-sell{font-size:.68rem;padding:3px 5px;min-width:34px}
 .weapon-cell .slot-sell{position:absolute;right:4px;top:6px}.slot-sell:disabled{opacity:.45}
 .sell-dialog{color:#ecf6ff;background:#0b1b2c;border:1px solid #56758b;border-radius:12px;max-width:calc(100% - 24px)}
 .sell-dialog::backdrop{background:#040915bd}.sell-dialog h3{margin-top:0}
 @media(max-width:620px){.build-layout{grid-template-columns:minmax(82px,26%) minmax(0,1fr);gap:5px}.ship-stats{padding:5px}.ship-stats dl div{font-size:.63rem;flex-wrap:wrap;gap:1px 4px}.build-content .weapon-cells{grid-template-columns:repeat(2,minmax(0,1fr))}.shop-shelf{grid-template-columns:repeat(2,minmax(0,1fr))}.weapon-cell{padding-right:6px}.weapon-cell .slot-sell{position:static;margin-top:3px}}
+@media(max-width:620px){.panel[data-screen="pause"] .pause-layout{grid-template-columns:minmax(0,1fr)}}
 </style>
 <style>
 .shop-shelf{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
@@ -452,6 +475,36 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 .ending-reward img{display:block;width:100%;max-height:36vh;object-fit:contain;border-radius:8px;background:#0a1422}
 .ending-thanks{text-align:center;color:#d6e9fb}
 .ending-thanks strong{color:#9eefff;letter-spacing:.08em}
+.panel[data-screen="result"]{background:radial-gradient(ellipse at 50% 38%,#10233bd9,#050a14ed 78%)}
+.panel[data-screen="result"] .box{width:min(760px,100%);padding:clamp(16px,3vw,28px);border-color:#456781;background:linear-gradient(150deg,#102237f7,#091321f8 75%);box-shadow:0 20px 72px #000b,inset 0 1px #8beaff24}
+.panel[data-screen="result"] .box>h2{margin-bottom:6px;font-size:clamp(24px,4vw,36px);letter-spacing:-.04em}
+.result-screen{display:grid;gap:12px}
+.result-kicker{display:flex;align-items:center;gap:9px;margin:0;color:#84e7ff;font:700 10px/1.2 ui-monospace,monospace;letter-spacing:.12em}
+.result-kicker:after{content:"";height:1px;flex:1;background:linear-gradient(90deg,#3c7e9e,transparent)}
+.result-screen[data-outcome="defeat"] .result-kicker{color:#ffc976}
+.result-intro{margin:0;color:#aec3d8;font-size:13px}
+.result-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.result-metric{min-width:0;padding:10px 11px 9px;border:1px solid #2d4c65;border-left:2px solid #63dfff;border-radius:7px;background:linear-gradient(145deg,#142b40,#0c1828)}
+.result-screen[data-outcome="defeat"] .result-metric{border-left-color:#f5b966}
+.result-metric small,.result-metric strong{display:block}
+.result-metric small{margin-bottom:5px;color:#93abc1;font-size:10px;letter-spacing:.04em}
+.result-metric strong{overflow-wrap:anywhere;color:#f0f8ff;font-size:clamp(15px,2.5vw,22px);font-variant-numeric:tabular-nums}
+.result-metric strong span{margin-left:3px;color:#93abc1;font-size:.58em;font-weight:600}
+.result-metric em{display:block;margin-top:3px;color:#8fa8bf;font-size:10px;font-style:normal}
+.result-record{border:1px solid #2c4960;border-radius:7px;background:#0b1726}
+.result-record summary{margin:0;padding:10px 12px;color:#8ce8ff;font-size:12px;font-weight:700}
+.result-record[open] summary{border-bottom:1px solid #28455d}
+.result-record-body{padding:10px 12px 12px}
+.result-record .stat{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 16px;margin:0 0 8px;padding-left:18px;font-size:12px}
+.result-record details{margin-top:8px}
+.result-record details summary{padding:6px 0;border:0}
+.result-record details .stat{margin-top:5px}
+.result-unlocks{display:grid;gap:6px}
+.result-unlocks p{margin:0;padding:8px 10px;border:1px solid #3a685f;border-radius:6px;background:#102b2a;color:#c1f5de;font-size:12px}
+.panel[data-screen="result"] .buttons{margin:0;gap:8px}
+.panel[data-screen="result"] .buttons button{min-height:42px}
+.panel[data-screen="result"] #again{font-weight:750}
+@media(max-width:620px){.result-screen{gap:9px}.result-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.result-metric{padding:8px}.result-record .stat{grid-template-columns:1fr}.panel[data-screen="result"] .buttons{display:grid;grid-template-columns:1fr 1fr}.panel[data-screen="result"] #again{grid-column:1/-1;text-align:center}.panel[data-screen="result"] #quit{text-align:center}}
 </style>
 <style>.options select{color:#ecf6ff;background:#0b1929;border:1px solid #4a6980;border-radius:6px;padding:5px;max-width:100%;font:inherit}</style>
 <style>
@@ -474,6 +527,8 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 .flight-hud .hud-meter{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:5px;align-items:center}
 .flight-hud .hud-meter strong,.flight-hud .hud-totals strong{font-size:11px;font-variant-numeric:tabular-nums}
 .flight-hud .hud-totals>span{display:flex;justify-content:space-between;gap:5px}
+.flight-hud .hud-totals>span:last-child{white-space:normal;display:block}
+.flight-hud .hud-totals>span:last-child strong{font-size:10px;line-height:1.2;white-space:normal;overflow-wrap:anywhere;color:#d8c8ff}
 .flight-hud meter::-webkit-meter-optimum-value{
   background:repeating-linear-gradient(115deg,transparent 0 9px,#08162490 10px 11px),var(--meter);
 }
@@ -565,6 +620,11 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 .panel[data-screen="level"] .level-cards .card:is(:hover,:focus-visible){
   outline:2px solid var(--card-edge);outline-offset:-3px;
 }
+.panel[data-screen="level"] .level-cards .card:focus-visible{
+  z-index:3;outline:3px solid #f4fdff;outline-offset:2px;
+  box-shadow:0 0 0 2px var(--card-edge),0 0 22px var(--card-edge);
+  filter:drop-shadow(0 0 8px var(--card-edge));
+}
 @media(max-width:480px){
   .panel[data-screen="level"] .level-cards .card{min-height:137px}
   .panel .card .card-art{min-height:42px}
@@ -593,6 +653,7 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
   object-fit:cover;border:0;background:none;
 }
 .hangar-selectors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 auto;width:min(600px,95%)}
+.hangar-unlock-note{flex:none;width:min(600px,95%);margin:0 auto 7px;color:#eef5fc;font-size:clamp(10px,1.2vw,13px);font-weight:650;line-height:1.35;text-align:center;text-shadow:0 1px 4px #000,0 0 10px #000}
 .hangar-selector{
   display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;
   margin:0;min-width:0;padding:3px 5px 5px;border:1px solid #4699bb;border-radius:6px;background:#0b2437;
@@ -650,17 +711,24 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 .panel[data-screen="hangar"] .hull-display{gap:0;align-items:end}
 .panel[data-screen="hangar"] .hull-pilot{
   width:clamp(75px,19vw,230px);height:clamp(125px,34vh,340px);
-  object-fit:contain;object-position:center bottom;filter:drop-shadow(0 4px 9px #000);
+  object-fit:contain;object-position:center bottom;filter:drop-shadow(0 4px 9px #000);transition:filter .16s ease;
 }
+.panel[data-screen="hangar"] .hull-card:focus-visible{outline:0}
 .panel[data-screen="hangar"] .hull-card[aria-pressed="true"] .hull-pilot{
-  animation:pilot-neon-pulse 1.8s ease-in-out infinite alternate;
+  filter:drop-shadow(0 0 2px var(--bay)) drop-shadow(0 0 10px var(--bay-light));
 }
-@keyframes pilot-neon-pulse{
-  from{filter:drop-shadow(0 0 3px #70dcff) drop-shadow(0 0 8px #1689ff99)}
-  to{filter:drop-shadow(0 0 5px #a9f3ff) drop-shadow(0 0 17px #1689ff)}
+.panel[data-screen="hangar"] .hull-card:hover .hull-pilot,
+.panel[data-screen="hangar"] .hull-card:focus-visible .hull-pilot{
+  filter:drop-shadow(0 0 3px var(--bay)) drop-shadow(0 0 14px var(--bay));
+}
+.panel[data-screen="hangar"] .hull-pilot.pilot-select-flash{animation:pilot-select-flash .72s ease-out}
+@keyframes pilot-select-flash{
+  0%,100%{filter:drop-shadow(0 0 2px var(--bay)) drop-shadow(0 0 10px var(--bay-light))}
+  18%,68%{filter:drop-shadow(0 0 5px #fff) drop-shadow(0 0 22px var(--bay)) drop-shadow(0 0 34px var(--bay))}
+  42%,84%{filter:drop-shadow(0 0 3px var(--bay)) drop-shadow(0 0 13px var(--bay))}
 }
 @media(prefers-reduced-motion:reduce){
-  .panel[data-screen="hangar"] .hull-card[aria-pressed="true"] .hull-pilot{animation:none}
+  .panel[data-screen="hangar"] .hull-pilot.pilot-select-flash{animation:none}
 }
 .panel[data-screen="hangar"] .hull-ship{
   align-self:center;width:100%;height:clamp(110px,27vh,270px);background:none;
@@ -724,6 +792,8 @@ header .game-version{align-self:center;font-size:10px}
 .panel[data-screen="level"] .card-art{flex:1;min-height:80px}
 .panel[data-screen="level"] .card-art svg{width:54px;height:54px}
 .panel[data-screen="level"] .card-art :is(.card-icon,.part-icon){width:62px;height:62px}
+.panel[data-screen="level"] .level-cards .card>.card-grade{min-height:1.4em;line-height:1.4}
+.panel[data-screen="level"] .level-cards .card>.card-grade-placeholder{visibility:hidden}
 .panel[data-screen="level"] .card>span:not(.choice,.card-grade,.card-art){
   background:#081321b8;border:1px solid #a8dfff48;border-radius:4px;padding:4px;
 }
@@ -853,7 +923,7 @@ header .game-version{align-self:center;font-size:10px}
 }
 </style>
 <main>
-<header><div class="brand"><img class="header-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"><small class="game-version" data-game-version>v0.2.73</small></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button><button id="fullscreenDisplay" class="mobile-fullscreen" type="button" aria-pressed="false">전체화면</button></div><p id="displayStatus" class="display-status" role="status" hidden></p></header>
+<header><div class="brand"><img class="header-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"><small class="game-version" data-game-version>v0.2.75</small></div><div class="header-controls"><button id="stickToggle" type="button" aria-pressed="false">조이스틱 꺼짐</button><button id="esc" aria-keyshortcuts="Escape">ESC · 일시정지</button><button id="fullscreenDisplay" class="mobile-fullscreen" type="button" aria-pressed="false">전체화면</button></div><p id="displayStatus" class="display-status" role="status" hidden></p></header>
 <div class="hud" id="hud" aria-live="off"></div>
 <div class="field">
 <canvas id="canvas" width="960" height="640" aria-label="우주 슈팅 전투 화면"></canvas>
@@ -882,13 +952,13 @@ header .game-version{align-self:center;font-size:10px}
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <audio id="warningAudio" src="orbit-rogue-warning.mp3" preload="auto"></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer><span data-game-version>v0.2.73</span> · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer><span data-game-version>v0.2.75</span> · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
 const canvas = $('canvas'), ctx = canvas.getContext('2d');
-const GAME_VERSION='0.2.73';
+const GAME_VERSION='0.2.75';
 const H=640,DESKTOP_WIDTH=Math.round(H*16/9),MAX_STAGE=20,MAP_SIDE=3;
 let W=960;
 const DASH_TIME=.32,DASH_FILL_TIME=8,DASH_KILL_CHARGE=.13;
@@ -1121,7 +1191,7 @@ const WARNING_DURATION=4.3;
 const stick={on:coarsePointer||store.get('or-stick',false),id:null,x:0,y:0};
 let hangarHull=0, starterHull=0, mouseThrust=false, throttleId=null;
 let best=store.get('or-best',0), mode='hangar', run, world, boss, starter=4;
-let audio, musicAt=0, musicStep=0, musicPhase='',bossFade=null,activeBossOst=null, pointer=null, last=0,lastClock=null,cards=[], stock=[], previousMode;
+let audio, musicAt=0, musicStep=0, musicPhase='',bossFade=null,activeBossOst=null, pointer=null, last=0,lastClock=null,cards=[], stock=[], previousMode,levelPauseReturn=null;
 let permanent=!!store.get('or-discount',false);
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const rng=(a,b)=>a+Math.random()*(b-a);
@@ -1418,15 +1488,13 @@ function studioStart(){
   mode='studio-start';menuPlaying=false;document.documentElement.classList.add('studio-splash-active');
   document.querySelectorAll('[data-game-version]').forEach(node=>node.textContent='v'+GAME_VERSION);
   document.title='ORBIT ROGUE v'+GAME_VERSION+' · 우주전투 로그라이크';
-  showPanel('', '<div class="studio-start-content"><img class="boot-game-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"><small class="hangar-version">v'+GAME_VERSION+'</small><p class="studio-start-message">'+tr('지구의 최후 방어선이 무너지고 있습니다. 20구역과 3×3 전장에서 외계 침공을 막아내세요.','Earth is under attack. Defend it across 20 stages and a 3×3 battlefield.')+'</p><div class="studio-start-actions"><button id="studioStartButton" class="primary" type="button">'+tr('게임 시작','START GAME')+'</button></div></div>');
-  controls({studioStartButton:studioIntro});
-}
-function studioIntro(){
-  if(mode!=='studio-start')return;
-  resumeAudioFromGesture();mode='studio-intro';menuPlaying=true;
-  showPanel('', '<div class="studio-intro-content"><img class="studio-splash-logo" src="assets/branding/healingarty-games-logo.png" alt="HealingArty Games"><p class="studio-intro-message">'+tr('HealingArty Games 제작','A HealingArty Games production')+'</p></div>');
-  document.documentElement.classList.add('studio-splash-active');syncCombatOst();
-  window.setTimeout(()=>{if(mode!=='studio-intro')return;hangar();document.documentElement.classList.remove('studio-splash-active');},1000);
+  showPanel('', '<div class="studio-start-content"><img class="boot-game-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"><small class="hangar-version">v'+GAME_VERSION+'</small></div>');
+  window.setTimeout(()=>{
+    if(mode!=='studio-start')return;
+    mode='studio-intro';menuPlaying=true;
+    hangar();
+    document.documentElement.classList.remove('studio-splash-active');
+  },1000);
 }
 function hangar(){
   hangarIgnitedAt=performance.now();
@@ -1438,9 +1506,9 @@ function hangar(){
   let chosen=available.includes(starter)?starter:available[0];
   hangarHull=starterHull;
   showPanel('<span class="hangar-brand"><img class="hangar-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"><small class="hangar-version">v'+GAME_VERSION+'</small><small class="hangar-studio-credit">HEALINGARTY GAMES · CREATED BY HEALINGARTY</small></span>',
-    '<p class="hangar-subtitle">'+tr('지구를 침공한 외계 세력에 맞서 20구역을 돌파하고, 3×3 전장에서 유물 거점을 점령해 보상을 받으세요.','Defend Earth across 20 stages and claim relic rewards across a 3×3 battlefield.')+'</p><div class="hull-pick">'+
-    hulls.map((h,i)=>'<button id="hull'+i+'" class="hull-card" aria-pressed="'+(i===hangarHull)+'"><span class="hull-card-head"><strong class="pilot-name"><span class="pilot-rank" aria-hidden="true">'+(i?'<i></i><i></i><i></i>':'<b></b><b></b>')+'</span>'+tr(i?'김마리아 대위':'하영서 중사',i?'Capt. Kim Maria':'Sgt. Ha Yeongseo')+'</strong></span><span class="hull-display"><canvas id="hangarShip'+i+'" class="hull-ship" width="300" height="170" aria-label="'+tr(h.name,i?'Power ship':'Speed ship')+'"></canvas><small class="hull-specs">'+tr(h.name,i?'Power':'Speed')+' <span>'+tr(h.brief,i?'Damage +20% · Hull 110':'Speed +10% · Hull 82')+'</span></small><img class="hull-pilot" src="orbit-rogue-pilot-'+(i?'power':'speed')+'-full.webp" alt="'+tr(i?'파워 기체 파일럿':'스피드 기체 파일럿',i?'Power pilot':'Speed pilot')+'"></span></button>').join('')+
-    '</div><div class="hangar-selectors">'+
+    '<div class="hull-pick">'+
+    hulls.map((h,i)=>'<button id="hull'+i+'" class="hull-card" aria-pressed="'+(i===hangarHull)+'"><span class="hull-card-head"><strong class="pilot-name"><span class="pilot-rank" aria-hidden="true">'+(i?'<i></i><i></i><i></i>':'<b></b><b></b>')+'</span>'+tr(i?'김마리아 대위':'하영서 중사',i?'Capt. Kim Maria':'Sgt. Ha Yeongseo')+'</strong></span><span class="hull-display"><canvas id="hangarShip'+i+'" class="hull-ship" width="300" height="170" aria-label="'+tr(h.name,i?'Power ship':'Speed ship')+'"></canvas><small class="hull-specs">'+tr(h.name,i?'Power':'Speed')+' <span>'+tr(h.brief,i?'Damage +20% · Hull 110':'Speed +10% · Hull 82')+'</span></small><img class="hull-pilot" src="orbit-rogue-pilot-'+(i?'power':'speed')+'-full.webp" data-idle-src="orbit-rogue-pilot-'+(i?'power':'speed')+'-full.webp" data-action-src="orbit-rogue-pilot-'+(i?'power-fist':'speed-salute')+'.png" alt="'+tr(i?'파워 기체 파일럿':'스피드 기체 파일럿',i?'Power pilot':'Speed pilot')+'"></span></button>').join('')+
+    '</div><p class="hangar-unlock-note">'+tr('시작 무기와 난이도는 첫 클리어 시 하나씩 해금됩니다.','Starting weapons and difficulties unlock one at a time after your first clear.')+'</p><div class="hangar-selectors">'+
     ['weapon','difficulty'].map((name,i)=>'<fieldset class="hangar-selector"><legend>'+tr(i?'난이도':'시작 무기',i?'Difficulty':'Starting weapon')+'</legend>'+
       '<button id="'+name+'Prev" aria-label="'+tr(i?'이전 난이도':'이전 무기','Previous '+name)+'">‹</button>'+
       '<output id="'+name+'Value" aria-live="polite"></output>'+
@@ -1464,8 +1532,15 @@ function hangar(){
     render();
   });
   hulls.forEach((_,i)=>$('hull'+i).onclick=()=>{
-    $('hull'+hangarHull).setAttribute('aria-pressed','false');
-    hangarHull=i;hangarIgnitedAt=performance.now();$('hull'+i).setAttribute('aria-pressed','true');
+    const previous=hangarHull,previousButton=$('hull'+previous),previousPilot=previousButton.querySelector('.hull-pilot');
+    previousPilot.src=previousPilot.dataset.idleSrc;
+    previousButton.setAttribute('aria-pressed','false');
+    hangarHull=i;hangarIgnitedAt=performance.now();
+    const selected=$('hull'+i),pilot=selected.querySelector('.hull-pilot');
+    selected.setAttribute('aria-pressed','true');
+    pilot.src=pilot.dataset.actionSrc;
+    pilot.classList.remove('pilot-select-flash');void pilot.offsetWidth;pilot.classList.add('pilot-select-flash');
+    window.setTimeout(()=>pilot.classList.remove('pilot-select-flash'),760);
   });
   $('launch').onclick=()=>start(chosen,hangarHull,chosenDifficulty);
   $('startOptions').onclick=openStartOptions;
@@ -1482,16 +1557,28 @@ function hangar(){
     lastClock=null;inventory();stock=run.stock?.length<=4&&run.stock?.every(c=>!c||c.type!=='swap'&&(c.type!=='copy'||c.id!==undefined))?run.stock.map(c=>c?refreshWeaponOffer(c,c.price):null):newStock();resetWorld();openShop(false);
   };
 }
+const RELIC_TYPES={
+  A:{name:'수호 코어',short:'수호',color:'#63dfff',buff:'guard',effect:'10초 무적'},
+  B:{name:'화력 코어',short:'화력',color:'#ff9b5b',buff:'attack',effect:'공격력 +30% · 10초'},
+  C:{name:'기동 코어',short:'기동',color:'#8bf0a3',buff:'speed',effect:'속도 +25% · 10초'}
+};
+function relicProfile(site){return RELIC_TYPES[site?.type??site?.id]??RELIC_TYPES.C;}
+function defaultRelicSites(){return [
+  {id:'A',type:'A',x:W*.5,y:H*1.5,progress:0,claimed:false},
+  {id:'B',type:'B',x:W*2.5,y:H*.5,progress:0,claimed:false},
+  {id:'C',type:'C',x:W*1.5,y:H*2.5,progress:0,claimed:false}
+];}
 function ensureRunMap(){
   if(!run)return null;
-  run.map??={x:W,y:H,sites:[
-    {id:'A',x:W*.5,y:H*.5,progress:0,claimed:false},
-    {id:'B',x:W*2.5,y:H*2.5,progress:0,claimed:false}
-  ]};
-  run.map.sites??=[
-    {id:'A',x:W*.5,y:H*.5,progress:0,claimed:false},
-    {id:'B',x:W*2.5,y:H*2.5,progress:0,claimed:false}
-  ];
+  run.map??={x:W,y:H,sites:defaultRelicSites()};
+  if(!Array.isArray(run.map.sites))run.map.sites=defaultRelicSites();
+  const defaults=defaultRelicSites(),known=new Set(run.map.sites.map(site=>site.id));
+  for(const site of defaults)if(!known.has(site.id))run.map.sites.push(site);
+  run.map.sites.forEach((site,index)=>{
+    site.id??=['A','B','C'][index]??'C';site.type??=site.id;
+    site.progress=clamp(Number(site.progress)||0,0,8);site.claimed=Boolean(site.claimed);
+  });
+  run.relicBuffs??={guard:0,attack:0,speed:0};
   run.map.x=clamp(run.map.x??W,0,W*(MAP_SIDE-1));
   run.map.y=clamp(run.map.y??H,0,H*(MAP_SIDE-1));
   return run.map;
@@ -1517,11 +1604,8 @@ function start(index,hull=starterHull,level=chosenDifficulty){
   run={hull,difficulty:chosenDifficulty,starter:index,stage:1,level:1,xp:0,score:0,kills:0,coin:0,elapsed:0,hp:frame.hp,max:frame.hp,shield:frame.shield,armor:0,dash:1,
     speed:frame.speed,bonus:frame.bonus,wp:index,rank:0, copies:0, mastered:false,
     bullet:0,missile:0,laser:0,rate:0,crit:0,regen:0,shieldMax:frame.shield,area:0,engineering:0,pickup:36,luck:0,salvage:0,
-    support:[0,0,0,0],charge:0,coupons:{sale:false,free:0,halfRoll:0,half:0,dice:0},roll:0};
-  run.map={x:W,y:H,sites:[
-    {id:'A',x:W*.5,y:H*.5,progress:0,claimed:false},
-    {id:'B',x:W*2.5,y:H*2.5,progress:0,claimed:false}
-  ]};
+    support:[0,0,0,0],relicBuffs:{guard:0,attack:0,speed:0},charge:0,coupons:{sale:false,free:0,halfRoll:0,half:0,dice:0},roll:0};
+  run.map={x:W,y:H,sites:defaultRelicSites()};
   enterStage();
 }
 function stageHasBoss(){
@@ -1789,6 +1873,7 @@ function cardButton(c,id,shortcut=''){
     (shortcut?'<span class="choice">'+shortcut+' · '+({copy:'무기 중첩',equip:'새 무기',stat:'기체 능력치',support:'보조장비',heal:'정비'})[c.type]+'</span>':
       c.group?'<span class="choice">'+({ship:'기체 강화',weapon:'무기',support:'보조장비'})[c.group]+'</span>':'')+
     (weapon?'<span class="card-grade">'+ranks[c.rank??0]+'</span>':'')+
+    (!weapon&&shortcut?'<span class="card-grade card-grade-placeholder" aria-hidden="true"></span>':'')+
     '<strong>'+c.name+'</strong><span class="card-art">'+(weapon?weaponIcon(c.id,c.rank??0):rewardIcon(c.type,c.id,c.name))+'</span>'+
     (c.type==='trade'?(c.repairCore?'<span class="effect effect-gain">초당 내구도 +3 회복</span><span class="effect effect-loss">남은 작전에서 내구도 카드·광석 자석 제외</span>':rewardLabel(c.changes)):'<span>'+c.text+'</span>')+
     (shop?'<span class="shop-purchase"><span class="card-price"><b>'+c.cost.toLocaleString()+'</b> 코인</span>'+
@@ -1925,9 +2010,9 @@ function stepSectorExit(dt){
 function prepareDockingStation(){
   if(world.docking)return world.docking;
   const image=artwork.dockingStation,aspect=image?.width&&image?.height?image.width/image.height:930/887;
-  const width=Math.min(W*.63,H*.68*aspect),height=width/aspect;
-  const targetX=Math.max(0,W-width*.72),startX=W+width*.9;
-  return world.docking={x:startX,y:(H-height)/2,width,height,startX,targetX,elapsed:0,timer:0,phase:'approach'};
+  const width=Math.min(W*.42,H*.48*aspect),height=width/aspect;
+  const targetX=clamp(world.x+W*.06,18,W-width-18),targetY=clamp(world.y-height*.54,12,H-height-12),startX=W+width*.8;
+  return world.docking={x:startX,y:targetY,width,height,startX,targetX,elapsed:0,timer:0,phase:'approach'};
 }
 function stepDockingApproach(dt){
   if(run.stage===MAX_STAGE||run.time>DOCKING_APPROACH)return;
@@ -2111,13 +2196,22 @@ function end(win){
   const rewardArt=win&&run.clearReason==='BOSS DEFEATED'
     ?'<figure class="ending-reward"><img src="assets/branding/orbit-rogue-ending.webp" alt="임무를 마치고 격납고에 돌아온 두 파일럿"></figure><p class="ending-thanks"><strong>THANK YOU FOR PLAYING</strong><br>플레이해 주셔서 감사합니다.</p>'
     :'';
-  showPanel(win?'20구역 최종 클리어':'작전 종료',rewardArt+'<p>'+tr(difficulties[resultDifficulty].ko,difficulties[resultDifficulty].en)+' · 도달 '+run.stage+' / 20 · 점수 '+run.score.toLocaleString()+
-    ' · 최고 '+best.toLocaleString()+'</p><p>전체 시간 <strong>'+formatRunTime(run.elapsed)+'</strong>'+
-    (run.partialTiming?' · 이전 구간 시간 추정':'')+'</p><p>격추 '+run.kills+' · 최종 레벨 '+run.level+'</p>'+gear()+
-    (difficultyReward?'<p class="sym">'+tr('난이도 해금','Difficulty unlocked')+' · <strong>'+tr(difficultyReward.ko,difficultyReward.en)+'</strong></p>':'')+
-    (unlocked!==null?'<p class="sym">'+tr('시작 무기 해금','Starting weapon unlocked')+' · <strong>'+tr(weapons[unlocked],weaponNamesEn[unlocked])+'</strong></p>':'')+
+  const outcome=win?'clear':'defeat';
+  const report='<section class="result-screen" data-outcome="'+outcome+'">'+
+    '<p class="result-kicker">AFTER-ACTION REPORT · '+(win?'MISSION COMPLETE':'SORTIE ENDED')+'</p>'+
+    '<p class="result-intro">'+(win?'최종 임무 기록입니다. 전투 성과와 장비 구성을 확인하세요.':'이번 출격 기록입니다. 장비와 전투 결과를 확인하고 다시 도전할 수 있습니다.')+
+    ' <strong>'+tr(difficulties[resultDifficulty].ko,difficulties[resultDifficulty].en)+'</strong></p>'+rewardArt+
+    '<div class="result-metrics" aria-label="작전 요약">'+
+    '<div class="result-metric"><small>도달 구역</small><strong>'+run.stage+'<span>/ 20</span></strong></div>'+
+    '<div class="result-metric"><small>획득 점수</small><strong>'+run.score.toLocaleString()+'</strong><em>최고 기록 '+best.toLocaleString()+'</em></div>'+
+    '<div class="result-metric"><small>전체 시간</small><strong>'+formatRunTime(run.elapsed)+'</strong>'+(run.partialTiming?'<em>이전 구간 시간 추정</em>':'')+'</div>'+
+    '<div class="result-metric"><small>격추 / 최종 레벨</small><strong>'+run.kills+'<span>/ '+run.level+'</span></strong></div></div>'+
+    '<details class="result-record"><summary>무장 · 보조 장비 · 기체 기록 보기</summary><div class="result-record-body">'+gear()+'</div></details>'+
+    '<div class="result-unlocks">'+(difficultyReward?'<p>'+tr('난이도 해금','Difficulty unlocked')+' · <strong>'+tr(difficultyReward.ko,difficultyReward.en)+'</strong></p>':'')+
+    (unlocked!==null?'<p>'+tr('시작 무기 해금','Starting weapon unlocked')+' · <strong>'+tr(weapons[unlocked],weaponNamesEn[unlocked])+'</strong></p>':'')+'</div>'+
     (win?'<div class="buttons"><button id="proof" class="primary">클리어 카드 PNG 저장 ↓</button></div>':'')+
-    '<div class="buttons"><button id="again" class="primary">'+(canReplay?'같은 기체·무기로 다시 하기':'기본 무기로 다시 하기')+'</button><button id="quit">격납고</button></div>');
+    '<div class="buttons"><button id="again" class="primary">'+(canReplay?'같은 기체·무기로 다시 하기':'기본 무기로 다시 하기')+'</button><button id="quit">격납고</button></div></section>';
+  showPanel(win?'20구역 최종 클리어':'작전 종료',report);
   if(win)$('proof').onclick=downloadProof;
   controls({again:()=>start(starter,starterHull,resultDifficulty),quit:hangar});
 }
@@ -2160,7 +2254,7 @@ function makeProof(clear){
   if(art){const scale=Math.min(390/art.width,430/art.height);const w=art.width*scale,h=art.height*scale;
     draw.drawImage(art,925-w/2,318-h/2,w,h);
   }
-  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v0.2.73',896,587);
+  draw.fillStyle='#68dfff';draw.font='650 16px ui-monospace, monospace';draw.fillText('ORBIT ROGUE  /  v'+GAME_VERSION,896,587);
   draw.fillStyle='#a5bccf';draw.font='650 14px system-ui, sans-serif';draw.textAlign='center';draw.fillText('THANK YOU FOR PLAYING',925,477);draw.textAlign='start';
   return card;
 }
@@ -2171,7 +2265,7 @@ function downloadProof(){
   document.body.append(link);link.click();link.remove();
 }
 function damageNumbersOption(){
-  return '<label>'+tr('피해 숫자','Damage numbers')+'<input id="damageNumbers" type="checkbox"'+
+  return '<label class="damage-numbers-option"><span>'+tr('피해 숫자','Damage numbers')+'</span><input id="damageNumbers" type="checkbox"'+
     (prefs.damageNumbers!==false?' checked':'')+'></label>';
 }
 function bindDamageNumbersOption(){
@@ -2199,17 +2293,21 @@ function openStartOptions(){
 }
 function pause(){
   if(mode==='pause'){
-    mode=previousMode;hide();
+    const resumeMode=previousMode;
+    if(resumeMode==='level'){previousMode=levelPauseReturn??'combat';levelPauseReturn=null;openLevel();}
+    else{mode=resumeMode;hide();}
     if(mode==='boss-warning')playWarningAudio();
     return;
   }
-  if(!flightActive())return;
+  const returnToLevel=mode==='level';
+  if(!flightActive()&&!returnToLevel)return;
+  if(returnToLevel)levelPauseReturn=previousMode;
   if(mode==='boss-warning')warningAudio.pause();
   previousMode=mode;mode='pause';keys.clear();pointer=null;
-  showPanel('일시정지','<div class="build-layout">'+shipStats()+'<div class="build-content"><div class="options"><label>음악 볼륨<input id="music" type="range" min="0" max="100" value="'+prefs.music+
-    '"></label><label>효과음 볼륨<input id="fx" type="range" min="0" max="100" value="'+prefs.fx+
-    '"></label>'+damageNumbersOption()+'</div><div class="buttons"><button id="continue" class="primary">계속하기</button><button id="leaveRun">그만하기</button></div></div></div>');
-  for(const key of ['music','fx'])$(key).oninput=e=>saveAudioPreference(key,e.target.value);
+  showPanel('일시정지','<div class="build-layout pause-layout">'+shipStats()+'<div class="build-content pause-content"><section class="pause-control-panel"><p class="pause-kicker">FLIGHT SYSTEM · PAUSED</p><div class="options">'+
+    '<label class="pause-slider"><span><b>음악 볼륨</b><output id="musicOutput">'+prefs.music+'%</output></span><input id="music" type="range" min="0" max="100" value="'+prefs.music+'"></label>'+
+    '<label class="pause-slider"><span><b>효과음 볼륨</b><output id="fxOutput">'+prefs.fx+'%</output></span><input id="fx" type="range" min="0" max="100" value="'+prefs.fx+'"></label>'+damageNumbersOption()+'</div></section><div class="buttons pause-actions"><button id="continue" class="primary">'+(returnToLevel?'강화 선택으로 돌아가기':'계속하기')+'</button><button id="leaveRun">그만하기</button></div></div></div>');
+  for(const key of ['music','fx'])$(key).oninput=e=>{saveAudioPreference(key,e.target.value);$(key+'Output').value=e.target.value+'%';};
   bindDamageNumbersOption();
   controls({continue:pause,leaveRun:()=>{
     showPanel('이번 전투를 그만할까요?','<p>이번 전투의 진행이 끝납니다.</p><div class="buttons"><button id="confirmQuit">그만하기</button><button id="backRun">계속하기</button></div>');
@@ -2391,7 +2489,11 @@ function nearest(x,y,limit=Infinity){
 }
 function projectile(x,y,angle,speed,power,kind,seek=false,critical=false,marksTarget=false,visual=null){
   const life=kind==='missile'&&seek?Math.hypot(W,H)/Math.max(speed,1)+1.25:2.2;
-  world.shots.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,power,kind,seek,critical,marksTarget,visual,life});
+  if(world.shots.length>=320){
+    const expendable=world.shots.findIndex(s=>s.kind==='bullet');
+    world.shots.splice(expendable>=0?expendable:0,1);
+  }
+  world.shots.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,speed,power,kind,seek,seekTarget:null,critical,marksTarget,visual,life});
 }
 function beamHits(beam,t,radius){
   let px=beam.x,py=beam.y;
@@ -2452,7 +2554,7 @@ function paintDamageNumbers(){
 function weaponHit(slot){
   const {id,rank,mastered,prestige}=slot;
   const base=id===3?5.2+run.laser*.32:id===2?12+run.laser:id<2?19+run.missile:(id===5?5.5:9)+run.bullet;
-  return base*(1+rank*.35+run.bonus)*(mastered?1.28+prestige*.08:1);
+  return base*(1+rank*.35+run.bonus)*(mastered?1.28+prestige*.08:1)*(run.relicBuffs?.attack>0?1.3:1);
 }
 function weaponInterval({id,rank}){
   if(id===3)return .085-rank*.004;
@@ -2752,6 +2854,7 @@ function hostile(t,angle,speed,kind=null,port=0,aim=angle){
     vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,kind,life:kind?5:Infinity});
 }
 function electromagneticPulse(bossDamage,radius=Infinity){
+  if(run.relicBuffs?.attack>0)bossDamage*=1.3;
   for(const target of world.targets){
     if(!target.rock&&target.hp>0&&near(target,world,radius))damageTarget(target,target.boss?bossDamage:target.max);
   }
@@ -2761,7 +2864,7 @@ function electromagneticPulse(bossDamage,radius=Infinity){
   world.hostile=world.hostile.filter(round=>!round.disabled);
 }
 function hurt(damage){
-  if(world.inv>0)return;
+  if(world.inv>0||run.relicBuffs?.guard>0)return;
   damage*=difficulty().damage;
   const absorbed=Math.min(run.shield,damage);
   const hullLoss=Math.max(0,damage-absorbed-run.armor);
@@ -2784,9 +2887,10 @@ const gemRewards=[
   {xp:5,score:12,color:'#ffd479'},
   {xp:2,score:4,color:'#65caff'}
 ];
+const ORE_LIFETIME=70;
 function drop(t){
   const count=t.boss?15:t.rock?4:3;
-  for(let i=0;i<count;i++)world.gems.push({x:t.x+rng(-17,17),y:t.y+rng(-15,15),life:40,ore:t.rock?t.variant:3});
+  for(let i=0;i<count;i++)world.gems.push({x:t.x+rng(-17,17),y:t.y+rng(-15,15),life:ORE_LIFETIME,ore:t.rock?t.variant:3});
   if(t.boss)return;
   const schedule=run.shopDropSchedule??=(Math.random()<.5?[4,12]:[3,9,15]);
   const index=run.shopDropsSpawned??0;
@@ -2850,11 +2954,12 @@ function moveBoss(unit,dt){
     return true;
   }
 
-  const phase=motion.age*config.pace;
-  const lane=unit.partner ? .68 : vulcanBosses[run.stage] ? .32 : .5;
-  const margin=Math.max(unit.r+12,40);
-  unit.x=clamp(W*(lane+Math.sin(phase+(unit.partner?Math.PI:0))*config.sweep),margin,W-margin);
-  unit.y=118+Math.sin(phase*.72+(unit.partner?1.5:0))*22;
+  const phase=motion.age*config.pace,margin=Math.max(unit.r+12,40);
+  const sway=Math.min(145,W*Math.max(.08,config.sweep)*.9),offset=unit.partner?72:-42;
+  const targetX=clamp(world.x+Math.sin(phase+(unit.partner?Math.PI:0))*sway+offset,margin,W-margin);
+  const targetY=clamp(world.y-130+Math.sin(phase*.72+(unit.partner?1.5:0))*22,margin,H-margin);
+  const follow=1-Math.exp(-dt*2.8);
+  unit.x+=(targetX-unit.x)*follow;unit.y+=(targetY-unit.y)*follow;
   if(config.interval&&(motion.wait-=dt)<=0){
     motion.pass={age:0,fromX:unit.x,fromY:unit.y,
       toX:config.aimed?clamp(world.x,margin,W-margin):unit.x,
@@ -3050,10 +3155,11 @@ function advanceRelics(dt){
       if(site.progress>=8-1e-8){
         site.claimed=true;run.coin+=40;run.score+=600;run.xp+=6;
         run.hp=Math.min(run.max,run.hp+18);
+        const relic=relicProfile(site);run.relicBuffs[relic.buff]=10;
         if(world.loot)world.loot.coins+=40;
-        world.notice='유물 '+site.id+' 확보 · +40 코인 · +6 XP';world.noticeFor=3.2;
+        world.notice=relic.name+' 확보 · '+relic.effect;world.noticeFor=3.2;
       }
-    }else site.progress=Math.max(0,(site.progress??0)-dt*1.4);
+    }else site.progress=0;
   }
 }
 function moveShip(dt){
@@ -3063,7 +3169,7 @@ function moveShip(dt){
   }
   const dx=stick.id!==null?stick.x:pointer?pointer.x-world.x:0;
   const dy=stick.id!==null?stick.y:pointer?pointer.y-world.y:0;
-  const hull=hulls[run.hull??0];
+  const hull=hulls[run.hull??0],shipSpeed=run.speed*(run.relicBuffs?.speed>0?1.25:1);
   const keyTurn=Number(keys.has('ArrowRight'))-Number(keys.has('ArrowLeft'));
   const dashing=world.dashRemaining>0;
   if(dashing)world.angle=world.dashAngle;
@@ -3082,20 +3188,20 @@ function moveShip(dt){
   world.thrust=mouseThrust||throttleId!==null||keys.has('ArrowUp');
   world.braking=keys.has('ArrowDown')&&!dashing;
   if(dashing){
-    const travel=Math.min(dt,world.dashRemaining)*run.speed*3.2;
+    const travel=Math.min(dt,world.dashRemaining)*shipSpeed*3.2;
     world.x=clamp(world.x+Math.cos(world.angle)*travel,16,W-16);
     world.y=clamp(world.y+Math.sin(world.angle)*travel,16,H-16);
-    world.vx=Math.cos(world.angle)*run.speed;
-    world.vy=Math.sin(world.angle)*run.speed;
+    world.vx=Math.cos(world.angle)*shipSpeed;
+    world.vy=Math.sin(world.angle)*shipSpeed;
   }else{
     if(world.thrust&&!world.braking){
-      world.vx+=Math.cos(world.angle)*run.speed*4.3*dt;
-      world.vy+=Math.sin(world.angle)*run.speed*4.3*dt;
+      world.vx+=Math.cos(world.angle)*shipSpeed*4.3*dt;
+      world.vy+=Math.sin(world.angle)*shipSpeed*4.3*dt;
     }
     const drag=Math.exp(-(world.braking?12:world.thrust?.75:4.2)*dt);
     world.vx*=drag;world.vy*=drag;
     const speed=Math.hypot(world.vx,world.vy);
-    if(speed>run.speed){world.vx*=run.speed/speed;world.vy*=run.speed/speed;}
+    if(speed>shipSpeed){world.vx*=shipSpeed/speed;world.vy*=shipSpeed/speed;}
     const nextX=clamp(world.x+world.vx*dt,16,W-16);
     const nextY=clamp(world.y+world.vy*dt,16,H-16);
     if(nextX===16||nextX===W-16)world.vx=0;
@@ -3198,6 +3304,8 @@ function step(dt){
   }
   if(!flightActive())return;
   animateExplosions(dt);
+  run.relicBuffs??={guard:0,attack:0,speed:0};
+  for(const key of Object.keys(run.relicBuffs))run.relicBuffs[key]=Math.max(0,(Number(run.relicBuffs[key])||0)-dt);
   world.inv=Math.max(0,world.inv-dt);world.flash=Math.max(0,world.flash-dt);world.magnet-=dt;
   world.shieldDelay-=dt;
   if(world.shieldDelay<=0)run.shield=Math.min(run.shieldMax,run.shield+7*dt);
@@ -3226,7 +3334,8 @@ function step(dt){
       for(const [n,side] of [[satellite,-1],[drone,1]]){
         if(!n)continue;
         const x=world.x+side*30;
-        projectile(x,world.y-10,Math.atan2(t.y-world.y,t.x-x),510,6+n*6+run.engineering,'support',true,false,side===-1&&run.targetLink);
+        const damage=(6+n*6+run.engineering)*(run.relicBuffs.attack>0?1.3:1);
+        projectile(x,world.y-10,Math.atan2(t.y-world.y,t.x-x),510,damage,'support',true,false,side===-1&&run.targetLink);
       }
     }
     world.drone=.68;
@@ -3260,14 +3369,21 @@ function step(dt){
   }
   for(const s of world.shots){
     if(s.seek){
-      const marked=world.linkedTarget;
-      const t=s.kind==='missile'&&run.support[1]>0&&marked?.hp>0&&world.targets.includes(marked)&&near(marked,s,480)
-        ?marked:nearest(s.x,s.y,s.kind==='missile'?520:330);
+      const trackingRange=s.kind==='missile'?520:330;
+      let t=s.seekTarget;
+      if(!t||t.hp<=0||!world.targets.includes(t)||!near(t,s,trackingRange)){
+        const marked=world.linkedTarget;
+        t=s.kind==='missile'&&run.support[1]>0&&marked?.hp>0&&world.targets.includes(marked)&&near(marked,s,480)
+          ?marked:nearest(s.x,s.y,trackingRange);
+      }
+      s.seekTarget=t;
       if(s.kind==='missile')s.lockedTarget=t;
       if(t){
-        const speed=Math.hypot(s.vx,s.vy),angle=Math.atan2(t.y-s.y,t.x-s.x);
-        s.vx+=(Math.cos(angle)*speed-s.vx)*Math.min(1,dt*7);
-        s.vy+=(Math.sin(angle)*speed-s.vy)*Math.min(1,dt*7);
+        const speed=s.speed||Math.hypot(s.vx,s.vy)|| (s.kind==='missile'?430:510);
+        const heading=Math.atan2(s.vy,s.vx),aim=Math.atan2(t.y-s.y,t.x-s.x);
+        const difference=Math.atan2(Math.sin(aim-heading),Math.cos(aim-heading));
+        const nextHeading=heading+clamp(difference,-7*dt,7*dt);
+        s.vx=Math.cos(nextHeading)*speed;s.vy=Math.sin(nextHeading)*speed;
       }
     }
     s.x+=s.vx*dt;s.y+=s.vy*dt;s.life-=dt;
@@ -3645,9 +3761,34 @@ function paintDockingStation(){
   ctx.drawImage(image,d.x,d.y+bob,d.width,d.height);
   ctx.restore();
 }
+function paintGuidanceArrow(targetX,targetY,color,label,forceEdge=false){
+  const dx=targetX-world.x,dy=targetY-world.y,distance=Math.hypot(dx,dy);
+  const angle=distance>1?Math.atan2(dy,dx):-Math.PI/2,inset=52;
+  const visible=targetX>=36&&targetX<=W-36&&targetY>=36&&targetY<=H-36;
+  let x,y;
+  if(visible&&!forceEdge){x=targetX-Math.cos(angle)*44;y=targetY-Math.sin(angle)*44;}
+  else{
+    const tx=dx>0?(W-inset-world.x)/dx:dx<0?(inset-world.x)/dx:Infinity;
+    const ty=dy>0?(H-inset-world.y)/dy:dy<0?(inset-world.y)/dy:Infinity;
+    const hits=[tx,ty].filter(value=>Number.isFinite(value)&&value>=0),scale=hits.length?Math.min(...hits):0;
+    x=clamp(world.x+dx*scale,inset,W-inset);y=clamp(world.y+dy*scale,inset,H-inset);
+  }
+  const pulse=reducedMotion.matches?0:Math.sin(last*.006)*2;
+  ctx.save();ctx.translate(x,y);ctx.fillStyle='#061321ec';ctx.strokeStyle=color;ctx.lineWidth=2.5;
+  ctx.shadowColor=color;ctx.shadowBlur=16;ctx.beginPath();ctx.arc(0,0,25+pulse,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.shadowBlur=0;ctx.setLineDash([4,4]);ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,0,19,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+  ctx.rotate(angle);ctx.beginPath();ctx.moveTo(18,0);ctx.lineTo(-9,-11);ctx.lineTo(-5,0);ctx.lineTo(-9,11);ctx.closePath();
+  ctx.fillStyle=color;ctx.shadowColor=color;ctx.shadowBlur=10;ctx.fill();ctx.restore();
+  ctx.save();ctx.font='900 10px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  const badgeWidth=Math.min(W-18,ctx.measureText(label).width+18),badgeX=clamp(x,9+badgeWidth/2,W-9-badgeWidth/2),badgeY=clamp(y+35,14,H-14);
+  ctx.fillStyle='#061321ed';ctx.strokeStyle=color;ctx.lineWidth=1;ctx.fillRect(badgeX-badgeWidth/2,badgeY-10,badgeWidth,20);
+  ctx.strokeRect(badgeX-badgeWidth/2,badgeY-10,badgeWidth,20);ctx.fillStyle='#f2fbff';ctx.fillText(label,badgeX,badgeY);ctx.restore();
+}
 function paintDockingNotice(){
   if(!world?.docking||!(world.docking.phase==='approach'||mode==='docking'))return;
-  const text=mode==='docking'?'도킹 베이 안으로 진입하세요 · '+Math.ceil(world.docking.timer)+'초':'정거장 접근 중 · 화면 왼쪽 베이로 이동';
+  const d=world.docking,bayX=d.x+d.width*.295,bayY=d.y+d.height*.54;
+  paintGuidanceArrow(bayX,bayY,'#65e2ff','DOCK BAY');
+  const text=mode==='docking'?'화살표를 따라 도킹 베이로 진입 · '+Math.ceil(d.timer)+'초':'정거장 접근 중 · 화살표를 따라 도킹 베이로 이동';
   ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='700 13px system-ui,sans-serif';
   const width=Math.min(W-24,ctx.measureText(text).width+24),x=(W-width)/2,y=H-28;
   ctx.fillStyle='#071321d9';ctx.fillRect(x,y-13,width,26);
@@ -3676,20 +3817,33 @@ function paintRelicSites(){
   const map=run?.map;
   if(!map||!world)return;
   for(const site of map.sites){
+    if(site.claimed)continue;
     const x=site.x-map.x,y=site.y-map.y;
-    if(x<-32||x>W+32||y<-32||y>H+32)continue;
-    const color=site.claimed?'#91e8a2':'#ffd27c',progress=clamp((site.progress??0)/8,0,1);
-    ctx.save();ctx.translate(x,y);ctx.globalAlpha=site.claimed?.54:1;
-    ctx.strokeStyle=color;ctx.fillStyle='#091621cc';ctx.lineWidth=2;
-    ctx.beginPath();ctx.arc(0,0,17,0,Math.PI*2);ctx.fill();ctx.stroke();
-    ctx.beginPath();ctx.moveTo(0,-9);ctx.lineTo(8,0);ctx.lineTo(0,9);ctx.lineTo(-8,0);ctx.closePath();ctx.fillStyle=color;ctx.fill();
-    if(!site.claimed){
-      ctx.beginPath();ctx.arc(0,0,22,-Math.PI/2,-Math.PI/2+Math.PI*2*progress);ctx.strokeStyle='#fff5ca';ctx.lineWidth=3;ctx.stroke();
-      ctx.font='700 10px system-ui,sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff3d8';
-      ctx.fillText(progress>0?Math.ceil(8-site.progress)+'초':'유물 '+site.id,0,-28);
-    }else{
-      ctx.font='700 9px system-ui,sans-serif';ctx.textAlign='center';ctx.fillStyle=color;ctx.fillText('회수 완료',0,-27);
+    if(x<-72||x>W+72||y<-72||y>H+72)continue;
+    const relic=relicProfile(site),color=relic.color,progress=clamp((site.progress??0)/8,0,1),pulse=reducedMotion.matches?0:Math.sin(last*.004)*2;
+    ctx.save();ctx.translate(x,y);ctx.globalAlpha=.94;
+    const glow=ctx.createRadialGradient(0,0,3,0,0,58);glow.addColorStop(0,color+'40');glow.addColorStop(.5,color+'18');glow.addColorStop(1,color+'00');
+    ctx.fillStyle=glow;ctx.beginPath();ctx.arc(0,0,58,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=color;ctx.lineWidth=1.4;ctx.setLineDash([6,5]);ctx.beginPath();ctx.arc(0,0,43+pulse,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+    ctx.globalAlpha=.72;ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,0,32,0,Math.PI*2);ctx.stroke();
+    for(let i=0;i<8;i++){
+      const a=i*Math.PI/4;ctx.beginPath();ctx.moveTo(Math.cos(a)*35,Math.sin(a)*35);ctx.lineTo(Math.cos(a)*41,Math.sin(a)*41);ctx.stroke();
     }
+    ctx.globalAlpha=.92;ctx.fillStyle='#071522e8';ctx.beginPath();ctx.arc(0,0,25,0,Math.PI*2);ctx.fill();ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke();
+    ctx.save();ctx.rotate(reducedMotion.matches?0:last*.00035);
+    ctx.beginPath();
+    if(site.id==='A'){
+      ctx.moveTo(0,-16);ctx.lineTo(13,-10);ctx.lineTo(10,6);ctx.lineTo(0,16);ctx.lineTo(-10,6);ctx.lineTo(-13,-10);
+    }else if(site.id==='B'){
+      ctx.moveTo(3,-16);ctx.lineTo(-9,1);ctx.lineTo(-2,1);ctx.lineTo(-5,15);ctx.lineTo(10,-4);ctx.lineTo(3,-4);
+    }else{
+      ctx.moveTo(0,-10);ctx.lineTo(12,0);ctx.lineTo(4,0);ctx.lineTo(15,10);ctx.lineTo(0,4);ctx.lineTo(-15,10);ctx.lineTo(-4,0);ctx.lineTo(-12,0);
+    }
+    ctx.closePath();ctx.fillStyle=color;ctx.shadowColor=color;ctx.shadowBlur=13;ctx.fill();ctx.restore();
+    ctx.shadowBlur=0;ctx.strokeStyle=color;ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,0,51,-Math.PI/2,-Math.PI/2+Math.PI*2*progress);ctx.stroke();
+    ctx.font='900 9px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#f3fbff';
+    ctx.fillText(site.id+' · '+relic.short,0,-58);
+    ctx.fillStyle=color;ctx.fillText(progress>0?Math.ceil(8-site.progress)+'초':'8초 점령',0,59);
     ctx.restore();
   }
 }
@@ -3700,18 +3854,8 @@ function paintObjectiveBearing(){
   if(!site)return;
   const sx=site.x-map.x,sy=site.y-map.y;
   if(sx>=0&&sx<=W&&sy>=0&&sy<=H)return;
-  const dx=sx-world.x,dy=sy-world.y;
-  const angle=Math.atan2(dy,dx),inset=22;
-  const tx=dx>0?(W-inset-world.x)/dx:dx<0?(inset-world.x)/dx:Infinity;
-  const ty=dy>0?(H-inset-world.y)/dy:dy<0?(inset-world.y)/dy:Infinity;
-  const intersections=[tx,ty].filter(t=>Number.isFinite(t)&&t>=0);
-  const t=intersections.length?Math.min(...intersections):0;
-  const rawX=intersections.length?world.x+dx*t:world.x+Math.cos(angle)*34;
-  const rawY=intersections.length?world.y+dy*t:world.y+Math.sin(angle)*34;
-  const x=clamp(rawX,inset,W-inset),y=clamp(rawY,inset,H-inset);
-  ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.fillStyle='#ffd27c';ctx.shadowColor='#ffbb50';ctx.shadowBlur=12;
-  ctx.beginPath();ctx.moveTo(11,0);ctx.lineTo(-7,-6);ctx.lineTo(-4,0);ctx.lineTo(-7,6);ctx.closePath();ctx.fill();
-  ctx.shadowBlur=0;ctx.rotate(-angle);ctx.font='800 10px system-ui,sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff2d2';ctx.fillText('유물 '+site.id,x< W/2?13:-13,-10);ctx.restore();
+  const relic=relicProfile(site);
+  paintGuidanceArrow(sx,sy,relic.color,'유물 '+site.id+' · '+relic.short,true);
 }
 function paintMinimap(){
   const map=run?.map;
@@ -3725,13 +3869,25 @@ function paintMinimap(){
     ctx.beginPath();ctx.moveTo(x,y+i*cell);ctx.lineTo(x+size,y+i*cell);ctx.stroke();
   }
   ctx.fillStyle='#d3e8f4';ctx.font='700 8px system-ui,sans-serif';ctx.textAlign='left';ctx.textBaseline='top';ctx.fillText('3×3',x+4,y+3);
+  ctx.fillStyle='#ff697d';ctx.beginPath();ctx.arc(x+31,y+7,2.2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e5edf6';ctx.fillText('적',x+36,y+3);
   const viewX=x+map.x/mapW*size,viewY=y+map.y/mapH*size;
   ctx.strokeStyle='#64e2ff';ctx.lineWidth=1.6;ctx.strokeRect(viewX,viewY,cell,cell);
+  for(const enemy of world.targets){
+    if(enemy.rock||enemy.hp<=0)continue;
+    const ex=x+(map.x+enemy.x)/mapW*size,ey=y+(map.y+enemy.y)/mapH*size;
+    if(ex<x+1||ex>x+size-1||ey<y+1||ey>y+size-1)continue;
+    ctx.save();ctx.translate(ex,ey);ctx.fillStyle=enemy.boss?'#ff5267':'#ff697d';ctx.strokeStyle=enemy.boss?'#fff0c9':'#3b0d20';ctx.lineWidth=enemy.boss?1.2:.8;
+    ctx.beginPath();ctx.arc(0,0,enemy.boss?4.2:2.1,0,Math.PI*2);ctx.fill();ctx.stroke();
+    if(enemy.boss){ctx.beginPath();ctx.arc(0,0,6.1,0,Math.PI*2);ctx.strokeStyle='#ff8792';ctx.lineWidth=.8;ctx.stroke();}
+    ctx.restore();
+  }
   for(const site of map.sites){
+    if(site.claimed)continue;
     const sx=x+site.x/mapW*size,sy=y+site.y/mapH*size;
-    ctx.save();ctx.translate(sx,sy);ctx.fillStyle=site.claimed?'#8be3a0':'#ffd27c';ctx.strokeStyle='#07111b';ctx.lineWidth=1;
-    ctx.beginPath();ctx.arc(0,0,site.claimed?3.2:4.6,0,Math.PI*2);ctx.fill();ctx.stroke();
-    if(!site.claimed){ctx.beginPath();ctx.arc(0,0,7,-Math.PI/2,-Math.PI/2+Math.PI*2*clamp((site.progress??0)/8,0,1));ctx.strokeStyle='#fff4ce';ctx.lineWidth=1.5;ctx.stroke();}
+    const color=relicProfile(site).color;
+    ctx.save();ctx.translate(sx,sy);ctx.fillStyle=color;ctx.strokeStyle='#f4fbff';ctx.lineWidth=1.1;
+    ctx.beginPath();ctx.moveTo(0,-5.5);ctx.lineTo(5.5,0);ctx.lineTo(0,5.5);ctx.lineTo(-5.5,0);ctx.closePath();ctx.fill();ctx.stroke();
+    if(site.progress>0){ctx.beginPath();ctx.arc(0,0,8,-Math.PI/2,-Math.PI/2+Math.PI*2*clamp(site.progress/8,0,1));ctx.strokeStyle=color;ctx.lineWidth=1.8;ctx.stroke();}
     ctx.restore();
   }
   const px=x+(map.x+world.x)/mapW*size,py=y+(map.y+world.y)/mapH*size;
@@ -3973,6 +4129,12 @@ function showHud(){
   const group=(name,content)=>'<div class="hud-group hud-'+name+'">'+content+'</div>';
   const meter=(label,value,max,color)=>'<span class="hud-meter"><small>'+label+'</small><meter min="0" max="'+max+
     '" value="'+clamp(value,0,max)+'" aria-label="'+label+'" style="--meter:'+color+'"></meter><strong>'+value+'/'+max+'</strong></span>';
+  const buffs=run.relicBuffs??{};
+  const buffText=[
+    buffs.guard>0?'무적 '+Math.ceil(buffs.guard)+'s':'',
+    buffs.attack>0?'화력 +30% '+Math.ceil(buffs.attack)+'s':'',
+    buffs.speed>0?'기동 +25% '+Math.ceil(buffs.speed)+'s':''
+  ].filter(Boolean).join(' · ')||'—';
   touchDash.disabled=run.dash<1||world.dashRemaining>0||world.stun>0;
   setHud(group('mission',field(tr(difficulty().ko,difficulty().en),run.stage+' / 20')+
     field('공세',mode==='docking'?'도킹 베이':boss?'보스전':(wavePressure(run.time)+1)+' / 5')+field(timeLabel,time))+
@@ -3980,7 +4142,7 @@ function showHud(){
     meter('내구도',Math.max(0,Math.ceil(run.hp)),run.max,'#79ee82'))+
     group('progress',meter('Lv.'+run.level,run.xp,xpGoal(),'#b995ff')+
     meter('대시',Math.floor(100*run.dash),100,'#64dfff'))+
-    group('totals',field('코인',run.coin.toLocaleString(),'credits')+field('점수',run.score.toLocaleString())));
+    group('totals',field('코인',run.coin.toLocaleString(),'credits')+field('점수',run.score.toLocaleString())+field('유물 효과',buffText)));
 }
 function frame(now){
   const dt=Math.min(.05,(now-(last||now))/1000);last=now;
