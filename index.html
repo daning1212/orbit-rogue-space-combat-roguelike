@@ -249,6 +249,8 @@ summary{cursor:pointer;color:var(--accent);font-size:12px;margin-top:8px}
 .header-logo{display:block;width:clamp(150px,22vw,235px);height:42px;object-fit:contain;object-position:left center;filter:drop-shadow(0 0 8px #2e9dff78)}
 .panel[data-screen="hangar"] .box>h2{align-items:flex-start}
 .hangar-logo{display:block;width:min(560px,72%);height:auto;max-height:118px;object-fit:contain;object-position:left center;filter:drop-shadow(0 5px 12px #000b)}
+.hangar-brand{display:grid;justify-items:center;gap:2px;margin-inline:auto}
+.hangar-version{color:#a9eaff;font-size:11px;font-weight:800;letter-spacing:.2em;text-shadow:0 0 8px #55cfff80}
 @media(max-width:680px){
  .hangar-wordmark{gap:9px}
  .hangar-wordmark>.brand-mark{width:39px;height:39px}
@@ -1367,7 +1369,7 @@ function hangar(){
   const difficultyLimit=unlockedDifficulty();
   let chosen=available.includes(starter)?starter:available[0];
   hangarHull=starterHull;
-  showPanel('<img class="hangar-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE">',
+  showPanel('<span class="hangar-brand"><img class="hangar-logo" src="orbit-rogue-logo.png" alt="ORBIT ROGUE"><small class="hangar-version">v0.2.72</small></span>',
     '<p class="hangar-subtitle">'+tr('기체와 기본 무기를 고르고 출격하세요.','Choose a ship and primary weapon.')+'</p><div class="hull-pick">'+
     hulls.map((h,i)=>'<button id="hull'+i+'" class="hull-card" aria-pressed="'+(i===hangarHull)+'"><span class="hull-card-head"><strong class="pilot-name"><span class="pilot-rank" aria-hidden="true">'+(i?'<i></i><i></i><i></i>':'<b></b><b></b>')+'</span>'+tr(i?'김마리아 대위':'하영서 중사',i?'Capt. Kim Maria':'Sgt. Ha Yeongseo')+'</strong></span><span class="hull-display"><canvas id="hangarShip'+i+'" class="hull-ship" width="300" height="170" aria-label="'+tr(h.name,i?'Power ship':'Speed ship')+'"></canvas><small class="hull-specs">'+tr(h.name,i?'Power':'Speed')+' <span>'+tr(h.brief,i?'Damage +20% · Hull 110':'Speed +10% · Hull 82')+'</span></small><img class="hull-pilot" src="orbit-rogue-pilot-'+(i?'power':'speed')+'-full.webp" alt="'+tr(i?'파워 기체 파일럿':'스피드 기체 파일럿',i?'Power pilot':'Speed pilot')+'"></span></button>').join('')+
     '</div><div class="hangar-selectors">'+
