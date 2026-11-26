@@ -5,7 +5,7 @@
 <p align="center">우주전투 로그라이크</p>
 
 <p align="center">
-  <a href="https://htmlpreview.github.io/?https://github.com/daning1212/orbit-rogue-space-combat-roguelike/blob/cbe5844fba2d6c85b2af7149fe5d0cc91f0120f1/index.html"><strong>게임 시작 · v0.2.78</strong></a>
+  <a href="https://htmlpreview.github.io/?https://github.com/daning1212/orbit-rogue-space-combat-roguelike/blob/b4e54514972c3b082d91ef055e5cb640ee35f616/index.html"><strong>게임 시작 · v0.2.79</strong></a>
 </p>
 
 <p align="center">
@@ -18,9 +18,9 @@
 
 ## 플레이·소스·다운로드
 
-- [브라우저에서 플레이 · v0.2.78](https://htmlpreview.github.io/?https://github.com/daning1212/orbit-rogue-space-combat-roguelike/blob/cbe5844fba2d6c85b2af7149fe5d0cc91f0120f1/index.html)
-- [게임 코드 소스](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/tree/cbe5844fba2d6c85b2af7149fe5d0cc91f0120f1)
-- [게임 ZIP 다운로드](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/archive/cbe5844fba2d6c85b2af7149fe5d0cc91f0120f1.zip)
+- [브라우저에서 플레이 · v0.2.79](https://htmlpreview.github.io/?https://github.com/daning1212/orbit-rogue-space-combat-roguelike/blob/b4e54514972c3b082d91ef055e5cb640ee35f616/index.html)
+- [게임 코드 소스](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/tree/b4e54514972c3b082d91ef055e5cb640ee35f616)
+- [게임 ZIP 다운로드](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/archive/b4e54514972c3b082d91ef055e5cb640ee35f616.zip)
 - [HealingArty 홈페이지 게임 섹션](https://daning1212.github.io/healingarty/#games)
 
 ## 조작법
@@ -38,15 +38,15 @@
 
 ### 다음 작업자를 위한 핵심 정보
 
-현재 공개 게임 버전은 **v0.2.78**입니다. 게임 저장소는 [`daning1212/orbit-rogue-space-combat-roguelike`](https://github.com/daning1212/orbit-rogue-space-combat-roguelike)이며, 공개 PLAY·소스·ZIP이 가리키는 게임 코드 커밋은 [`cbe5844fba2d6c85b2af7149fe5d0cc91f0120f1`](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/commit/cbe5844fba2d6c85b2af7149fe5d0cc91f0120f1)입니다. 홈페이지 미리보기 이미지도 이 SHA를 사용합니다. README와 홈페이지 수정은 별도 커밋이므로 게임 코드 링크를 갱신할 때 문서 커밋 SHA를 대신 쓰지 마세요.
+현재 공개 게임 버전은 **v0.2.79**입니다. 게임 저장소는 [`daning1212/orbit-rogue-space-combat-roguelike`](https://github.com/daning1212/orbit-rogue-space-combat-roguelike)이며, 공개 PLAY·소스·ZIP이 가리키는 게임 코드 커밋은 [`b4e54514972c3b082d91ef055e5cb640ee35f616`](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/commit/b4e54514972c3b082d91ef055e5cb640ee35f616)입니다. 홈페이지 미리보기 이미지도 이 SHA를 사용합니다. README와 홈페이지 수정은 별도 커밋이므로 게임 코드 링크를 갱신할 때 문서 커밋 SHA를 대신 쓰지 마세요.
 
 게임은 프레임워크 없는 정적 단일 `index.html`(JavaScript·CSS·Canvas)과 `assets/`로 구성되어 설치 없이 브라우저에서 실행됩니다. 주 게임 로직과 화면은 `index.html`, 작업 설계는 `plan.md`, 진행 항목은 `TODO.md`에 있습니다. 새로운 요청을 이어받으면 이 파일들을 읽고 이미 구현된 흐름을 먼저 확인하세요.
 
-### v0.2.78 현재 구현과 설계상 주의점
+### v0.2.79 현재 구현과 설계상 주의점
 
-시작 버튼 없이 ORBIT ROGUE 제목·버전 로고가 먼저 표시되고, 650ms 뒤 HealingArty Games 로고가 2초 동안 나타난 뒤 격납고로 자동 진입합니다. 격납고에는 제작자 크레딧이 있고 ORBIT ROGUE 로고 아래에 `v0.2.78`이 표시됩니다. 파일럿 이름표는 유지하며 하영서 중위는 파랑, 김마리아 중령은 주황 윤곽 발광을 보여줍니다. 선택 순간의 섬광과 중위의 경례·중령의 주먹 포즈도 적용했습니다. 중위 표식은 다이아몬드 두 개, 중령 표식은 꽃 모양 두 개로 구분합니다. 레벨업 강화는 무료이며 실제 효과와 수치, 개별 아이콘과 랭크 미리보기를 보여줍니다. 밸런스 보호를 위해 새 인챈트·진화 규칙은 추가하지 않았습니다.
+시작 버튼 없이 ORBIT ROGUE 제목·버전 로고가 먼저 표시되고, 650ms 뒤 HealingArty Games 로고가 2초 동안 나타난 뒤 격납고로 자동 진입합니다. 격납고 배경과 파일럿 화면을 복구했으며 제작자 크레딧과 ORBIT ROGUE 로고 아래 `v0.2.79`를 표시합니다. 파일럿 이름표는 유지하며 하영서 중위는 파랑, 김마리아 중령은 주황 윤곽 발광을 보여줍니다. 선택 순간의 섬광과 중위의 경례·중령의 주먹 포즈도 적용했습니다. 중위 표식은 다이아몬드 두 개, 중령 표식은 꽃 모양 두 개로 구분합니다. 레벨업 강화는 무료이며 실제 효과와 수치, 개별 아이콘과 랭크 미리보기를 보여줍니다. 밸런스 보호를 위해 새 인챈트·진화 규칙은 추가하지 않았습니다.
 
-일반 구역은 종료 3초 전부터 16:9 비율의 정거장 전체가 전장 안쪽으로 접근하고 화살표가 실제 도킹 베이를 안내합니다. 도킹 중 기존 일반 적은 남아 계속 이동·공격하며 정거장 자동 포탑 네 곳이 가까운 적을 향해 사격하고 피해를 줍니다. 화면에는 “정거장 방어 가동”을 표시합니다. 실제 베이에 진입해야 상점이 열리며, 기본 도킹 제한은 12초라는 구현 가정입니다. 도킹 실패나 시간 만료 시 상점을 건너뛰고 다음 구역으로 진행합니다. 보스는 도킹 진입 시 정리하며 Stage 20 최종 흐름은 일반 도킹과 분리해 보존했습니다. 상점은 왼쪽 약 30%의 기체·상태·능력치, 오른쪽 약 70%의 코인·수리·상품 네 가지, 하단의 무장·리롤·저장 후 나가기·다음 구역 동작으로 구성되어 있습니다.
+일반 구역은 종료 5초 전부터 사방 중 한 방향에 고정된 정거장과 도킹 베이 화살표를 보여줍니다. 정거장은 전장에 들어온 뒤 움직이지 않으며 화면 폭 변경에도 플레이어와 겹치지 않도록 방향·간격을 유지합니다. 12초 도킹 방어전에서 적기는 정거장을 집중 공격하고, 일부는 피격 뒤 후퇴합니다. 정거장 레이저와 유도탄이 방어하며 플레이어도 계속 발사할 수 있습니다. 실드 3,000이 먼저 피해를 흡수하고 실드 고갈 뒤 에너지 3,000이 감소합니다. 에너지 0이면 정거장이 폭발해 게임 오버가 됩니다. 플레이어 기체는 기존과 같이 실드·내구도가 소진되어 파괴되면 게임 오버입니다. 실제 도킹에 성공한 경우에만 상점과 회복을 제공하며, 시간 만료·미도킹은 상점·도킹 회복 없이 다음 구역으로 진행합니다. 새 구역의 정거장 실드와 에너지는 각각 3,000으로 초기화됩니다. 보스는 거리를 유지하며 접근 속도를 낮추고 공격 빈도를 높였습니다. Stage 20 최종 흐름은 일반 도킹과 분리해 보존했습니다. 상점은 왼쪽 약 30%의 기체·상태·능력치, 오른쪽 약 70%의 코인·수리·상품 네 가지, 하단의 무장·리롤·저장 후 나가기·다음 구역 동작으로 구성되어 있습니다.
 
 레벨업 중에는 전투 업데이트만 멈추고 현재 BGM 곡과 재생 위치를 유지합니다. 모바일 터치 조이스틱 회전은 입력 기울기에 비례해 부드럽게 조정되며, PC 키보드·마우스 경로는 바꾸지 않았습니다. 현재 지원되는 것은 화면 가상 조이스틱입니다. 물리 USB·Bluetooth 게임패드 입력은 아직 구현되지 않았습니다. 브라우저 Gamepad API로 추가할 수 있지만, 매핑·데드존·브라우저/기기별 실기 확인이 필요하며 아직 사용자 승인된 구현 작업은 아닙니다.
 
@@ -54,15 +54,15 @@
 
 ### 3×3 전장·유물·시작 연출·오디오·엔딩
 
-각 구획과 기체 크기는 기존 화면 크기를 유지하면서 카메라가 3×3 월드를 따라갑니다. 우측 상단 미니맵은 플레이어 위치·방향·시야와 적(붉은 점), 보스(큰 고리), 미점령 유물을 표시합니다. 점령한 유물은 전장과 미니맵에서 사라집니다. 유물 점령 반경은 112이며, 색상별 바닥 표시·경계·점령 진행 링도 같은 범위를 표현합니다. 8초간 범위 안에 있어야 획득되고 이탈하면 진행이 초기화됩니다. 보상은 유물마다 코인 40, 점수 600, XP 6, 체력 18이며, 수호 무적·화력 +30%·기동 속도 +25% 버프는 각각 10초 지속되고 HUD에 남은 시간을 표시합니다. 광석은 파괴 위치에 생성되어 월드에 남으며 수명은 70초입니다. 3×3은 시험용 프로토타입으로 타당하지만, 이것이 객관적으로 최적 크기라고 입증된 것은 아닙니다.
+각 구획과 기체 크기는 기존 화면 크기를 유지하면서 카메라가 3×3 월드를 따라갑니다. 우측 상단 미니맵은 플레이어 위치·방향·시야와 적(붉은 점), 보스(큰 고리), 미점령 유물을 표시합니다. 점령한 유물은 전장과 미니맵에서 사라집니다. 유물 점령 반경은 112입니다. 장판 안에서는 이동·전투·회피 중에도 8초 점령 진행이 유지되고, 반경 밖으로 나갈 때만 초기화됩니다. 색상별 바닥 표시·경계·진행 링은 같은 범위를 표현합니다. 보상은 유물마다 코인 40, 점수 600, XP 6, 체력 18이며, 수호 무적·화력 +30%·기동 속도 +25% 버프는 각각 10초 지속되고 HUD에 남은 시간을 표시합니다. 광석은 파괴 위치에 생성되어 월드에 남으며 수명은 70초입니다. 3×3은 시험용 프로토타입으로 타당하지만, 이것이 객관적으로 최적 크기라고 입증된 것은 아닙니다.
 
 유도 미사일은 가까운 표적이 있으면 발사 수량을 모두 발사하고, 표적이 없을 때도 비행을 이어가 전장 끝에서 사라집니다. 일시정지 화면은 기체 능력치, 음악·효과음 음량과 피해 숫자 설정, 계속하기·그만하기를 분리한 다크 SF 제어 패널입니다. 레벨업 카드 선택 중 ESC로 연 일시정지에서 강화 선택으로 돌아갈 수 있습니다. 사망 결과는 작전 리포트 형태로 구역·점수·최고 기록·시간·격추·레벨을 요약하고 장비 상세를 접어 볼 수 있게 했습니다. 최종 보스 엔딩과 클리어 카드에는 제공된 파일럿 그림과 `THANK YOU FOR PLAYING`을 사용합니다.
 
 ### 자산·검증·미완료 사항
 
-`assets/upgrades/generated/stat-composite-armor.png`는 AI 생성 복합 장갑 원본 그림입니다. `assets/upgrades/items/`에는 이와 별개인 28종의 강화 아이콘 SVG가 있습니다. 생성 도구는 `tools/build-card-art.py`, 도킹 정거장은 `assets/station/orbit-docking-station.webp`, RIFT 그림은 `assets/bosses/rift-excavator.webp`입니다. 사용자가 준 참고 PNG `orbit-rogue-shop-reference.png`, `orbit-rogue-station-source.png`, `orbit-rogue-upgrade-reference.png`는 개인 참고용으로 Git 커밋에 넣지 않았습니다.
+`assets/audio/sfx/dash-boost.mp3`는 새 SF 부스터 대시 효과음입니다. `assets/upgrades/generated/stat-composite-armor.png`는 AI 생성 복합 장갑 원본 그림입니다. `assets/upgrades/items/`에는 이와 별개인 28종의 강화 아이콘 SVG가 있습니다. 생성 도구는 `tools/build-card-art.py`, 도킹 정거장은 `assets/station/orbit-docking-station.webp`, RIFT 그림은 `assets/bosses/rift-excavator.webp`입니다. 사용자 참고 PNG `orbit-rogue-shop-reference.png`, `orbit-rogue-station-source.png`, `orbit-rogue-upgrade-reference.png`, `assets/station/orbit-docking-station-source.png`는 개인 참고용으로 Git 커밋에 넣지 않았습니다.
 
-완료된 자동 확인: 인라인 JavaScript 구문과 `git diff --check`, 미니맵 적·보스 표식, 점령 유물의 렌더링 제거와 플레이어 아이콘 유지, 유물 보상·진행 초기화·버프 효과와 HUD, 광석 70초, 도킹 접근, 강화 카드 키보드 포커스와 ESC 복귀, 데스크톱·모바일 결과/일시정지 화면, 오디오 옵션 조작 및 콘솔 오류를 확인했습니다. 기존 Chromium 테스트에서도 카메라·저장 복원·터치 제외·엔딩 그림·클리어 카드를 확인했습니다. 실제 휴대폰 브라우저에서 수동 플레이하거나 물리 게임패드를 연결한 검증은 하지 않았습니다. 다음 변경에서 관련 동작을 건드리면 그 경로만 다시 확인하고, 실기 검증을 했다고 과장하지 마세요.
+완료된 자동 확인: 인라인 JavaScript 구문과 `git diff --check`, 미니맵 적·보스 표식, 점령 유물의 렌더링 제거와 플레이어 아이콘 유지, 유물 보상·진행 초기화·버프 효과와 HUD, 광석 70초, 도킹 접근, 강화 카드 키보드 포커스와 ESC 복귀, 데스크톱·모바일 결과/일시정지 화면, 오디오 옵션 조작 및 콘솔 오류를 확인했습니다. 기존 Chromium 테스트에서도 카메라·저장 복원·터치 제외·엔딩 그림·클리어 카드를 확인했습니다. v0.2.79에서는 격납고 배경·파일럿 계급, 유물 장판 안 이동 중 점령 진행, 5초 정거장 안내, 도킹 성공·실패와 정거장 에너지 고갈, 방어 레이저·유도탄, 도킹 중 플레이어 발사, 대시 효과음 및 페이지 오류 없음을 확인했습니다. 실제 휴대폰 브라우저에서 수동 플레이하거나 물리 게임패드를 연결한 검증은 하지 않았습니다. 다음 변경에서 관련 동작을 건드리면 그 경로만 다시 확인하고, 실기 검증을 했다고 과장하지 마세요.
 
 ### 이전 릴리스 작업 이력
 
@@ -78,6 +78,7 @@
 | v0.2.76 | 하영서 중사·김마리아 대위의 파일럿 계급을 각각 중위·중령으로 변경하고, 위관급 다이아몬드와 영관급 꽃 모양 표식을 구분했습니다. |
 | v0.2.77 | ORBIT ROGUE 타이틀·버전 뒤 HealingArty Games 로고를 2초간 보여주고 격납고로 자동 진입합니다. |
 | v0.2.78 | 정거장 전체가 잘리지 않도록 16:9 크기를 적용하고, 도킹 중 적과 정거장 자동 포탑 방어를 유지했습니다. 유물 점령 반경·표시를 112로 넓혔습니다. |
+| v0.2.79 | 격납고 배경을 복구하고 정거장을 사방 고정·5초 안내로 변경했습니다. 정거장 실드/에너지 3,000씩, 적의 집중 공격·후퇴, 레이저·유도탄 방어, 도킹 실패 무보급 진행, 대시 부스터 효과음, 보스 접근·공격 밸런스를 반영했습니다. |
 
 ### 링크 갱신·커밋 순서
 
