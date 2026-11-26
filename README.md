@@ -5,7 +5,7 @@
 <p align="center">우주전투 로그라이크</p>
 
 <p align="center">
-  <a href="https://rawcdn.githack.com/daning1212/orbit-rogue-space-combat-roguelike/ba7784662a4502984b1156a093746e0f1c1da118/index.html"><strong>게임 시작 · v0.2.75</strong></a>
+  <a href="https://rawcdn.githack.com/daning1212/orbit-rogue-space-combat-roguelike/da25bafe88b9f482d36733358da0ed00d0fb81d6/index.html"><strong>게임 시작 · v0.2.77</strong></a>
 </p>
 
 <p align="center">
@@ -18,9 +18,9 @@
 
 ## 플레이·소스·다운로드
 
-- [브라우저에서 플레이 · v0.2.75](https://rawcdn.githack.com/daning1212/orbit-rogue-space-combat-roguelike/ba7784662a4502984b1156a093746e0f1c1da118/index.html)
-- [게임 코드 소스](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/tree/ba7784662a4502984b1156a093746e0f1c1da118)
-- [게임 ZIP 다운로드](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/archive/ba7784662a4502984b1156a093746e0f1c1da118.zip)
+- [브라우저에서 플레이 · v0.2.77](https://rawcdn.githack.com/daning1212/orbit-rogue-space-combat-roguelike/da25bafe88b9f482d36733358da0ed00d0fb81d6/index.html)
+- [게임 코드 소스](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/tree/da25bafe88b9f482d36733358da0ed00d0fb81d6)
+- [게임 ZIP 다운로드](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/archive/da25bafe88b9f482d36733358da0ed00d0fb81d6.zip)
 - [HealingArty 홈페이지 게임 섹션](https://daning1212.github.io/healingarty/#games)
 
 ## 조작법
@@ -38,13 +38,13 @@
 
 ### 다음 작업자를 위한 핵심 정보
 
-현재 공개 게임 버전은 **v0.2.75**입니다. 게임 저장소는 [`daning1212/orbit-rogue-space-combat-roguelike`](https://github.com/daning1212/orbit-rogue-space-combat-roguelike)이며, 공개 PLAY·소스·ZIP이 가리키는 게임 코드 커밋은 [`ba7784662a4502984b1156a093746e0f1c1da118`](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/commit/ba7784662a4502984b1156a093746e0f1c1da118)입니다. 홈페이지 미리보기 로고도 이 SHA를 사용합니다. README와 홈페이지 수정은 별도 커밋이므로 게임 코드 링크를 갱신할 때 문서 커밋 SHA를 대신 쓰지 마세요.
+현재 공개 게임 버전은 **v0.2.77**입니다. 게임 저장소는 [`daning1212/orbit-rogue-space-combat-roguelike`](https://github.com/daning1212/orbit-rogue-space-combat-roguelike)이며, 공개 PLAY·소스·ZIP이 가리키는 게임 코드 커밋은 [`da25bafe88b9f482d36733358da0ed00d0fb81d6`](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/commit/da25bafe88b9f482d36733358da0ed00d0fb81d6)입니다. 홈페이지 미리보기 로고도 이 SHA를 사용합니다. README와 홈페이지 수정은 별도 커밋이므로 게임 코드 링크를 갱신할 때 문서 커밋 SHA를 대신 쓰지 마세요.
 
 게임은 프레임워크 없는 정적 단일 `index.html`(JavaScript·CSS·Canvas)과 `assets/`로 구성되어 설치 없이 브라우저에서 실행됩니다. 주 게임 로직과 화면은 `index.html`, 작업 설계는 `plan.md`, 진행 항목은 `TODO.md`에 있습니다. 새로운 요청을 이어받으면 이 파일들을 읽고 이미 구현된 흐름을 먼저 확인하세요.
 
-### v0.2.75 구현 내용과 설계상 주의점
+### v0.2.77 현재 구현과 설계상 주의점
 
-시작 버튼을 따로 누르지 않아도 HealingArty Games 로고가 잠깐 나타난 뒤 격납고로 자동 진입하고, ORBIT ROGUE 로고 아래에는 `v0.2.75`가 표시됩니다. 파일럿 이름표는 유지하며 하영서 중사는 파랑, 김마리아 대위는 주황 윤곽 발광을 보여줍니다. 선택 순간의 섬광과 중사의 경례·대위의 주먹 포즈도 적용했습니다. 레벨업 강화는 무료이며 실제 효과와 수치, 개별 아이콘과 랭크 미리보기를 보여줍니다. 밸런스 보호를 위해 새 인챈트·진화 규칙은 추가하지 않았습니다.
+시작 버튼 없이 ORBIT ROGUE 제목·버전 로고가 먼저 표시되고, 650ms 뒤 HealingArty Games 로고가 2초 동안 나타난 뒤 격납고로 자동 진입합니다. 격납고에는 제작자 크레딧이 있고 ORBIT ROGUE 로고 아래에 `v0.2.77`이 표시됩니다. 파일럿 이름표는 유지하며 하영서 중위는 파랑, 김마리아 중령은 주황 윤곽 발광을 보여줍니다. 선택 순간의 섬광과 중위의 경례·중령의 주먹 포즈도 적용했습니다. 중위 표식은 다이아몬드 두 개, 중령 표식은 꽃 모양 두 개로 구분합니다. 레벨업 강화는 무료이며 실제 효과와 수치, 개별 아이콘과 랭크 미리보기를 보여줍니다. 밸런스 보호를 위해 새 인챈트·진화 규칙은 추가하지 않았습니다.
 
 일반 구역은 종료 3초 전부터 작은 정거장이 전장 안쪽으로 접근하고 큰 화살표가 도킹 베이를 안내합니다. 실제 베이에 진입해야 상점이 열리며, 기본 도킹 제한은 12초라는 구현 가정입니다. 도킹 실패나 시간 만료 시 상점을 건너뛰고 다음 구역으로 진행합니다. 보스는 플레이어를 추격하고 Stage 20 최종 흐름은 일반 도킹과 분리해 보존했습니다. 상점은 왼쪽 약 30%의 기체·상태·능력치, 오른쪽 약 70%의 코인·수리·상품 네 가지, 하단의 무장·리롤·저장 후 나가기·다음 구역 동작으로 구성되어 있습니다.
 
@@ -75,6 +75,8 @@
 | v0.2.54–0.2.57 | 무기 등급별 기체 파츠·발사 이미지, 미사일 조준 연출, 상점 기체 미리보기와 추가 수리·지원 장비를 추가했습니다. |
 | v0.2.73 | 파일럿 윤곽, 무료 강화 카드, 구역 도킹과 상점 UI, BGM 상태 유지, RIFT 자산 폴백, 모바일 회전 보정, 유도 미사일 지속성, 3×3 월드·미니맵·유물 보상, 시작 로고·효과음·제작 크레딧, 엔딩 그림과 클리어 카드를 개선했습니다. |
 | v0.2.75 | 파일럿별 색상 윤곽·선택 포즈, 보스 추격·도킹 안내, 유물 버프와 HUD, 적 미니맵 표식, 광석 수명 연장, 키보드 강화 선택·ESC 일시정지, 작전 결과 리포트를 다듬었습니다. |
+| v0.2.76 | 하영서 중사·김마리아 대위의 파일럿 계급을 각각 중위·중령으로 변경하고, 위관급 다이아몬드와 영관급 꽃 모양 표식을 구분했습니다. |
+| v0.2.77 | ORBIT ROGUE 타이틀·버전 뒤 HealingArty Games 로고를 2초간 보여주고 격납고로 자동 진입합니다. |
 
 ### 링크 갱신·커밋 순서
 
