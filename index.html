@@ -951,7 +951,7 @@ header .game-version{align-self:center;font-size:10px}
 <audio id="bossOst2" src="orbit-rogue-boss-02.mp3" preload="metadata" loop></audio>
 <audio id="warningAudio" src="orbit-rogue-warning.mp3" preload="auto"></audio>
 <img id="warningArt" src="orbit-rogue-warning.png" alt="" hidden>
-<footer><span data-game-version>v0.2.80</span> · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
+<footer><span data-game-version>v0.2.81</span> · 자동 사격 <span class="desktop-help">· ←→ 회전 · ↑ 가속 · ↓ 제동 · Shift 대시 · 메뉴 ↑↓ / Enter · ESC 일시정지 · F11 전체화면</span><span class="touch-help">· 왼쪽 조준 · 오른쪽 가속 · 대시 버튼 한 번</span></footer>
 </main>
 <script>
 'use strict';
@@ -1565,13 +1565,15 @@ function hangar(){
 const RELIC_TYPES={
   A:{name:'수호 코어',short:'수호',color:'#63dfff',buff:'guard',effect:'10초 무적'},
   B:{name:'화력 코어',short:'화력',color:'#ff9b5b',buff:'attack',effect:'공격력 +30% · 10초'},
-  C:{name:'기동 코어',short:'기동',color:'#8bf0a3',buff:'speed',effect:'속도 +25% · 10초'}
+  C:{name:'기동 코어',short:'기동',color:'#8bf0a3',buff:'speed',effect:'속도 +25% · 10초'},
+  D:{name:'혜성 추진기',short:'혜성',color:'#93bbff',weapon:'comet',effect:'대시 궤적이 적기에 피해 · 이번 구역'},
+  E:{name:'인양 호위기',short:'인양',color:'#f8de88',weapon:'escort',effect:'광석 회수 반경 +45 · 광석 5개마다 유도탄 · 이번 구역'}
 };
 function relicProfile(site){return RELIC_TYPES[site?.type??site?.id]??RELIC_TYPES.C;}
 function defaultRelicSites(){return [
   {id:'A',type:'A',x:W*.5,y:H*1.5,progress:0,claimed:false},
-  {id:'B',type:'B',x:W*2.5,y:H*.5,progress:0,claimed:false},
-  {id:'C',type:'C',x:W*1.5,y:H*2.5,progress:0,claimed:false}
+  {id:'B',type:run.stage%2===0?'D':'B',x:W*2.5,y:H*.5,progress:0,claimed:false},
+  {id:'C',type:run.stage%2===0?'C':'E',x:W*1.5,y:H*2.5,progress:0,claimed:false}
 ];}
 function ensureRunMap(){
   if(!run)return null;
@@ -1619,6 +1621,7 @@ function stageHasBoss(){
 function enterStage(arrive=false){
   menuPlaying=false;
   combatOst.pause();
+  run.map={x:W,y:H,sites:defaultRelicSites()};
   resetWorld();pointer=null;keys.clear();resetStick();releaseThrust();
   run.time=waveDuration(run.stage);
   if(run.stage!==MAX_STAGE)prepareDockingStation();
@@ -2058,7 +2061,7 @@ function enterDockingWindow(){
   boss=null;world.vulcanTeam=null;world.linkedTarget=null;world.stun=0;
   world.targets=world.targets.filter(target=>!target.boss);
   for(const target of world.targets){target.attack=null;target.chargeAngle=undefined;target.stationAttack=false;}
-  for(const key of ['hostile','beams','zones','gems','drops','edgeAlerts'])world[key]=[];
+  for(const key of ['hostile','beams','zones','drops','edgeAlerts'])world[key]=[];
   world.blasts=[];world.sparks=[];world.damageNumbers=[];world.noticeFor=0;
   world.dockingDefense={cooldown:.35,nextTurret:0,missileCooldown:.75,nextMissile:2,beams:[],missiles:[]};
   mode='docking';keys.clear();pointer=null;resetStick();releaseThrust();syncCombatOst();hide();
@@ -2230,6 +2233,30 @@ function destroyDockingStation(){
   explode({x:bay.x,y:bay.y,r:Math.max(d.height*.36,Math.min(W,H)*.38),boss:true});
   startPlayerDestruction();
 }
+function collectOre(dt){
+  const radius=run.pickup+run.support[3]*40+(world.relicWeapons?.escort?45:0);
+  world.gems=world.gems.filter(g=>{
+    const d=Math.hypot(g.x-world.x,g.y-world.y);
+    if(d<14){
+      const reward=gemRewards[g.ore];
+      run.xp+=reward.xp;run.score+=reward.score;
+      if(world.relicWeapons?.escort)world.escortOre=Math.min(5,(world.escortOre??0)+1);
+      sound(800,.035,.22);return false;
+    }
+    if(d<radius||world.magnet>0){
+      const v=dt*(world.magnet>0?650:310)/Math.max(d,1);
+      g.x+=(world.x-g.x)*Math.min(v,1);g.y+=(world.y-g.y)*Math.min(v,1);
+    }
+    return (g.life-=dt)>0;
+  });
+  if(world.escortOre===5){
+    const target=nearest(world.x,world.y,520);
+    if(target){
+      projectile(world.x,world.y,Math.atan2(target.y-world.y,target.x-world.x),430,26,'missile',true);
+      world.escortOre=0;
+    }
+  }
+}
 function stepDocking(dt){
   const d=world.docking;
   if(!d){run.stage=Math.min(MAX_STAGE,run.stage+1);enterStage(true);return;}
@@ -2237,6 +2264,7 @@ function stepDocking(dt){
   moveShip(dt);
   run.dash=Math.min(dashBefore,run.dash);
   stepDockingThreats(dt);
+  collectOre(dt);
   if(run.hp<=0){startPlayerDestruction();return;}
   if(d.energy<=0){destroyDockingStation();return;}
   if(dockingBayContains(d)){
@@ -2615,7 +2643,7 @@ function fitArena(){
     const image=artwork.dockingStation,aspect=image?.width&&image?.height?image.width/image.height:16/9;
     d.height=d.width/aspect;d.y=centerY-d.height/2;
   }
-  for(const group of [world.targets,world.shots,world.hostile,world.gems,world.drops,world.sparks,world.blasts,world.damageNumbers]){
+  for(const group of [world.targets,world.shots,world.hostile,world.gems,world.drops,world.sparks,world.blasts,world.damageNumbers,world.relicTrail??[]]){
     for(const entity of group)entity.x*=ratio;
   }
   for(const beam of world.beams){
@@ -2628,6 +2656,7 @@ function fitArena(){
   for(const zone of world.zones){zone.x*=ratio;if(!zone.radius)zone.w*=ratio;}
   for(const target of world.targets){
     if(target.attack?.x!==undefined)target.attack.x*=ratio;
+    if(target.motion)target.motion.homeX*=ratio;
     if(target.motion?.pass){target.motion.pass.fromX*=ratio;target.motion.pass.toX*=ratio;}
   }
   if(world.vulcanApproach)world.vulcanApproach.lanes=world.vulcanApproach.lanes.map(x=>x*ratio);
@@ -2828,7 +2857,8 @@ function fire(slot=inventory()[0]){
   sound(missile?170:420,.07,.24);playFx('playerLaunch',missile?.5:.34);
   return weaponInterval(slot);
 }
-function waveDuration(stage){return stage<=8?20+(stage-1)*5:stage===20?120:60;}
+const sectorTimes=[55,60,60,65,65,70,70,70,70,85,85,85,90,90,95,95,100,105,110,120];
+function waveDuration(stage){return sectorTimes[stage-1]??60;}
 function wavePressure(time){
   const duration=waveDuration(run.stage);
   return clamp(Math.floor((1-time/duration)*5),0,4);
@@ -3116,10 +3146,11 @@ function drop(t){
     const type=pick(['sale','free','halfRoll','half','dice','loyalty']);
     world.drops.push({x:t.x,y:t.y,type,life:17});
     run.shopDropsSpawned=index+1;
-  }else if(Math.random()<Math.min(.30,.13+run.luck*.004)){
-    const type=Math.random()<.75?'magnet':'purge';
-    if(type==='magnet'&&run.repairCore)return;
-    world.drops.push({x:t.x,y:t.y,type,life:17});
+  }else if(Math.random()<Math.min(.30,.13+run.luck*.004)*.75){
+    if(!run.repairCore)world.drops.push({x:t.x,y:t.y,type:'magnet',life:17});
+  }else if(!t.rock&&(world.pulsesDropped??0)<(run.stage<=4?2:3)&&Math.random()<.012){
+    world.drops.push({x:t.x,y:t.y,type:'purge',life:17});
+    world.pulsesDropped=(world.pulsesDropped??0)+1;
   }
 }
 function collect(type){
@@ -3172,24 +3203,29 @@ function moveBoss(unit,dt){
     return true;
   }
 
+  const map=ensureRunMap();
   const phase=motion.age*config.pace,margin=Math.max(unit.r+12,40);
-  const sway=Math.min(145,W*Math.max(.08,config.sweep)*.9),offset=unit.partner?72:-42;
-  const targetX=clamp(world.x+Math.sin(phase+(unit.partner?Math.PI:0))*sway+offset,margin,W-margin);
-  const verticalSide=world.y<H*.42?1:-1;
-  const targetY=clamp(world.y+verticalSide*210+Math.sin(phase*.72+(unit.partner?1.5:0))*22,margin,H-margin);
+  const sway=Math.min(145,W*Math.max(.08,config.sweep)*.9);
+  const minX=margin-map.x,maxX=MAP_SIDE*W-margin-map.x;
+  const minY=margin-map.y,maxY=MAP_SIDE*H-margin-map.y;
+  const targetX=clamp(motion.homeX-map.x+Math.sin(phase+(unit.partner?Math.PI:0))*sway,minX,maxX);
+  const targetY=clamp(motion.homeY-map.y+Math.sin(phase*.72+(unit.partner?1.5:0))*70,minY,maxY);
   const follow=1-Math.exp(-dt*1.25);
   unit.x+=(targetX-unit.x)*follow;unit.y+=(targetY-unit.y)*follow;
-  if(config.interval&&(motion.wait-=dt)<=0){
+  if(config.interval&&bossInRange(unit)&&(motion.wait-=dt)<=0){
     motion.pass={age:0,fromX:unit.x,fromY:unit.y,
-      toX:config.aimed?clamp(world.x,margin,W-margin):unit.x,
-      toY:H*config.depth,hit:false};
+      toX:config.aimed?clamp(world.x,minX,maxX):unit.x,
+      toY:clamp(config.aimed?world.y:unit.y+H*config.depth,minY,maxY),hit:false};
     return true;
   }
   return false;
 }
+function bossInRange(unit){
+  return unit.hp>0&&near(unit,world,Math.max(450,Math.min(W,H)*.78));
+}
 function vulcanStep(dt){
   const config=vulcanBosses[run.stage];
-  boss.pattern-=dt;
+  if(world.vulcanTeam.some(bossInRange))boss.pattern-=dt;
   if(boss.pattern<=0){
     const width=config.zoneWidth;
     addBossZone(clamp(world.x-width/2,0,W-width),0,width,H);
@@ -3198,7 +3234,7 @@ function vulcanStep(dt){
   }
 
   for(const unit of world.vulcanTeam){
-    if(unit.hp<=0||moveBoss(unit,dt))continue;
+    if(unit.hp<=0||moveBoss(unit,dt)||!bossInRange(unit))continue;
     unit.fire-=dt;
     if(unit.fire>0)continue;
     if(!unit.burst){
@@ -3241,6 +3277,11 @@ function startBoss(){
     world.vulcanTeam=[boss,partner];
     world.targets.push(...world.vulcanTeam);
   }else world.targets.push(boss);
+  const map=ensureRunMap();
+  for(const unit of world.vulcanTeam??[boss]){
+    unit.motion.homeX=map.x+unit.x;
+    unit.motion.homeY=map.y+unit.y;
+  }
   world.spawn=spawnWave(0);
   syncCombatOst();startBossOst();
 }
@@ -3273,7 +3314,7 @@ function addCrownZone(x,y,radius,delay=0){
 }
 function bossStep(dt){
   if(vulcanBosses[run.stage]){vulcanStep(dt);return;}
-  if(moveBoss(boss,dt))return;
+  if(moveBoss(boss,dt)||!bossInRange(boss))return;
   boss.pattern-=dt;boss.fire-=dt;
   if(boss.fire<=0){
     const angle=Math.atan2(world.y-boss.y,world.x-boss.x);
@@ -3332,7 +3373,7 @@ function shiftScene(dx,dy){
     if(Number.isFinite(point.x))point.x+=dx;
     if(Number.isFinite(point.y))point.y+=dy;
   };
-  for(const group of [world.targets,world.shots,world.hostile,world.gems,world.drops,world.sparks,world.blasts,world.damageNumbers,world.edgeAlerts,world.zones,world.beams,world.dockingDefense?.beams,world.dockingDefense?.missiles])
+  for(const group of [world.targets,world.shots,world.hostile,world.gems,world.drops,world.sparks,world.blasts,world.damageNumbers,world.relicTrail,world.edgeAlerts,world.zones,world.beams,world.dockingDefense?.beams,world.dockingDefense?.missiles])
     for(const entity of group??[])move(entity);
   for(const beam of world.dockingDefense?.beams??[]){
     if(Number.isFinite(beam.tx))beam.tx+=dx;
@@ -3378,7 +3419,9 @@ function advanceRelics(dt){
       if(site.progress>=8-1e-8){
         site.claimed=true;run.coin+=40;run.score+=600;run.xp+=6;
         run.hp=Math.min(run.max,run.hp+18);
-        const relic=relicProfile(site);run.relicBuffs[relic.buff]=10;
+        const relic=relicProfile(site);
+        if(relic.weapon)(world.relicWeapons??={})[relic.weapon]=true;
+        else run.relicBuffs[relic.buff]=10;
         if(world.loot)world.loot.coins+=40;
         world.notice=relic.name+' 확보 · '+relic.effect;world.noticeFor=3.2;
       }
@@ -3395,6 +3438,23 @@ function moveShip(dt){
   const hull=hulls[run.hull??0],shipSpeed=run.speed*(run.relicBuffs?.speed>0?1.25:1);
   const keyTurn=Number(keys.has('ArrowRight'))-Number(keys.has('ArrowLeft'));
   const dashing=world.dashRemaining>0;
+  const trail=world.relicTrail??=[];
+  if(world.relicWeapons?.comet&&dashing){
+    world.relicTrailDelay=(world.relicTrailDelay??0)-dt;
+    if(world.relicTrailDelay<=0){
+      trail.push({x:world.x,y:world.y,life:.65,hit:new Set()});
+      world.relicTrailDelay=.045;
+    }
+  }else world.relicTrailDelay=0;
+  world.relicTrail=trail.filter(segment=>{
+    for(const target of world.targets){
+      if(!target.rock&&target.hp>0&&!segment.hit.has(target)&&near(target,segment,target.r+12)){
+        segment.hit.add(target);
+        damageTarget(target,8);
+      }
+    }
+    return (segment.life-=dt)>0;
+  });
   if(dashing)world.angle=world.dashAngle;
   else if(world.reverseRemaining>0){
     const rotation=Math.min(world.reverseRemaining,REVERSE_RATE*dt);
@@ -3536,7 +3596,10 @@ function step(dt){
   moveShip(dt);
   advanceRelics(dt);
   world.edgeAlerts=world.edgeAlerts.filter(alert=>(alert.life-=dt)>0);
-  run.time=Math.max(0,run.time-dt);
+  if(mode==='boss'&&!world.bossEngaged){
+    world.bossEngaged=(world.vulcanTeam??[boss]).some(bossInRange);
+  }
+  if(mode!=='boss'||world.bossEngaged)run.time=Math.max(0,run.time-dt);
   stepDockingApproach(dt);
   if(run.stage!==MAX_STAGE&&run.time===0){
     enterDockingWindow();return;
@@ -3657,20 +3720,7 @@ function step(dt){
     defeated ||= Boolean(t.boss&&(!team||team.every(unit=>unit.hp<=0)));
     return false;
   });
-  const radius=run.pickup+run.support[3]*40;
-  world.gems=world.gems.filter(g=>{
-    const d=Math.hypot(g.x-world.x,g.y-world.y);
-    if(d<14){
-      const reward=gemRewards[g.ore];
-      run.xp+=reward.xp;run.score+=reward.score;
-      sound(800,.035,.22);return false;
-    }
-    if(d<radius||world.magnet>0){
-      const v=dt*(world.magnet>0?650:310)/Math.max(d,1);
-      g.x+=(world.x-g.x)*Math.min(v,1);g.y+=(world.y-g.y)*Math.min(v,1);
-    }
-    return (g.life-=dt)>0;
-  });
+  collectOre(dt);
   world.drops=world.drops.filter(d=>{
     if(near(d,world,25)){collect(d.type);world.notice=dropNames[d.type];world.noticeFor=2.8;return false;}
     return (d.life-=dt)>0;
@@ -4239,6 +4289,13 @@ function paint(){
       ctx.fillRect(z.x,z.y,z.w,z.h);ctx.strokeRect(z.x,z.y,z.w,z.h);
     }
   }
+  for(const segment of world.relicTrail??[]){
+    ctx.save();
+    ctx.globalAlpha=Math.min(.65,segment.life);
+    ctx.fillStyle='#84c4ff';
+    ctx.beginPath();ctx.arc(segment.x,segment.y,7,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  }
   for(const g of world.gems){
     if(!drawArt('ore'+g.ore,g.x,g.y,13,18))
       path([[g.x,g.y-5],[g.x+4,g.y],[g.x,g.y+5],[g.x-4,g.y]],gemRewards[g.ore].color);
@@ -4411,7 +4468,9 @@ function showHud(){
   const buffText=[
     buffs.guard>0?'무적 '+Math.ceil(buffs.guard)+'s':'',
     buffs.attack>0?'화력 +30% '+Math.ceil(buffs.attack)+'s':'',
-    buffs.speed>0?'기동 +25% '+Math.ceil(buffs.speed)+'s':''
+    buffs.speed>0?'기동 +25% '+Math.ceil(buffs.speed)+'s':'',
+    world.relicWeapons?.comet?'혜성':'',
+    world.relicWeapons?.escort?'인양 '+(world.escortOre??0)+'/5':''
   ].filter(Boolean).join(' · ')||'—';
   touchDash.disabled=run.dash<1||world.dashRemaining>0||world.stun>0;
   setHud(group('mission',field(tr(difficulty().ko,difficulty().en),run.stage+' / 20')+
