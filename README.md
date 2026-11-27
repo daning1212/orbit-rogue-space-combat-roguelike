@@ -5,7 +5,7 @@
 <p align="center">우주전투 로그라이크</p>
 
 <p align="center">
-  <a href="https://htmlpreview.github.io/?https://github.com/daning1212/orbit-rogue-space-combat-roguelike/blob/83adf100355874ca18d1c1d901aa756dbf9f70ed/index.html"><strong>게임 시작 · v0.2.80</strong></a>
+  <a href="https://htmlpreview.github.io/?https://github.com/daning1212/orbit-rogue-space-combat-roguelike/blob/ac24fc97ae4b56d4d377780c3726f85832b6e271/index.html"><strong>게임 시작 · v0.2.81</strong></a>
 </p>
 
 <p align="center">
@@ -18,9 +18,9 @@
 
 ## 플레이·소스·다운로드
 
-- [브라우저에서 플레이 · v0.2.80](https://htmlpreview.github.io/?https://github.com/daning1212/orbit-rogue-space-combat-roguelike/blob/83adf100355874ca18d1c1d901aa756dbf9f70ed/index.html)
-- [게임 코드 소스](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/tree/83adf100355874ca18d1c1d901aa756dbf9f70ed)
-- [게임 ZIP 다운로드](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/archive/83adf100355874ca18d1c1d901aa756dbf9f70ed.zip)
+- [브라우저에서 플레이 · v0.2.81](https://htmlpreview.github.io/?https://github.com/daning1212/orbit-rogue-space-combat-roguelike/blob/ac24fc97ae4b56d4d377780c3726f85832b6e271/index.html)
+- [게임 코드 소스](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/tree/ac24fc97ae4b56d4d377780c3726f85832b6e271)
+- [게임 ZIP 다운로드](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/archive/ac24fc97ae4b56d4d377780c3726f85832b6e271.zip)
 - [HealingArty 홈페이지 게임 섹션](https://daning1212.github.io/healingarty/#games)
 
 ## 조작법
@@ -38,13 +38,13 @@
 
 ### 다음 작업자를 위한 핵심 정보
 
-현재 공개 게임 버전은 **v0.2.80**입니다. 게임 저장소는 [`daning1212/orbit-rogue-space-combat-roguelike`](https://github.com/daning1212/orbit-rogue-space-combat-roguelike)이며, 공개 PLAY·소스·ZIP이 가리키는 게임 코드 커밋은 [`83adf100355874ca18d1c1d901aa756dbf9f70ed`](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/commit/83adf100355874ca18d1c1d901aa756dbf9f70ed)입니다. 홈페이지 미리보기 이미지도 이 SHA를 사용합니다. README와 홈페이지 수정은 별도 커밋이므로 게임 코드 링크를 갱신할 때 문서 커밋 SHA를 대신 쓰지 마세요.
+현재 공개 게임 버전은 **v0.2.81**입니다. 게임 저장소는 [`daning1212/orbit-rogue-space-combat-roguelike`](https://github.com/daning1212/orbit-rogue-space-combat-roguelike)이며, 공개 PLAY·소스·ZIP이 가리키는 게임 코드 커밋은 [`ac24fc97ae4b56d4d377780c3726f85832b6e271`](https://github.com/daning1212/orbit-rogue-space-combat-roguelike/commit/ac24fc97ae4b56d4d377780c3726f85832b6e271)입니다. 홈페이지 미리보기 이미지도 이 SHA를 사용합니다. README와 홈페이지 수정은 별도 커밋이므로 게임 코드 링크를 갱신할 때 문서 커밋 SHA를 대신 쓰지 마세요.
 
 게임은 프레임워크 없는 정적 단일 `index.html`(JavaScript·CSS·Canvas)과 `assets/`로 구성되어 설치 없이 브라우저에서 실행됩니다. 주 게임 로직과 화면은 `index.html`, 작업 설계는 `plan.md`, 진행 항목은 `TODO.md`에 있습니다. 새로운 요청을 이어받으면 이 파일들을 읽고 이미 구현된 흐름을 먼저 확인하세요.
 
-### v0.2.80 현재 구현과 설계상 주의점
+### v0.2.81 현재 구현과 설계상 주의점
 
-시작 버튼 없이 ORBIT ROGUE 제목·버전 로고가 먼저 표시되고, 650ms 뒤 HealingArty Games 로고가 2초 동안 나타난 뒤 격납고로 자동 진입합니다. 격납고 배경과 파일럿 화면을 복구했으며 제작자 크레딧과 ORBIT ROGUE 로고 아래 `v0.2.80`을 표시합니다. 파일럿 이름표는 유지하며 하영서 중위는 파랑, 김마리아 중령은 주황 윤곽 발광을 보여줍니다. 선택 순간의 섬광과 중위의 경례·중령의 주먹 포즈도 적용했습니다. 중위 표식은 다이아몬드 두 개, 중령 표식은 꽃 모양 두 개로 구분합니다. 레벨업 강화는 무료이며 실제 효과와 수치, 개별 아이콘과 랭크 미리보기를 보여줍니다. 밸런스 보호를 위해 새 인챈트·진화 규칙은 추가하지 않았습니다.
+시작 버튼 없이 ORBIT ROGUE 제목·버전 로고가 먼저 표시되고, 650ms 뒤 HealingArty Games 로고가 2초 동안 나타난 뒤 격납고로 자동 진입합니다. 격납고 배경과 파일럿 화면을 복구했으며 제작자 크레딧과 ORBIT ROGUE 로고 아래 `v0.2.81`을 표시합니다. 파일럿 이름표는 유지하며 하영서 중위는 파랑, 김마리아 중령은 주황 윤곽 발광을 보여줍니다. 선택 순간의 섬광과 중위의 경례·중령의 주먹 포즈도 적용했습니다. 중위 표식은 다이아몬드 두 개, 중령 표식은 꽃 모양 두 개로 구분합니다. 레벨업 강화는 무료이며 실제 효과와 수치, 개별 아이콘과 랭크 미리보기를 보여줍니다. 밸런스 보호를 위해 새 인챈트·진화 규칙은 추가하지 않았습니다.
 
 일반 스테이지 시작 시 정거장을 3×3 전체 맵의 북·동·남·서 외곽 네 변 중 무작위 한 곳에 미리 배치하고, 플레이어가 비행해 실제로 찾아가는 장소로 둡니다. 정거장은 플레이어 위치로 이동하거나 갑자기 나타나지 않으며, 배치 뒤 월드 좌표에 고정됩니다. 플레이어와 너무 가까운 후보는 제외하고, 북쪽·남쪽 변에서는 정거장과 베이가 맵 안쪽을 향하도록 회전합니다. 남은 시간이 10초 이하가 될 때만 정거장 방향 화살표가 안내를 시작하므로, 플레이어는 그곳으로 갈지 선택할 수 있습니다. 12초 도킹 방어전에서 적기는 정거장을 집중 공격하고, 일부는 피격 뒤 후퇴합니다. 정거장 레이저와 유도탄이 방어하며 플레이어도 계속 발사할 수 있습니다. 실드 3,000이 먼저 피해를 흡수하고 실드 고갈 뒤 에너지 3,000이 감소합니다. 에너지 0이면 정거장이 폭발해 게임 오버가 됩니다. 플레이어 기체는 기존과 같이 실드·내구도가 소진되어 파괴되면 게임 오버입니다. 실제 도킹에 성공한 경우에만 상점과 회복을 제공하며, 시간 만료·미도킹은 상점·도킹 회복 없이 다음 구역으로 진행합니다. 새 구역의 정거장 실드와 에너지는 각각 3,000으로 초기화됩니다. 보스는 거리를 유지하며 접근 속도를 낮추고 공격 빈도를 높였습니다. Stage 20 최종 흐름은 일반 도킹과 분리해 보존했습니다. 상점은 왼쪽 약 30%의 기체·상태·능력치, 오른쪽 약 70%의 코인·수리·상품 네 가지, 하단의 무장·리롤·저장 후 나가기·다음 구역 동작으로 구성되어 있습니다.
 
@@ -62,7 +62,11 @@
 
 `assets/audio/sfx/dash-boost.mp3`는 새 SF 부스터 대시 효과음입니다. `assets/upgrades/generated/stat-composite-armor.png`는 AI 생성 복합 장갑 원본 그림입니다. `assets/upgrades/items/`에는 이와 별개인 28종의 강화 아이콘 SVG가 있습니다. 생성 도구는 `tools/build-card-art.py`, 도킹 정거장은 `assets/station/orbit-docking-station.webp`, RIFT 그림은 `assets/bosses/rift-excavator.webp`입니다. 사용자 참고 PNG `orbit-rogue-shop-reference.png`, `orbit-rogue-station-source.png`, `orbit-rogue-upgrade-reference.png`, `assets/station/orbit-docking-station-source.png`는 개인 참고용으로 Git 커밋에 넣지 않았습니다.
 
-완료된 자동 확인: 인라인 JavaScript 구문과 `git diff --check`, 미니맵 적·보스 표식, 점령 유물의 렌더링 제거와 플레이어 아이콘 유지, 유물 보상·진행 초기화·버프 효과와 HUD, 광석 70초, 도킹 접근, 강화 카드 키보드 포커스와 ESC 복귀, 데스크톱·모바일 결과/일시정지 화면, 오디오 옵션 조작 및 콘솔 오류를 확인했습니다. 기존 Chromium 테스트에서도 카메라·저장 복원·터치 제외·엔딩 그림·클리어 카드를 확인했습니다. v0.2.80에서는 100회 무작위 배치에서 네 외곽 변이 모두 선택되고 정거장 여백이 약 22px 유지되며 시작 시 베이와 기체가 겹치지 않는 것을 확인했습니다. 카메라가 약 320px 이동해도 정거장의 전체 맵 좌표는 변하지 않았고, 10초 전까지 안내 단계가 대기하다 남은 시간 10초에 접근 안내로 전환됐습니다. 네 방향 베이 좌표 판정과 페이지 오류가 없음을 확인했습니다. 실제 휴대폰 브라우저에서 수동 플레이하거나 물리 게임패드를 연결한 검증은 하지 않았습니다. 다음 변경에서 관련 동작을 건드리면 그 경로만 다시 확인하고, 실기 검증을 했다고 과장하지 마세요.
+완료된 자동 확인: 인라인 JavaScript 구문과 `git diff --check`, 미니맵 적·보스 표식, 점령 유물의 렌더링 제거와 플레이어 아이콘 유지, 유물 보상·진행 초기화·버프 효과와 HUD, 광석 70초, 도킹 접근, 강화 카드 키보드 포커스와 ESC 복귀, 데스크톱·모바일 결과/일시정지 화면, 오디오 옵션 조작 및 콘솔 오류를 확인했습니다. 기존 Chromium 테스트에서도 카메라·저장 복원·터치 제외·엔딩 그림·클리어 카드를 확인했습니다. v0.2.81에서는 100회 무작위 배치에서 네 외곽 변이 모두 선택되고 정거장 여백이 약 22px 유지되며 시작 시 베이와 기체가 겹치지 않는 것을 확인했습니다. 카메라가 약 320px 이동해도 정거장의 전체 맵 좌표는 변하지 않았고, 10초 전까지 안내 단계가 대기하다 남은 시간 10초에 접근 안내로 전환됐습니다. 네 방향 베이 좌표 판정과 페이지 오류가 없음을 확인했습니다. 실제 휴대폰 브라우저에서 수동 플레이하거나 물리 게임패드를 연결한 검증은 하지 않았습니다. 다음 변경에서 관련 동작을 건드리면 그 경로만 다시 확인하고, 실기 검증을 했다고 과장하지 마세요.
+
+### v0.2.81 전투 시간과 유물
+
+1구역 전투는 55초부터 시작해 최종 구역 120초까지 점진적으로 늘어납니다. 보스는 월드 좌표에 기준점을 두고 움직이며 교전 거리 안으로 들어가면 타이머가 시작됩니다. 펄스는 적기에서 드물게 나오며 초반 최대 2개, 이후 최대 3개입니다. 기존 10초 버프에 구역 한정 유물인 혜성 추진기와 인양 호위기를 추가했습니다. 남은 광석은 도킹 방어 중에도 회수할 수 있습니다.
 
 ### 이전 릴리스 작업 이력
 
